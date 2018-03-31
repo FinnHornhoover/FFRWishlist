@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ MIT License
+  ~
+  ~ Copyright (c) 2018 FinnHornhoover
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ Copies and derivative works of the Software which contain significant portions
+  ~ of the data contained within the files that are licensed under the CC-BY-NC 4.0
+  ~ license (specified in LICENSE-CC-BY-NC file) must also satisfy the conditions
+  ~ of the CC-BY-NC 4.0 license, specifically non-commercial use and attribution.
+  ~ Therefore, such copies or derivative works may not be used for commercial
+  ~ purposes, and must include acceptable attribution.
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<?import finnhh.ffrwishlist.model.constants.stage.StageInfo?>
+<?import finnhh.ffrwishlist.resources.ResourceLoader?>
+<?import finnhh.ffrwishlist.scene.controller.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.lang.Double?>
+
+<VBox alignment="TOP_CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="finnhh.ffrwishlist.scene.controller.MainSceneController">
+    <prefWidth>
+        <StageInfo fx:constant="MAIN_STAGE_WIDTH" />
+    </prefWidth>
+    <prefHeight>
+        <StageInfo fx:constant="MAIN_STAGE_HEIGHT" />
+    </prefHeight>
+    <fx:define>
+        <Double fx:id="mainButtonSize" fx:value="131.0" />
+    </fx:define>
+    <children>
+        <Label alignment="CENTER" contentDisplay="CENTER" text="FFR Wishlist" textAlignment="CENTER" textFill="#01ae3e">
+            <font>
+                <Font size="48.0" />
+            </font>
+        </Label>
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <TextField fx:id="searchBar" onAction="#onSearchBarQueryEntered" promptText="Search for an item" HBox.hgrow="ALWAYS" />
+            <ComboBox fx:id="profileComboBox" onAction="#onProfileChanged" prefWidth="$mainButtonSize" />
+        </HBox>
+        <HBox alignment="CENTER_LEFT">
+            <Label fx:id="topInfoText" textFill="WHITE">
+                <MainSceneController fx:constant="TOP_TEXT_WISHLIST_TRUE" />
+            </Label>
+            <ButtonBar buttonMinWidth="$mainButtonSize" HBox.hgrow="ALWAYS">
+                <buttons>
+                    <Button mnemonicParsing="false" onAction="#onSetMenuButtonClicked" text="Sets Menu">
+                        <graphic>
+                            <ImageView preserveRatio="true">
+                                <fitWidth>
+                                    <MainSceneController fx:constant="BUTTON_ICONS_SIZE" />
+                                </fitWidth>
+                                <ResourceLoader fx:constant="SET_ICON" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <Button fx:id="topAddButton" mnemonicParsing="false" onAction="#onTopAddButtonClicked">
+                        <text>
+                            <MainSceneController fx:constant="TOP_BUTTON_TEXT_WISHLIST_TRUE" />
+                        </text>
+                        <graphic>
+                            <ImageView fx:id="topButtonImageView" preserveRatio="true">
+                                <fitHeight>
+                                    <MainSceneController fx:constant="BUTTON_ICONS_SIZE" />
+                                </fitHeight>
+                                <ResourceLoader fx:constant="PLUS_ICON" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </buttons>
+            </ButtonBar>
+        </HBox>
+        <TableView id="itemTable" fx:id="itemPackTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="iconColumn" editable="false" resizable="false" sortable="false" text="Icon">
+                    <minWidth>
+                        <MainSceneController fx:constant="ICON_ROW_WIDTH" />
+                    </minWidth>
+                    <maxWidth>
+                        <MainSceneController fx:constant="ICON_ROW_WIDTH" />
+                    </maxWidth>
+                </TableColumn>
+                <TableColumn fx:id="nameColumn" editable="false" prefWidth="75.0" text="Name">
+                    <minWidth>
+                        <MainSceneController fx:constant="NAME_ROW_MIN_WIDTH" />
+                    </minWidth>
+                </TableColumn>
+                <TableColumn fx:id="levelColumn" editable="false" prefWidth="75.0" text="Level" />
+                <TableColumn fx:id="typeColumn" editable="false" prefWidth="75.0" text="Type" />
+                <TableColumn fx:id="rarityColumn" editable="false" prefWidth="75.0" text="Rarity" />
+                <TableColumn fx:id="setsColumn" editable="false" prefWidth="75.0" sortable="false" text="Sets">
+                    <minWidth>
+                        <MainSceneController fx:constant="SET_ROW_MIN_WIDTH" />
+                    </minWidth>
+                </TableColumn>
+                <TableColumn fx:id="amountColumn" editable="false" prefWidth="75.0" text="Amount">
+                    <minWidth>
+                        <MainSceneController fx:constant="AMOUNT_ROW_MIN_WIDTH" />
+                    </minWidth>
+                </TableColumn>
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+        <HBox alignment="CENTER" spacing="20.0">
+            <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                <Label fx:id="messageBarSearchText" textFill="#01ae3e" />
+                <Label fx:id="messageBarItemCountsText" textFill="white" />
+                <Label fx:id="messageBarErrorText" textFill="red" />
+            </VBox>
+            <ButtonBar buttonMinWidth="$mainButtonSize">
+                <buttons>
+                    <Button mnemonicParsing="false" onAction="#onImportExportButtonClicked" text="Import / Export" />
+                    <Button mnemonicParsing="false" onAction="#onHelpButtonClicked" text="Help" />
+                </buttons>
+            </ButtonBar>
+        </HBox>
+    </children>
+    <padding>
+        <Insets bottom="15.0" left="20.0" right="20.0" />
+    </padding>
+</VBox>

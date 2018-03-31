@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ MIT License
+  ~
+  ~ Copyright (c) 2018 FinnHornhoover
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ Copies and derivative works of the Software which contain significant portions
+  ~ of the data contained within the files that are licensed under the CC-BY-NC 4.0
+  ~ license (specified in LICENSE-CC-BY-NC file) must also satisfy the conditions
+  ~ of the CC-BY-NC 4.0 license, specifically non-commercial use and attribution.
+  ~ Therefore, such copies or derivative works may not be used for commercial
+  ~ purposes, and must include acceptable attribution.
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<?import finnhh.ffrwishlist.model.constants.stage.StageInfo?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<TabPane tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="finnhh.ffrwishlist.scene.controller.ImportExportSceneController">
+    <prefWidth>
+        <StageInfo fx:constant="IMPORT_EXPORT_STAGE_WIDTH" />
+    </prefWidth>
+    <prefHeight>
+        <StageInfo fx:constant="IMPORT_EXPORT_STAGE_HEIGHT" />
+    </prefHeight>
+    <tabs>
+        <Tab closable="false" text="Import">
+            <content>
+                <VBox spacing="10.0">
+                    <children>
+                        <Label text="Import Wishlist" textFill="#01ae3e">
+                            <font>
+                                <Font size="32.0" />
+                            </font>
+                        </Label>
+                        <Separator prefWidth="200.0" />
+                        <BorderPane prefWidth="200.0">
+                            <left>
+                                <Label text="Insert the BBCode version of the wishlist to import below:" textFill="white" BorderPane.alignment="CENTER" />
+                            </left>
+                            <right>
+                                <Label fx:id="importProfileLabel" textFill="white" BorderPane.alignment="CENTER">
+                                    <font>
+                                        <Font size="20.0" />
+                                    </font>
+                                </Label>
+                            </right>
+                        </BorderPane>
+                        <TextArea fx:id="importBBCodeTextArea" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                            <children>
+                                <Label fx:id="importParseFailLabel" textFill="red" />
+                                <ButtonBar prefHeight="40.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                    <buttons>
+                                        <Button mnemonicParsing="false" onAction="#onParseItemsButtonClicked" text="Parse Items to Import" />
+                                    </buttons>
+                                </ButtonBar>
+                            </children>
+                        </HBox>
+                        <Label text="These items will be imported:" textFill="white" />
+                        <ListView fx:id="importConfirmationListView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                            <children>
+                                <Label fx:id="importSuccessLabel" textFill="#01ae3e" />
+                                <ButtonBar prefHeight="40.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                    <buttons>
+                                        <Button mnemonicParsing="false" onAction="#onAppendToWishlistButtonClicked" text="Append to Wishlist" />
+                                    </buttons>
+                                </ButtonBar>
+                            </children>
+                        </HBox>
+                    </children>
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                    </padding>
+                </VBox>
+            </content>
+        </Tab>
+        <Tab closable="false" text="Export">
+            <content>
+                <VBox spacing="10.0">
+                    <children>
+                        <Label text="Export Wishlist" textFill="#01ae3e">
+                            <font>
+                                <Font size="32.0" />
+                            </font>
+                        </Label>
+                        <Separator prefWidth="200.0" />
+                        <BorderPane prefWidth="200.0">
+                            <left>
+                                <Label text="BBCode version of your wishlist:" textFill="white" BorderPane.alignment="CENTER" />
+                            </left>
+                            <right>
+                                <Label fx:id="exportProfileLabel" textFill="white" BorderPane.alignment="CENTER">
+                                    <font>
+                                        <Font size="20.0" />
+                                    </font>
+                                </Label>
+                            </right>
+                        </BorderPane>
+                        <TextArea fx:id="exportBBCodeTextArea" editable="false" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                    </children>
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                    </padding>
+                </VBox>
+            </content>
+        </Tab>
+    </tabs>
+</TabPane>

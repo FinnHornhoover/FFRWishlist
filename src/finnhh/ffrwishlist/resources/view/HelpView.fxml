@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ MIT License
+  ~
+  ~ Copyright (c) 2018 FinnHornhoover
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ Copies and derivative works of the Software which contain significant portions
+  ~ of the data contained within the files that are licensed under the CC-BY-NC 4.0
+  ~ license (specified in LICENSE-CC-BY-NC file) must also satisfy the conditions
+  ~ of the CC-BY-NC 4.0 license, specifically non-commercial use and attribution.
+  ~ Therefore, such copies or derivative works may not be used for commercial
+  ~ purposes, and must include acceptable attribution.
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<?import finnhh.ffrwishlist.model.constants.stage.StageInfo?>
+<?import finnhh.ffrwishlist.resources.ResourceLoader?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<TabPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+    <prefWidth>
+        <StageInfo fx:constant="HELP_STAGE_WIDTH" />
+    </prefWidth>
+    <prefHeight>
+        <StageInfo fx:constant="HELP_STAGE_HEIGHT" />
+    </prefHeight>
+    <tabs>
+        <Tab closable="false" text="Welcome">
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                <children>
+                    <Label text="Welcome" textFill="#01ae3e">
+                        <font>
+                            <Font size="32.0" />
+                        </font>
+                    </Label>
+                    <Separator prefWidth="200.0" />
+                    <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
+                        <ImageView fitWidth="64.0" preserveRatio="true">
+                            <ResourceLoader fx:constant="PROGRAM_ICON" />
+                        </ImageView>
+                        <Label text="Welcome to FFR Wishlist, the only program you will need to keep track of your wanted items!" textAlignment="CENTER" textFill="#018e3e" wrapText="true">
+                            <font>
+                                <Font size="20.0" />
+                            </font>
+                        </Label>
+                        <Label text="FFR Wishlist is the must-have program of the organized FusionFaller! The program allows you to easily make and maintain a list of items to get in FusionFall Retro." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="It allows you to manage up to 16 different wishlists, and provides easy access to all items imaginable." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="The program contains lots of information about every item, including the set information, so even if you can't remember the name of the item you want, you can still find it!" textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="Simply click 'Add Items' to start adding items to your wishlist. The program will automatically save everything for you." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="When you're done adding items, click 'Done' to return to your wishlist. You can use the plus and minus buttons to alter the item amounts." textAlignment="CENTER" textFill="white" wrapText="true" />
+                    </VBox>
+                </children>
+                <padding>
+                    <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+            </VBox>
+        </Tab>
+        <Tab closable="false" text="Disclaimer">
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                <children>
+                    <Label text="Disclaimer" textFill="#01ae3e">
+                        <font>
+                            <Font size="32.0" />
+                        </font>
+                    </Label>
+                    <Separator prefWidth="200.0" />
+                    <VBox alignment="CENTER" spacing="20.0" VBox.vgrow="ALWAYS">
+                        <Label text="FusionFall is a registered trademark of the Turner Broadcasting System." textAlignment="CENTER" textFill="#018e3e" wrapText="true">
+                            <font>
+                                <Font size="20.0" />
+                            </font>
+                        </Label>
+                        <Label text="This software has been put together as a fan project with publicly available information and resources from the game, some in whole part and some altered through fair use. The developer and future developers of the project do not claim to be affiliated with or endorsed by the Turner Broadcasting System or the original FusionFall development team." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="Information about items were largely gathered from FusionFall Wiki, however alterations and additions were made by the developer." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="Contact Information" textAlignment="CENTER" textFill="#018e3e" wrapText="true">
+                            <font>
+                                <Font size="20.0" />
+                            </font>
+                        </Label>
+                        <Label text="FFU Forum Username: Finn_Hornhoover" textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="E-Mail: finnhornhoover@gmail.com" textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="Please use the forum thread for suggestions and bug reports. Your feedback is appreciated." textAlignment="CENTER" textFill="white" wrapText="true" />
+                    </VBox>
+                </children>
+                <padding>
+                    <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+            </VBox>
+        </Tab>
+        <Tab closable="false" text="The Table">
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                <children>
+                    <Label text="The Table" textFill="#01ae3e">
+                        <font>
+                            <Font size="32.0" />
+                        </font>
+                    </Label>
+                    <Separator prefWidth="200.0" />
+                    <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
+                        <Label text="The table in the center of the program shows the items in your wishlist. All columns can technically be resized, but it isn't recommended. The table will sort items by rarity (high to low), level (high to low), type and then by name by default, however you can click the column headers to sort items any way you want." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="When you click 'Add Items', the table starts showing items that aren't in your wishlist. You can add items to your wishlist there by clicking the plus buttons. The items get removed as you click the plus buttons, because they're now in your wishlist. Click 'Done' to return to your wishlist." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="The amount of the items in your wishlist can be manipulated by clicking the plus and minus buttons inside the Amount cells." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="When you click the minus button on an item that has only 1 copy in the wishlist, the item will be removed. Additionaly, the plus button on an item with 255 copies will do nothing, as that is the maximum." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="Clicking the highlighted set names on the table will bring up the Set Menu, which will show you all the items inside the same set." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="The items inside the table can be filtered through the use of the search bar." textAlignment="CENTER" textFill="white" wrapText="true" />
+                    </VBox>
+                </children>
+                <padding>
+                    <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+            </VBox>
+        </Tab>
+        <Tab closable="false" text="Profiles">
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                <children>
+                    <Label text="Profiles" textFill="#01ae3e">
+                        <font>
+                            <Font size="32.0" />
+                        </font>
+                    </Label>
+                    <Separator prefWidth="200.0" />
+                    <VBox alignment="CENTER" spacing="20.0" VBox.vgrow="ALWAYS">
+                        <Label text="The program allows you to save up to 16 different wishlists, which allows you to make all the planning you want for all your characters in the game." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="You can change Profiles to access the different wishlists. To do that, click the drop down menu at the top right corner, and select a Profile. Each Profile is essentially a new blank wishlist." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="The program automatically saves which Profile is active, so that when you close the program, you can come back to the current wishlist you were working on!" textAlignment="CENTER" textFill="white" wrapText="true" />
+                    </VBox>
+                </children>
+                <padding>
+                    <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+            </VBox>
+        </Tab>
+        <Tab closable="false" text="Search Bar">
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                <children>
+                    <Label text="Search Bar" textFill="#01ae3e">
+                        <font>
+                            <Font size="32.0" />
+                        </font>
+                    </Label>
+                    <Separator prefWidth="200.0" />
+                    <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
+                        <Label text="The program comes equipped with a powerful search bar. By default, it allows you to search for items by name." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="Don't worry! You don't have to type the name correctly. You don't even have to type the whole name! The search bar is case insensitive and can match any part of the item name, so even a few letters can allow you to find the item you want." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="For searches where you know the start or the end of the name, you can add quotation marks to the beginning or end of the string to match the phrase from the beginning or the end. Adding it on both sides allows you to match an exact name." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="Using % characters, you can skip words that you can't remember. To skip individual letters, you can use the underscore character." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="That's not all! You can also search items by their features such as their level range, rarity, type, amounts and even set names. To do that, you'll have to type them as Filters on the search bar." textAlignment="CENTER" textFill="white" wrapText="true" />
+                    </VBox>
+                </children>
+                <padding>
+                    <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+            </VBox>
+        </Tab>
+        <Tab closable="false" text="Filters">
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                <children>
+                    <Label text="Filters" textFill="#01ae3e">
+                        <font>
+                            <Font size="32.0" />
+                        </font>
+                    </Label>
+                    <Separator prefWidth="200.0" />
+                    <ScrollPane id="filterScrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER" pannable="true" VBox.vgrow="ALWAYS">
+                        <VBox alignment="CENTER" spacing="10.0">
+                            <Label text="Syntax:" textAlignment="CENTER" textFill="white" wrapText="true" />
+                            <Label text="-- column operator value" textAlignment="CENTER" textFill="white" wrapText="true">
+                                <font>
+                                    <Font name="Source Code Pro" size="15.0" />
+                                </font>
+                            </Label>
+                            <Label text="Filters are great for quickly searching for all items with certain traits. They are typed on the search bar like name searches, but are prefixed with --. Filters allow you to reference 'column's and check for 'value's inside the cells with an 'operator'. For example:" textAlignment="CENTER" textFill="white" wrapText="true" />
+                            <Label text="-- type = shattergun" textAlignment="CENTER" textFill="white" wrapText="true">
+                                <font>
+                                    <Font name="Source Code Pro" size="15.0" />
+                                </font>
+                            </Label>
+                            <Label text="would show all items that are shatterguns," textAlignment="CENTER" textFill="white" wrapText="true" />
+                            <Label text="-- level != 18" textAlignment="CENTER" textFill="white" wrapText="true">
+                                <font>
+                                    <Font name="Source Code Pro" size="15.0" />
+                                </font>
+                            </Label>
+                            <Label text="would show you items that aren't level 18. The spaces in between can be omitted, and multiple filters of the same type are allowed. The behaviour can change depending on the context, but they're designed to be useful:" textAlignment="CENTER" textFill="white" wrapText="true" />
+                            <Label text="-- amount &gt; 4 -- amount &lt; 25" textAlignment="CENTER" textFill="white" wrapText="true">
+                                <font>
+                                    <Font name="Source Code Pro" size="15.0" />
+                                </font>
+                            </Label>
+                            <Label text="would fetch items where the amount is both more than 4 and less than 25, whereas" textAlignment="CENTER" textFill="white" wrapText="true" />
+                            <Label text="-- rarity = ultra rare -- rarity = common" textAlignment="CENTER" textFill="white" wrapText="true">
+                                <font>
+                                    <Font name="Source Code Pro" size="15.0" />
+                                </font>
+                            </Label>
+                            <Label text="would fetch items that are Ultra Rare or Common." textAlignment="CENTER" textFill="white" wrapText="true" />
+                            <Label text="Set filters work pretty much the same way as the other filters, but the values don't need to be exact, similar to how name searches are done. Note that numerical operators (&lt;,&gt;,&lt;=,&gt;=) will only work for Level and Amount columns, as those don't make sense for other columns." textAlignment="CENTER" textFill="white" wrapText="true" />
+                            <Label text="There are alternative ways of referencing values and columns to make the filters a bit more comfortable to use. You can use these instead of writing the whole name of the column or the actual value:" textAlignment="CENTER" textFill="white" wrapText="true" />
+                            <GridPane styleClass="filterGridPane" gridLinesVisible="true">
+                                <columnConstraints>
+                                    <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                                    <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                <children>
+                                    <Label text="Alternatives" textFill="white" underline="true" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                    <Label text="Column / Value" textFill="white" underline="true" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                    <Label text="l, lv, lvl" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                    <Label text="Level Column" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Label text="t, ty" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                    <Label text="Type Column" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Label text="r, ra" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                    <Label text="Rarity Column" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    <Label text="s, set" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                                    <Label text="Sets Column" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                    <Label text="a, ct, count, num, number" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                                    <Label text="Amount Column" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                    <Label text="und, null, none, nan, uk, unknown" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+                                    <Label text="Level Undefined, Rarity Undefined" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                    <Label text="min" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+                                    <Label text="Level Minimum (0), Minimum Amount (1)" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                    <Label text="max" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+                                    <Label text="Level Maximum (36), Maximum Amount (255)" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                                    <Label text="Plural versions of type names" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="9" />
+                                    <Label text="Type Values" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                                    <Label text="gum, gums" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="10" />
+                                    <Label text="Gumball Type" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+                                    <Label text="shirt, shirts" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="11" />
+                                    <Label text="Body Type" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+                                    <Label text="pants, leggings" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="12" />
+                                    <Label text="Legs Type" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="12" />
+                                    <Label text="boots" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="13" />
+                                    <Label text="Shoes Type" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="13" />
+                                    <Label text="face" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="14" />
+                                    <Label text="Glasses Type" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="14" />
+                                    <Label text="c, co" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="15" />
+                                    <Label text="Common Rarity" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="15" />
+                                    <Label text="uc, unc" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="16" />
+                                    <Label text="Uncommon Rarity" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="16" />
+                                    <Label text="r, ra" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="17" />
+                                    <Label text="Rare Rarity" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="17" />
+                                    <Label text="ur, ultra, ultra-rare, ultrarare" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="18" />
+                                    <Label text="Ultra Rare Rarity" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="18" />
+                                    <Label text="none, null" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="19" />
+                                    <Label text="0 Amount" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="19" />
+                                </children>
+                            </GridPane>
+                            <Label text="There are also supertype filters which you type with no operators or values. The syntax for using those are:" textAlignment="CENTER" textFill="white" wrapText="true" />
+                            <Label text="-- supertype" textAlignment="CENTER" textFill="white" wrapText="true">
+                                <font>
+                                    <Font name="Source Code Pro" size="15.0" />
+                                </font>
+                            </Label>
+                            <Label text="You can negate them as well:" textAlignment="CENTER" textFill="white" wrapText="true" />
+                            <Label text="-- ! supertype" textAlignment="CENTER" textFill="white" wrapText="true">
+                                <font>
+                                    <Font name="Source Code Pro" size="15.0" />
+                                </font>
+                            </Label>
+                            <Label text="These allow you to do a broad type filtering, for example filtering all weapons or armor items. Here are all the supertypes, the alternate ways of writing them, and the types that they correspond to:" textAlignment="CENTER" textFill="white" wrapText="true" />
+                            <GridPane styleClass="filterGridPane" gridLinesVisible="true">
+                                <columnConstraints>
+                                    <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                                    <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                                    <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                <children>
+                                    <Label text="Supertype" textFill="white" underline="true" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                    <Label text="Alternatives" textFill="white" underline="true" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                    <Label text="Types Covered" textFill="white" underline="true" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                                    <Label text="Miscellaneous" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                    <Label text="misc" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Label text="Gumball" textFill="white" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                    <Label text="Weapon" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                    <Label text="weapons" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Label text="Thrown, Melee, Pistol, Rifle, Rocket, Shattergun" textFill="white" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                    <Label text="Armor" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                    <Label text="armors" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    <Label text="Body, Legs, Shoes" textFill="white" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                                    <Label text="Accessory" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                                    <Label text="accessories, cosmetic, cosmetics" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                    <Label text="Backpack, Glasses, Hat" textFill="white" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                                    <Label text="Vehicle" textFill="white" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                                    <Label text="vehicles" textFill="white" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                    <Label text="Vehicle" textFill="white" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                                </children>
+                            </GridPane>
+                            <Label text="Filters may seem complicated at first, but they are fast and useful tools that greatly come to your aid once you start to look for specific items." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        </VBox>
+                    </ScrollPane>
+                </children>
+                <padding>
+                    <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+            </VBox>
+        </Tab>
+        <Tab closable="false" text="Set Menu">
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                <children>
+                    <Label text="Set Menu" textFill="#01ae3e">
+                        <font>
+                            <Font size="32.0" />
+                        </font>
+                    </Label>
+                    <Separator prefWidth="200.0" />
+                    <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
+                        <Label text="FFR Wishlist comes with a one-of-a-kind set system and allows users to add items to their wishlists using this set information." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="To access the Set Menu, click the button at the top of the table. Clicking on one of the set labels of an item will take you to the Set Menu as well, but will automatically select the set that you clicked on." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="The Set Menu has a drop down menu for set selection at the top. When a set is selected, the items associated with the set are listed in the table at the center." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="Don't let the large number of sets discourage you! You can search for a set name in the search bar of the Set Menu. The search will match set names pretty much in the same fashion as the search bar on the main window. The drop down menu automatically opens when you hit Enter, and shows you the sets that it could find." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="You can directly alter the amounts of the items in the table by clicking on the plus and minus buttons associated with the items. You can click 'Add All to Wishlist' to add one of every item in the specified set that's not in your wishlist yet to your wishlist. Clicking 'Increment All Item Amounts' will disregard whether you already have the items in your wishlist or not, and will add one of each item in the set to your wishlist." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="When you close the Set Menu, the changes you made will be visible on the main window." textAlignment="CENTER" textFill="white" wrapText="true" />
+                    </VBox>
+                </children>
+                <padding>
+                    <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+            </VBox>
+        </Tab>
+        <Tab closable="false" text="Import / Export">
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                <children>
+                    <Label text="Import / Export" textFill="#01ae3e">
+                        <font>
+                            <Font size="32.0" />
+                        </font>
+                    </Label>
+                    <Separator prefWidth="200.0" />
+                    <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
+                        <Label text="Want to share your wishlist or add items to your wishlist from someone else's wishlist? No problem!" textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="The program allows you to import and export wishlists in BBCode form, which means you can even post your wishlist on the forum and have people use that wishlist!" textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="You can import a wishlist in BBCode form using the Import menu. Firstly, switch to the Profile you want to import items to. Paste the BBCode text to the top text area on the screen, make sure that you have the right form, and click 'Parse Items to Import'. The menu will check for items in the BBCode text, and if it encounters any errors, an error text will appear. All the items and amounts that it can find will land in the list below. After confirming the items, you can hit 'Append to Wishlist' to add the items to your wishlist. The changes will be visible once you close the window." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="To export your wishlist in BBCode form, switch to the Profile you want to export from, open the Import / Export menu, and navigate to the Export tab. You will find your wishlist in BBCode there, which you can copy and save anywhere. This may be useful for the Trading section of the forum." textAlignment="CENTER" textFill="white" wrapText="true" />
+                    </VBox>
+                </children>
+                <padding>
+                    <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+            </VBox>
+        </Tab>
+        <Tab closable="false" text="Updater">
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                <children>
+                    <Label text="Updater" textFill="#01ae3e">
+                        <font>
+                            <Font size="32.0" />
+                        </font>
+                    </Label>
+                    <Separator prefWidth="200.0" />
+                    <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
+                        <Label text="The program includes a small database updater. It actually allows me to add new things to your programs with no effort!" textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="The updater only appears when there's an update to be made, but your program will check if there's an update to make every time you open the program." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="You can see your database version from the title of your program, the number after the version number is the database version. It might take a couple seconds for the updater to realize there are no updates to make, after that it should update the title of the program with the current database version." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="FFR Wishlist was designed to run offline with no problems, you only need to connect to the internet when you want a recent database update to be applied." textAlignment="CENTER" textFill="white" wrapText="true" />
+                    </VBox>
+                </children>
+                <padding>
+                    <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+            </VBox>
+        </Tab>
+    </tabs>
+</TabPane>
