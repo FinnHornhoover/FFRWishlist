@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 
 public class DatabaseManager {
     public static final String DRIVER_NAME          = "org.sqlite.JDBC";
-    public static final String DATABASE_FILE_DIR    = "db";
+    public static final String DATABASE_FILE_DIR    = System.getProperty("user.home") + "/FFRWishlistData/db";
     public static final String DATABASE_URL         = "jdbc:sqlite:" + DATABASE_FILE_DIR + "/ffrw.db";
 
     private final VersionDAO    versionDAO;
@@ -78,7 +78,7 @@ public class DatabaseManager {
     private void initializeDataSource() throws IOException, SQLException, ClassNotFoundException {
         File dbDir = new File(DATABASE_FILE_DIR);
         if (!dbDir.exists())
-            Files.createDirectory(dbDir.toPath());
+            Files.createDirectories(dbDir.toPath());
 
         Class.forName(DRIVER_NAME);
 

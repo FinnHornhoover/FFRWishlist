@@ -47,7 +47,7 @@
         <Separator prefWidth="200.0" />
         <HBox spacing="10.0">
             <TextField fx:id="setSearchBar" onAction="#onSetSearchBarQueryEntered" promptText="Search for a Set" HBox.hgrow="ALWAYS" />
-            <ComboBox fx:id="setSelectComboBox" onAction="#onSetSelected" prefHeight="31.0" prefWidth="280.0" promptText="Choose a Set" />
+            <ComboBox fx:id="setSelectComboBox" onAction="#onSetSelected" prefWidth="280.0" promptText="Choose a Set" />
         </HBox>
         <BorderPane prefWidth="200.0">
             <left>

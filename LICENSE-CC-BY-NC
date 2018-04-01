@@ -3,6 +3,8 @@ This license applies ONLY to the following files:
     - src/finnhh/ffrwishlist/resources/db/ffrw.sql
     - src/finnhh/ffrwishlist/resources/images/background.jpg
     - src/finnhh/ffrwishlist/resources/images/icon.png
+    - src/finnhh/ffrwishlist/resources/images/icon.ico
+    - src/finnhh/ffrwishlist/resources/images/icon.icns
     - src/finnhh/ffrwishlist/resources/images/No_Picture.jpg
 
 Any copies or derivative works which contain significant portions of the data
