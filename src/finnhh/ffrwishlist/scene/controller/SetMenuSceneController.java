@@ -103,7 +103,7 @@ public class SetMenuSceneController extends ItemPackTableSceneController impleme
         activeSet.ifPresent(set ->
                 itemPackTable.getItems().addAll(itemPackDAO.queryItemPacksBySet(activeProfile, itemMap, set)));
 
-        itemPackTable.refresh();
+        lateRefreshTable();
     }
 
     @FXML
@@ -128,7 +128,7 @@ public class SetMenuSceneController extends ItemPackTableSceneController impleme
             protected void succeeded() {
                 super.succeeded();
 
-                Platform.runLater(itemPackTable::refresh);
+                lateRefreshTable();
             }
         };
 
@@ -169,7 +169,7 @@ public class SetMenuSceneController extends ItemPackTableSceneController impleme
             protected void succeeded() {
                 super.succeeded();
 
-                Platform.runLater(itemPackTable::refresh);
+                lateRefreshTable();
             }
         };
 

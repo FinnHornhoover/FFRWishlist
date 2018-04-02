@@ -26,16 +26,36 @@
      -fx-fill: white;
 }
 
-#itemTable .button {
+.filterGridPane Line {
+     -fx-stroke: white;
+}
+
+.profileLabel {
+     -fx-font-size: 20px;
+}
+
+.pageHeader {
+     -fx-font-size: 32px;
+}
+
+.helpTextLarge {
+     -fx-font-size: 20px;
+}
+
+.itemPackTable .button {
      -fx-background-color: transparent;
 }
 
-#itemTable .button:hover {
+.itemPackTable .button:hover {
      -fx-background-color: gainsboro;
 }
 
-#itemTable .setreference:hover {
+.itemPackTable .setreference:hover {
      -fx-background-color: gainsboro;
+}
+
+#mainStageHeader {
+     -fx-font-size: 48px;
 }
 
 #filterScrollPane > .viewport {
@@ -44,8 +64,4 @@
 
 #filterScrollPane {
      -fx-background-color: transparent;
-}
-
-.filterGridPane Line {
-     -fx-stroke: white;
 }

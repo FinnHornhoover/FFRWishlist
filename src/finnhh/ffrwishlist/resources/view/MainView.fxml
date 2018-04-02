@@ -52,11 +52,7 @@
         <Double fx:id="mainButtonSize" fx:value="131.0" />
     </fx:define>
     <children>
-        <Label alignment="CENTER" contentDisplay="CENTER" text="FFR Wishlist" textAlignment="CENTER" textFill="#01ae3e">
-            <font>
-                <Font size="48.0" />
-            </font>
-        </Label>
+        <Label id="mainStageHeader" alignment="CENTER" contentDisplay="CENTER" text="FFR Wishlist" textAlignment="CENTER" textFill="#01ae3e" />
         <HBox alignment="CENTER_LEFT" spacing="10.0">
             <TextField fx:id="searchBar" onAction="#onSearchBarQueryEntered" promptText="Search for an item" HBox.hgrow="ALWAYS" />
             <ComboBox fx:id="profileComboBox" onAction="#onProfileChanged" prefWidth="$mainButtonSize" />
@@ -93,19 +89,19 @@
                 </buttons>
             </ButtonBar>
         </HBox>
-        <TableView id="itemTable" fx:id="itemPackTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+        <TableView styleClass="itemPackTable" fx:id="itemPackTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="iconColumn" editable="false" resizable="false" sortable="false" text="Icon">
                     <minWidth>
-                        <MainSceneController fx:constant="ICON_ROW_WIDTH" />
+                        <MainSceneController fx:constant="ICON_COL_WIDTH" />
                     </minWidth>
                     <maxWidth>
-                        <MainSceneController fx:constant="ICON_ROW_WIDTH" />
+                        <MainSceneController fx:constant="ICON_COL_WIDTH" />
                     </maxWidth>
                 </TableColumn>
                 <TableColumn fx:id="nameColumn" editable="false" prefWidth="75.0" text="Name">
                     <minWidth>
-                        <MainSceneController fx:constant="NAME_ROW_MIN_WIDTH" />
+                        <MainSceneController fx:constant="NAME_COL_MIN_WIDTH" />
                     </minWidth>
                 </TableColumn>
                 <TableColumn fx:id="levelColumn" editable="false" prefWidth="75.0" text="Level" />
@@ -113,12 +109,12 @@
                 <TableColumn fx:id="rarityColumn" editable="false" prefWidth="75.0" text="Rarity" />
                 <TableColumn fx:id="setsColumn" editable="false" prefWidth="75.0" sortable="false" text="Sets">
                     <minWidth>
-                        <MainSceneController fx:constant="SET_ROW_MIN_WIDTH" />
+                        <MainSceneController fx:constant="SET_COL_MIN_WIDTH" />
                     </minWidth>
                 </TableColumn>
                 <TableColumn fx:id="amountColumn" editable="false" prefWidth="75.0" text="Amount">
                     <minWidth>
-                        <MainSceneController fx:constant="AMOUNT_ROW_MIN_WIDTH" />
+                        <MainSceneController fx:constant="AMOUNT_COL_MIN_WIDTH" />
                     </minWidth>
                 </TableColumn>
             </columns>

@@ -54,8 +54,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 public class MainSceneController extends ItemPackTableSceneController implements DatabaseConnected {
-    public static final int     BUTTON_ICONS_SIZE               = 32;
-    public static final int     SET_ROW_MIN_WIDTH               = 132;
+    public static final int     SET_COL_MIN_WIDTH               = 132;
     public static final int     TABLE_SETS_VBOX_SPACING         = 2;
     public static final String  TABLE_SETS_LABELS_CSS_CLASS     = "setreference";
     public static final String  TOP_TEXT_WISHLIST_TRUE          = "List of items in your wishlist:";

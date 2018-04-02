@@ -50,21 +50,13 @@
         <Tab closable="false" text="Welcome">
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                 <children>
-                    <Label text="Welcome" textFill="#01ae3e">
-                        <font>
-                            <Font size="32.0" />
-                        </font>
-                    </Label>
+                    <Label styleClass="pageHeader" text="Welcome" textFill="#01ae3e" />
                     <Separator prefWidth="200.0" />
                     <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
                         <ImageView fitWidth="64.0" preserveRatio="true">
                             <ResourceLoader fx:constant="PROGRAM_ICON" />
                         </ImageView>
-                        <Label text="Welcome to FFR Wishlist, the only program you will need to keep track of your wanted items!" textAlignment="CENTER" textFill="#018e3e" wrapText="true">
-                            <font>
-                                <Font size="20.0" />
-                            </font>
-                        </Label>
+                        <Label styleClass="helpTextLarge" text="Welcome to FFR Wishlist, the only program you will need to keep track of your wanted items!" textAlignment="CENTER" textFill="#018e3e" wrapText="true" />
                         <Label text="FFR Wishlist is the must-have program of the organized FusionFaller! The program allows you to easily make and maintain a list of items to get in FusionFall Retro." textAlignment="CENTER" textFill="white" wrapText="true" />
                         <Label text="It allows you to manage up to 16 different wishlists, and provides easy access to all items imaginable." textAlignment="CENTER" textFill="white" wrapText="true" />
                         <Label text="The program contains lots of information about every item, including the set information, so even if you can't remember the name of the item you want, you can still find it!" textAlignment="CENTER" textFill="white" wrapText="true" />
@@ -80,25 +72,13 @@
         <Tab closable="false" text="Disclaimer">
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                 <children>
-                    <Label text="Disclaimer" textFill="#01ae3e">
-                        <font>
-                            <Font size="32.0" />
-                        </font>
-                    </Label>
+                    <Label styleClass="pageHeader" text="Disclaimer" textFill="#01ae3e" />
                     <Separator prefWidth="200.0" />
                     <VBox alignment="CENTER" spacing="20.0" VBox.vgrow="ALWAYS">
-                        <Label text="FusionFall is a registered trademark of the Turner Broadcasting System." textAlignment="CENTER" textFill="#018e3e" wrapText="true">
-                            <font>
-                                <Font size="20.0" />
-                            </font>
-                        </Label>
+                        <Label styleClass="helpTextLarge" text="FusionFall is a registered trademark of the Turner Broadcasting System." textAlignment="CENTER" textFill="#018e3e" wrapText="true" />
                         <Label text="This software has been put together as a fan project with publicly available information and resources from the game, some in whole part and some altered through fair use. The developer and future developers of the project do not claim to be affiliated with or endorsed by the Turner Broadcasting System or the original FusionFall development team." textAlignment="CENTER" textFill="white" wrapText="true" />
                         <Label text="Information about items were largely gathered from FusionFall Wiki, however alterations and additions were made by the developer." textAlignment="CENTER" textFill="white" wrapText="true" />
-                        <Label text="Contact Information" textAlignment="CENTER" textFill="#018e3e" wrapText="true">
-                            <font>
-                                <Font size="20.0" />
-                            </font>
-                        </Label>
+                        <Label styleClass="helpTextLarge" text="Contact Information" textAlignment="CENTER" textFill="#018e3e" wrapText="true" />
                         <Label text="FFU Forum Username: Finn_Hornhoover" textAlignment="CENTER" textFill="white" wrapText="true" />
                         <Label text="E-Mail: finnhornhoover@gmail.com" textAlignment="CENTER" textFill="white" wrapText="true" />
                         <Label text="Please use the forum thread for suggestions and bug reports. Your feedback is appreciated." textAlignment="CENTER" textFill="white" wrapText="true" />
@@ -112,11 +92,7 @@
         <Tab closable="false" text="The Table">
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                 <children>
-                    <Label text="The Table" textFill="#01ae3e">
-                        <font>
-                            <Font size="32.0" />
-                        </font>
-                    </Label>
+                    <Label styleClass="pageHeader" text="The Table" textFill="#01ae3e" />
                     <Separator prefWidth="200.0" />
                     <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
                         <Label text="The table in the center of the program shows the items in your wishlist. All columns can technically be resized, but it isn't recommended. The table will sort items by rarity (high to low), level (high to low), type and then by name by default, however you can click the column headers to sort items any way you want." textAlignment="CENTER" textFill="white" wrapText="true" />
@@ -135,11 +111,7 @@
         <Tab closable="false" text="Profiles">
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                 <children>
-                    <Label text="Profiles" textFill="#01ae3e">
-                        <font>
-                            <Font size="32.0" />
-                        </font>
-                    </Label>
+                    <Label styleClass="pageHeader" text="Profiles" textFill="#01ae3e" />
                     <Separator prefWidth="200.0" />
                     <VBox alignment="CENTER" spacing="20.0" VBox.vgrow="ALWAYS">
                         <Label text="The program allows you to save up to 16 different wishlists, which allows you to make all the planning you want for all your characters in the game." textAlignment="CENTER" textFill="white" wrapText="true" />
@@ -155,11 +127,7 @@
         <Tab closable="false" text="Search Bar">
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                 <children>
-                    <Label text="Search Bar" textFill="#01ae3e">
-                        <font>
-                            <Font size="32.0" />
-                        </font>
-                    </Label>
+                    <Label styleClass="pageHeader" text="Search Bar" textFill="#01ae3e" />
                     <Separator prefWidth="200.0" />
                     <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
                         <Label text="The program comes equipped with a powerful search bar. By default, it allows you to search for items by name." textAlignment="CENTER" textFill="white" wrapText="true" />
@@ -177,11 +145,7 @@
         <Tab closable="false" text="Filters">
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                 <children>
-                    <Label text="Filters" textFill="#01ae3e">
-                        <font>
-                            <Font size="32.0" />
-                        </font>
-                    </Label>
+                    <Label styleClass="pageHeader" text="Filters" textFill="#01ae3e" />
                     <Separator prefWidth="200.0" />
                     <ScrollPane id="filterScrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER" pannable="true" VBox.vgrow="ALWAYS">
                         <VBox alignment="CENTER" spacing="10.0">
@@ -324,11 +288,7 @@
         <Tab closable="false" text="Set Menu">
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                 <children>
-                    <Label text="Set Menu" textFill="#01ae3e">
-                        <font>
-                            <Font size="32.0" />
-                        </font>
-                    </Label>
+                    <Label styleClass="pageHeader" text="Set Menu" textFill="#01ae3e" />
                     <Separator prefWidth="200.0" />
                     <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
                         <Label text="FFR Wishlist comes with a one-of-a-kind set system and allows users to add items to their wishlists using this set information." textAlignment="CENTER" textFill="white" wrapText="true" />
@@ -347,11 +307,7 @@
         <Tab closable="false" text="Import / Export">
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                 <children>
-                    <Label text="Import / Export" textFill="#01ae3e">
-                        <font>
-                            <Font size="32.0" />
-                        </font>
-                    </Label>
+                    <Label styleClass="pageHeader" text="Import / Export" textFill="#01ae3e" />
                     <Separator prefWidth="200.0" />
                     <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
                         <Label text="Want to share your wishlist or add items to your wishlist from someone else's wishlist? No problem!" textAlignment="CENTER" textFill="white" wrapText="true" />
@@ -368,11 +324,7 @@
         <Tab closable="false" text="Updater">
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                 <children>
-                    <Label text="Updater" textFill="#01ae3e">
-                        <font>
-                            <Font size="32.0" />
-                        </font>
-                    </Label>
+                    <Label styleClass="pageHeader" text="Updater" textFill="#01ae3e" />
                     <Separator prefWidth="200.0" />
                     <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
                         <Label text="The program includes a small database updater. It actually allows me to add new things to your programs with no effort!" textAlignment="CENTER" textFill="white" wrapText="true" />

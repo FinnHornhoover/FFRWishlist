@@ -39,11 +39,7 @@
 
 <VBox spacing="10.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="finnhh.ffrwishlist.scene.controller.SetMenuSceneController">
     <children>
-        <Label text="Set Menu" textFill="#01ae3e">
-            <font>
-                <Font size="32.0" />
-            </font>
-        </Label>
+        <Label styleClass="pageHeader" text="Set Menu" textFill="#01ae3e" />
         <Separator prefWidth="200.0" />
         <HBox spacing="10.0">
             <TextField fx:id="setSearchBar" onAction="#onSetSearchBarQueryEntered" promptText="Search for a Set" HBox.hgrow="ALWAYS" />
@@ -54,26 +50,22 @@
                 <Label text="The items in the selected set:" textFill="white" BorderPane.alignment="CENTER" />
             </left>
             <right>
-                <Label fx:id="profileLabel" textFill="white" BorderPane.alignment="CENTER">
-                    <font>
-                        <Font size="20.0" />
-                    </font>
-                </Label>
+                <Label fx:id="profileLabel" styleClass="profileLabel" textFill="white" BorderPane.alignment="CENTER" />
             </right>
         </BorderPane>
-        <TableView id="itemTable" fx:id="itemPackTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+        <TableView styleClass="itemPackTable" fx:id="itemPackTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="iconColumn" editable="false" resizable="false" sortable="false" text="Icon">
                     <minWidth>
-                        <SetMenuSceneController fx:constant="ICON_ROW_WIDTH" />
+                        <SetMenuSceneController fx:constant="ICON_COL_WIDTH" />
                     </minWidth>
                     <maxWidth>
-                        <SetMenuSceneController fx:constant="ICON_ROW_WIDTH" />
+                        <SetMenuSceneController fx:constant="ICON_COL_WIDTH" />
                     </maxWidth>
                 </TableColumn>
                 <TableColumn fx:id="nameColumn" editable="false" prefWidth="75.0" text="Name">
                     <minWidth>
-                        <SetMenuSceneController fx:constant="NAME_ROW_MIN_WIDTH" />
+                        <SetMenuSceneController fx:constant="NAME_COL_MIN_WIDTH" />
                     </minWidth>
                 </TableColumn>
                 <TableColumn fx:id="levelColumn" editable="false" prefWidth="75.0" text="Level" />
@@ -81,7 +73,7 @@
                 <TableColumn fx:id="rarityColumn" editable="false" prefWidth="75.0" text="Rarity" />
                 <TableColumn fx:id="amountColumn" editable="false" prefWidth="75.0" text="Amount">
                     <minWidth>
-                        <SetMenuSceneController fx:constant="AMOUNT_ROW_MIN_WIDTH" />
+                        <SetMenuSceneController fx:constant="AMOUNT_COL_MIN_WIDTH" />
                     </minWidth>
                 </TableColumn>
             </columns>

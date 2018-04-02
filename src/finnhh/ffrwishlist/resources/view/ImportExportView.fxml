@@ -49,22 +49,14 @@
             <content>
                 <VBox spacing="10.0">
                     <children>
-                        <Label text="Import Wishlist" textFill="#01ae3e">
-                            <font>
-                                <Font size="32.0" />
-                            </font>
-                        </Label>
+                        <Label styleClass="pageHeader" text="Import Wishlist" textFill="#01ae3e" />
                         <Separator prefWidth="200.0" />
                         <BorderPane prefWidth="200.0">
                             <left>
                                 <Label text="Insert the BBCode version of the wishlist to import below:" textFill="white" BorderPane.alignment="CENTER" />
                             </left>
                             <right>
-                                <Label fx:id="importProfileLabel" textFill="white" BorderPane.alignment="CENTER">
-                                    <font>
-                                        <Font size="20.0" />
-                                    </font>
-                                </Label>
+                                <Label fx:id="importProfileLabel" styleClass="profileLabel" textFill="white" BorderPane.alignment="CENTER" />
                             </right>
                         </BorderPane>
                         <TextArea fx:id="importBBCodeTextArea" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
@@ -101,22 +93,14 @@
             <content>
                 <VBox spacing="10.0">
                     <children>
-                        <Label text="Export Wishlist" textFill="#01ae3e">
-                            <font>
-                                <Font size="32.0" />
-                            </font>
-                        </Label>
+                        <Label styleClass="pageHeader" text="Export Wishlist" textFill="#01ae3e" />
                         <Separator prefWidth="200.0" />
                         <BorderPane prefWidth="200.0">
                             <left>
                                 <Label text="BBCode version of your wishlist:" textFill="white" BorderPane.alignment="CENTER" />
                             </left>
                             <right>
-                                <Label fx:id="exportProfileLabel" textFill="white" BorderPane.alignment="CENTER">
-                                    <font>
-                                        <Font size="20.0" />
-                                    </font>
-                                </Label>
+                                <Label fx:id="exportProfileLabel" styleClass="profileLabel" textFill="white" BorderPane.alignment="CENTER" />
                             </right>
                         </BorderPane>
                         <TextArea fx:id="exportBBCodeTextArea" editable="false" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />

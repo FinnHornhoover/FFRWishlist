@@ -42,11 +42,14 @@ import finnhh.ffrwishlist.resources.ResourceLoader;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 
 import java.io.ByteArrayInputStream;
@@ -54,14 +57,13 @@ import java.util.Comparator;
 import java.util.Map;
 
 public abstract class ItemPackTableSceneController extends TableViewSceneController {
-    public static final int ICON_SIZE                   = 64;
-    public static final int BUTTON_ICONS_SIZE           = 32;
-    public static final int ICON_ROW_WIDTH              = ICON_SIZE + 8;
-    public static final int NAME_ROW_MIN_WIDTH          = 96;
-    public static final int AMOUNT_ROW_MIN_WIDTH        = 96;
-    public static final int TABLE_AMOUNT_HBOX_SPACING   = 10;
-    public static final int TABLE_AMOUNT_LABELS_WIDTH   = 28;
-    public static final int TABLE_AMOUNT_BUTTONS_SIZE   = BUTTON_ICONS_SIZE + 8;
+    public static final int ICON_SIZE                       = 64;
+    public static final int BUTTON_ICONS_SIZE               = 32;
+    public static final int ICON_COL_WIDTH                  = ICON_SIZE + 8;
+    public static final int NAME_COL_MIN_WIDTH              = 96;
+    public static final int AMOUNT_COL_MIN_WIDTH            = 96;
+    public static final int TABLE_AMOUNT_TILEPANE_MIN_WIDTH = 140;
+    public static final int TABLE_AMOUNT_BUTTONS_SIZE       = BUTTON_ICONS_SIZE + 8;
 
     @FXML
     protected TableView<ItemPack> itemPackTable;
@@ -171,7 +173,7 @@ public abstract class ItemPackTableSceneController extends TableViewSceneControl
             private final Button    plusButton;
             private final Button    minusButton;
             private final Label     amountLabel;
-            private final HBox      hBox;
+            private final TilePane  tilePane;
 
             {
                 plusImageViewInsert = new ImageView();
@@ -202,13 +204,13 @@ public abstract class ItemPackTableSceneController extends TableViewSceneControl
                 minusButton.setGraphic(minusImageView);
 
                 amountLabel = new Label();
-                amountLabel.setMinWidth(TABLE_AMOUNT_LABELS_WIDTH);
-                amountLabel.setMaxWidth(TABLE_AMOUNT_LABELS_WIDTH);
                 amountLabel.setAlignment(Pos.CENTER);
 
-                hBox = new HBox(TABLE_AMOUNT_HBOX_SPACING);
-                hBox.alignmentProperty().setValue(Pos.CENTER);
-                hBox.getChildren().addAll(plusButton, amountLabel, minusButton);
+                tilePane = new TilePane();
+                tilePane.setPrefTileHeight(0);
+                tilePane.setMinWidth(TABLE_AMOUNT_TILEPANE_MIN_WIDTH);
+                tilePane.setAlignment(Pos.CENTER);
+                tilePane.getChildren().addAll(plusButton, amountLabel, minusButton);
             }
 
             @Override
@@ -233,7 +235,7 @@ public abstract class ItemPackTableSceneController extends TableViewSceneControl
 
                         amountLabel.setText(String.valueOf(item.getAmount()));
 
-                        setGraphic(hBox);
+                        setGraphic(tilePane);
                     }
                 }
             }
