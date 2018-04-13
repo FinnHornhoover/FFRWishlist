@@ -50,10 +50,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class SetMenuSceneController extends ItemPackTableSceneController implements DatabaseConnected {
     @FXML
@@ -241,13 +238,6 @@ public class SetMenuSceneController extends ItemPackTableSceneController impleme
     }
 
     @Override
-    public void bindMapData(Map<Integer, Item> itemMap, Map<Integer, Set> setMap) {
-        super.bindMapData(itemMap, setMap);
-
-        setSelectComboBox.getItems().addAll(this.setMap.values());
-    }
-
-    @Override
     public void bindHolderData(ControlledSceneHolder sceneHolder) {
         itemPackTable.setItems(((SetMenuSceneHolder) sceneHolder).getItemPackList());
         setSelectComboBox.setItems(((SetMenuSceneHolder) sceneHolder).getSetList());
@@ -257,6 +247,8 @@ public class SetMenuSceneController extends ItemPackTableSceneController impleme
     public void setDatabaseConnections(DatabaseManager databaseManager) {
         itemPackDAO = databaseManager.getItemPackDAO();
         setDAO = databaseManager.getSetDAO();
+
+        setSelectComboBox.getItems().addAll(setDAO.defaultQuerySets(setMap));
     }
 
     @Override

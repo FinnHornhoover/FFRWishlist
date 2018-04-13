@@ -48,6 +48,10 @@ public class SetDAO extends DataAccessObject {
 
     public SetDAO() { }
 
+    public List<Set> defaultQuerySets(Map<Integer, Set> setMap) {
+        return querySets(setMap, "");
+    }
+
     public List<Set> querySets(Map<Integer, Set> setMap, String name) {
         List<Set> matchedSets = new ArrayList<>();
 
@@ -60,7 +64,9 @@ public class SetDAO extends DataAccessObject {
                     "FROM " +
                             DatabaseManager.Table.SETS + " " +
                     "WHERE " +
-                            QueryableColumn.SETNAME + " LIKE ?";
+                            QueryableColumn.SETNAME + " LIKE ? " +
+                    "ORDER BY " +
+                            SetSchemaColumn.SETNAME + ";";
 
             try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
