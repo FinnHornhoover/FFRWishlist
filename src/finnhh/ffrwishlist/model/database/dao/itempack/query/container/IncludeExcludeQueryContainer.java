@@ -32,7 +32,6 @@
 package finnhh.ffrwishlist.model.database.dao.itempack.query.container;
 
 import finnhh.ffrwishlist.model.constants.database.QueryComparison;
-import finnhh.ffrwishlist.model.constants.database.QueryComparison.NonNumericComparison;
 import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
 import finnhh.ffrwishlist.model.database.dao.itempack.query.container.base.QueryContainer;
 import finnhh.ffrwishlist.model.database.dao.itempack.query.container.base.QueryEntry;
@@ -54,10 +53,10 @@ public class IncludeExcludeQueryContainer<T> extends QueryContainer<T> {
     }
 
     @Override
-    public void addToEntries(@NonNumericComparison QueryComparison comparison, T value) {
+    public void addToEntries(QueryComparison comparison, T value) {
         if (comparison == QueryComparison.EQUAL_TO)
             includeEntryList.add(new QueryEntry<>(comparison, value));
-        else
+        else if (comparison == QueryComparison.NOT_EQUAL_TO)
             excludeEntryList.add(new QueryEntry<>(comparison, value));
     }
 
