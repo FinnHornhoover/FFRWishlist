@@ -293,7 +293,9 @@ public class QueryParser {
                     })
                     .collect(Collectors.toList());
         } else {
-            sampleComparisons = Arrays.asList(QueryComparison.values());
+            sampleComparisons = Arrays.stream(QueryComparison.values())
+                    .filter(qComp -> qComp != QueryComparison.NO_COMPARISON)
+                    .collect(Collectors.toList());
         }
 
         QueryComparison selectedComparison = sampleComparisons.get(randomChoice.nextInt(sampleComparisons.size()));
