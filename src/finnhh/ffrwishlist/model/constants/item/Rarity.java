@@ -31,10 +31,9 @@
 
 package finnhh.ffrwishlist.model.constants.item;
 
-import finnhh.ffrwishlist.model.constants.base.IntegerValued;
-import finnhh.ffrwishlist.model.constants.base.StringMatcher;
+import finnhh.ffrwishlist.model.constants.base.ItemAttribute;
 
-public enum Rarity implements IntegerValued, StringMatcher {
+public enum Rarity implements ItemAttribute {
     INVALID_RARITY(-1, "Invalid Rarity",
             new String[0]),
 

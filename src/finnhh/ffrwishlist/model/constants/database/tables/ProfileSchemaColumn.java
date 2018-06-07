@@ -31,9 +31,9 @@
 
 package finnhh.ffrwishlist.model.constants.database.tables;
 
-import finnhh.ffrwishlist.model.constants.base.IntegerValued;
+import finnhh.ffrwishlist.model.constants.base.SchemaColumn;
 
-public enum ProfileSchemaColumn implements IntegerValued {
+public enum ProfileSchemaColumn implements SchemaColumn {
     PROFILEID(1),
     PROFILENAME(2),
     ACTIVE(3);

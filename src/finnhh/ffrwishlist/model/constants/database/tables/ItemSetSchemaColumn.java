@@ -31,9 +31,9 @@
 
 package finnhh.ffrwishlist.model.constants.database.tables;
 
-import finnhh.ffrwishlist.model.constants.base.IntegerValued;
+import finnhh.ffrwishlist.model.constants.base.SchemaColumn;
 
-public enum ItemSetSchemaColumn implements IntegerValued {
+public enum ItemSetSchemaColumn implements SchemaColumn {
     ITEMID(1),
     SETID(2);
 

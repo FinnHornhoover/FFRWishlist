@@ -31,6 +31,11 @@
 
 package finnhh.ffrwishlist.model.constants.database;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 public enum QueryComparison {
     NO_COMPARISON(""),
 
@@ -78,6 +83,8 @@ public enum QueryComparison {
         }
     }
 
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
     public @interface NonNumericComparison {
     }
 }

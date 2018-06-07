@@ -31,10 +31,9 @@
 
 package finnhh.ffrwishlist.model.constants.item;
 
-import finnhh.ffrwishlist.model.constants.base.IntegerValued;
-import finnhh.ffrwishlist.model.constants.base.StringMatcher;
+import finnhh.ffrwishlist.model.constants.base.ItemAttribute;
 
-public enum Type implements IntegerValued, StringMatcher {
+public enum Type implements ItemAttribute {
     INVALID_TYPE(-1, "Invalid Type",
             new String[0]),
 

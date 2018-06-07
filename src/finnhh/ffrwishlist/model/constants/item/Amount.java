@@ -31,10 +31,9 @@
 
 package finnhh.ffrwishlist.model.constants.item;
 
-import finnhh.ffrwishlist.model.constants.base.IntegerValued;
-import finnhh.ffrwishlist.model.constants.base.StringMatcher;
+import finnhh.ffrwishlist.model.constants.base.ItemAttribute;
 
-public enum Amount implements IntegerValued, StringMatcher {
+public enum Amount implements ItemAttribute {
     INVALID_AMOUNT(-1,
             new String[0]),
 

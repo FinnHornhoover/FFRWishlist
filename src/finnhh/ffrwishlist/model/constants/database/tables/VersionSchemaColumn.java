@@ -31,9 +31,9 @@
 
 package finnhh.ffrwishlist.model.constants.database.tables;
 
-import finnhh.ffrwishlist.model.constants.base.IntegerValued;
+import finnhh.ffrwishlist.model.constants.base.SchemaColumn;
 
-public enum VersionSchemaColumn implements IntegerValued {
+public enum VersionSchemaColumn implements SchemaColumn {
     DBID(1),
     VERSION(2);
 

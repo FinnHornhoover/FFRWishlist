@@ -31,10 +31,9 @@
 
 package finnhh.ffrwishlist.model.constants.item;
 
-import finnhh.ffrwishlist.model.constants.base.IntegerValued;
-import finnhh.ffrwishlist.model.constants.base.StringMatcher;
+import finnhh.ffrwishlist.model.constants.base.ItemAttribute;
 
-public enum Supertype implements IntegerValued, StringMatcher {
+public enum Supertype implements ItemAttribute {
     INVALID_SUPERTYPE(-1, "Invalid Supertype",
             new String[0],
             new Type[0]),

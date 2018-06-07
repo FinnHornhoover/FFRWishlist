@@ -33,6 +33,11 @@ package finnhh.ffrwishlist.model.constants.database;
 
 import finnhh.ffrwishlist.model.constants.base.StringMatcher;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 public enum QueryableColumn implements StringMatcher {
     INVALID_COLUMN(new String[0]),
 
@@ -43,10 +48,14 @@ public enum QueryableColumn implements StringMatcher {
     @ParameterQueryable
     LEVEL(new String[] {"l", "lv", "lvl"}),
     @ParameterQueryable
+    @NonNumericQueries
     TYPE(new String[] {"t", "ty"}),
     @ParameterQueryable
+    @NonNumericQueries
     RARITY(new String[] {"r", "rar"}),
     @ParameterQueryable
+    @NonNumericQueries
+    @FlexibleQueries
     SETNAME(new String[] {"s", "set"}),
     @ParameterQueryable
     AMOUNT(new String[] {"a", "ct", "count", "num", "number"});
@@ -79,6 +88,18 @@ public enum QueryableColumn implements StringMatcher {
         return INVALID_COLUMN;
     }
 
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
     public @interface ParameterQueryable {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface NonNumericQueries {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface FlexibleQueries {
     }
 }
