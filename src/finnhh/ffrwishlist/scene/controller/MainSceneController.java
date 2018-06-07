@@ -41,6 +41,7 @@ import finnhh.ffrwishlist.model.database.dao.ItemDAO;
 import finnhh.ffrwishlist.model.database.dao.ProfileDAO;
 import finnhh.ffrwishlist.model.database.dao.SetDAO;
 import finnhh.ffrwishlist.model.database.dao.itempack.ItemPackDAO;
+import finnhh.ffrwishlist.model.database.dao.itempack.query.QueryParser;
 import finnhh.ffrwishlist.resources.ResourceLoader;
 import finnhh.ffrwishlist.scene.controller.base.DatabaseConnected;
 import finnhh.ffrwishlist.scene.controller.table.ItemPackTableSceneController;
@@ -57,6 +58,7 @@ public class MainSceneController extends ItemPackTableSceneController implements
     public static final int     SET_COL_MIN_WIDTH               = 132;
     public static final int     TABLE_SETS_VBOX_SPACING         = 2;
     public static final String  TABLE_SETS_LABELS_CSS_CLASS     = "setreference";
+    public static final String  SEARCH_BAR_PROMPT_TEXT_DEFAULT  = "Search for an item";
     public static final String  TOP_TEXT_WISHLIST_TRUE          = "List of items in your wishlist:";
     public static final String  TOP_TEXT_WISHLIST_FALSE         = "List of items you can add to your wishlist:";
     public static final String  TOP_BUTTON_TEXT_WISHLIST_TRUE   = "Add Items";
@@ -170,6 +172,23 @@ public class MainSceneController extends ItemPackTableSceneController implements
 
     private void setMessageBarErrorText() {
         messageBarErrorText.setText(itemPackDAO.getQueryErrorString());
+    }
+
+    @Override
+    protected void initialize() {
+        super.initialize();
+
+        searchBar.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                String sampleQuery = QueryParser.getSampleQuery();
+
+                if (sampleQuery.equals("")) {
+                    searchBar.setPromptText(SEARCH_BAR_PROMPT_TEXT_DEFAULT);
+                } else {
+                    searchBar.setPromptText(SEARCH_BAR_PROMPT_TEXT_DEFAULT + " or use a filter e.g. " + sampleQuery);
+                }
+            }
+        });
     }
 
     @Override

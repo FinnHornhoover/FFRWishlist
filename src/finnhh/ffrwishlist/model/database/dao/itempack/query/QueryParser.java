@@ -39,6 +39,7 @@ import finnhh.ffrwishlist.model.database.dao.itempack.query.container.NumericQue
 import finnhh.ffrwishlist.model.database.dao.itempack.query.container.SetQueryContainer;
 import finnhh.ffrwishlist.model.database.dao.itempack.query.container.base.QueryContainer;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -249,5 +250,77 @@ public class QueryParser {
             return "%" + s.substring(0, s.length() - 1);
         else
             return "%" + s + "%";
+    }
+
+    public static String getSampleQuery() {
+        Random randomChoice = new Random();
+
+        List<QueryableColumn> sampleColumns = Arrays.stream(QueryableColumn.values())
+                .filter(qCol -> {
+                    try {
+                        Field f = qCol.getClass().getField(qCol.name());
+
+                        return f.isAnnotationPresent(QueryableColumn.ParameterQueryable.class)
+                                && !f.isAnnotationPresent(QueryableColumn.FlexibleQueries.class);
+                    } catch (NoSuchFieldException e) {
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        QueryableColumn selectedColumn = sampleColumns.get(randomChoice.nextInt(sampleColumns.size()));
+
+        List<QueryComparison> sampleComparisons;
+        boolean hasNonNumericQueries = false;
+
+        try {
+            Field f = selectedColumn.getClass().getField(selectedColumn.name());
+
+            hasNonNumericQueries = f.isAnnotationPresent(QueryableColumn.NonNumericQueries.class);
+        } catch (NoSuchFieldException ignored) {
+        }
+
+        if (hasNonNumericQueries) {
+            sampleComparisons = Arrays.stream(QueryComparison.values())
+                    .filter(qComp -> {
+                        try {
+                            Field f = qComp.getClass().getField(qComp.name());
+
+                            return f.isAnnotationPresent(QueryComparison.NonNumericComparison.class);
+                        } catch (NoSuchFieldException e) {
+                            return false;
+                        }
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            sampleComparisons = Arrays.asList(QueryComparison.values());
+        }
+
+        QueryComparison selectedComparison = sampleComparisons.get(randomChoice.nextInt(sampleComparisons.size()));
+
+        String sampleQueryForm = "--" + selectedColumn.toString().toLowerCase() + " " + selectedComparison + " ";
+
+        switch (selectedColumn) {
+            case LEVEL:
+                return sampleQueryForm + randomChoice.nextInt(Level.MAXIMUM.intValue() + 1);
+            case AMOUNT:
+                return sampleQueryForm + (randomChoice.nextInt(Amount.MAXIMUM.intValue()) + 1);
+            case TYPE:
+                List<Type> sampleTypes = Arrays.stream(Type.values())
+                        .filter(t -> t != Type.INVALID_TYPE)
+                        .collect(Collectors.toList());
+
+                return sampleQueryForm +
+                        sampleTypes.get(randomChoice.nextInt(sampleTypes.size())).toString().toLowerCase();
+            case RARITY:
+                List<Rarity> sampleRarities = Arrays.stream(Rarity.values())
+                        .filter(r -> r != Rarity.INVALID_RARITY)
+                        .collect(Collectors.toList());
+
+                return sampleQueryForm +
+                        sampleRarities.get(randomChoice.nextInt(sampleRarities.size())).toString().toLowerCase();
+            default:
+                return "";
+        }
     }
 }

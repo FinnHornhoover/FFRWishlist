@@ -38,7 +38,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
 <?import java.lang.Double?>
 
 <VBox alignment="TOP_CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="finnhh.ffrwishlist.scene.controller.MainSceneController">
@@ -54,7 +53,11 @@
     <children>
         <Label id="mainStageHeader" alignment="CENTER" contentDisplay="CENTER" text="FFR Wishlist" textAlignment="CENTER" textFill="#01ae3e" />
         <HBox alignment="CENTER_LEFT" spacing="10.0">
-            <TextField fx:id="searchBar" onAction="#onSearchBarQueryEntered" promptText="Search for an item" HBox.hgrow="ALWAYS" />
+            <TextField fx:id="searchBar" onAction="#onSearchBarQueryEntered" HBox.hgrow="ALWAYS">
+                <promptText>
+                    <MainSceneController fx:constant="SEARCH_BAR_PROMPT_TEXT_DEFAULT" />
+                </promptText>
+            </TextField>
             <ComboBox fx:id="profileComboBox" onAction="#onProfileChanged" prefWidth="$mainButtonSize" />
         </HBox>
         <HBox alignment="CENTER_LEFT">
