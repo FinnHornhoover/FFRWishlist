@@ -107,7 +107,7 @@ public class QueryParser {
 
                 //supertype negation check
                 if (param.startsWith("!")) {
-                    supertype = Supertype.correspondingTo(param.substring(1));
+                    supertype = Supertype.correspondingTo(param.substring(1).trim());
 
                     if (supertype != Supertype.INVALID_SUPERTYPE) {
                         Arrays.stream(supertype.getTypes())
