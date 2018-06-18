@@ -181,7 +181,8 @@
                             </Label>
                             <Label text="would fetch items that are Ultra Rare or Common." textAlignment="CENTER" textFill="white" wrapText="true" />
                             <Label text="Set filters work pretty much the same way as the other filters, but the values don't need to be exact, similar to how name searches are done. Note that numerical operators (&lt;,&gt;,&lt;=,&gt;=) will only work for Level and Amount columns, as those don't make sense for other columns." textAlignment="CENTER" textFill="white" wrapText="true" />
-                            <Label text="There are alternative ways of referencing values and columns to make the filters a bit more comfortable to use. You can use these instead of writing the whole name of the column or the actual value:" textAlignment="CENTER" textFill="white" wrapText="true" />
+                            <Label text="For your convenience, the search bar also keeps suggesting column names and values as you type them. If you select one of the suggested values, the search bar will autocomplete what you were writing for you!" textAlignment="CENTER" textFill="white" wrapText="true" />
+                            <Label text="There are alternative ways of referencing values and columns to make the filters a bit more comfortable to use:" textAlignment="CENTER" textFill="white" wrapText="true" />
                             <GridPane styleClass="filterGridPane" gridLinesVisible="true">
                                 <columnConstraints>
                                     <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
