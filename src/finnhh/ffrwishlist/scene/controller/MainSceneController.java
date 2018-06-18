@@ -40,9 +40,11 @@ import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.ItemDAO;
 import finnhh.ffrwishlist.model.database.dao.ProfileDAO;
 import finnhh.ffrwishlist.model.database.dao.SetDAO;
-import finnhh.ffrwishlist.model.database.dao.itempack.ItemPackDAO;
-import finnhh.ffrwishlist.model.database.dao.itempack.query.QueryParser;
+import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
+import finnhh.ffrwishlist.model.parser.ParsedQueryInformation;
+import finnhh.ffrwishlist.model.parser.QueryParser;
 import finnhh.ffrwishlist.resources.ResourceLoader;
+import finnhh.ffrwishlist.scene.component.textfield.AutoCompleteItemSearchBar;
 import finnhh.ffrwishlist.scene.controller.base.DatabaseConnected;
 import finnhh.ffrwishlist.scene.controller.table.ItemPackTableSceneController;
 import finnhh.ffrwishlist.scene.holder.MainSceneHolder;
@@ -58,16 +60,13 @@ public class MainSceneController extends ItemPackTableSceneController implements
     public static final int     SET_COL_MIN_WIDTH               = 132;
     public static final int     TABLE_SETS_VBOX_SPACING         = 2;
     public static final String  TABLE_SETS_LABELS_CSS_CLASS     = "setreference";
-    public static final String  SEARCH_BAR_PROMPT_TEXT_DEFAULT  = "Search for an item";
     public static final String  TOP_TEXT_WISHLIST_TRUE          = "List of items in your wishlist:";
     public static final String  TOP_TEXT_WISHLIST_FALSE         = "List of items you can add to your wishlist:";
     public static final String  TOP_BUTTON_TEXT_WISHLIST_TRUE   = "Add Items";
     public static final String  TOP_BUTTON_TEXT_WISHLIST_FALSE  = "Done";
 
-    private static final String PARAMETER_SPLITTER = "--";
-
     @FXML
-    private TextField searchBar;
+    private AutoCompleteItemSearchBar searchBar;
     @FXML
     private ComboBox<Profile> profileComboBox;
     @FXML
@@ -85,34 +84,28 @@ public class MainSceneController extends ItemPackTableSceneController implements
     @FXML
     private Label messageBarErrorText;
 
+    private QueryParser queryParser;
     private boolean wishlistMode = true;
 
     private ProfileDAO  profileDAO;
     private ItemPackDAO itemPackDAO;
 
-    public MainSceneController() { }
+    public MainSceneController() {
+        queryParser = new QueryParser();
+    }
 
     @FXML
     private void onSearchBarQueryEntered() {
-        //[0]: always the name, the rest is interpreted as args
-        String[] allParams = searchBar.getText().split(PARAMETER_SPLITTER);
-
-        String namePart = allParams[0].trim();
-        String[] filterArgs = new String[allParams.length - 1];
-
-        for (int i = 0; i < filterArgs.length; i++)
-            filterArgs[i] = allParams[i + 1].trim();
+        ParsedQueryInformation queryInformation = queryParser.parse(searchBar.getText(), wishlistMode);
 
         itemPackTable.getSortOrder().clear();
 
         itemPackTable.getItems().clear();
-        itemPackTable.getItems().addAll(
-                itemPackDAO.queryItemPacks(activeProfile, itemMap, wishlistMode, namePart, filterArgs)
-        );
+        itemPackTable.getItems().addAll(itemPackDAO.queryItemPacks(activeProfile, itemMap, queryInformation));
         itemPackTable.refresh();
-        setMessageBarSearchText(namePart);
+        setMessageBarSearchText(queryInformation.getSearchString());
         setMessageBarItemCountsText();
-        setMessageBarErrorText();
+        setMessageBarErrorText(queryInformation.getErrorString());
     }
 
     @FXML
@@ -170,25 +163,8 @@ public class MainSceneController extends ItemPackTableSceneController implements
         }
     }
 
-    private void setMessageBarErrorText() {
-        messageBarErrorText.setText(itemPackDAO.getQueryErrorString());
-    }
-
-    @Override
-    protected void initialize() {
-        super.initialize();
-
-        searchBar.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) {
-                String sampleQuery = QueryParser.getSampleQuery();
-
-                if (sampleQuery.equals("")) {
-                    searchBar.setPromptText(SEARCH_BAR_PROMPT_TEXT_DEFAULT);
-                } else {
-                    searchBar.setPromptText(SEARCH_BAR_PROMPT_TEXT_DEFAULT + " or use a filter e.g. " + sampleQuery);
-                }
-            }
-        });
+    private void setMessageBarErrorText(String errorText) {
+        messageBarErrorText.setText(errorText);
     }
 
     @Override
@@ -316,18 +292,20 @@ public class MainSceneController extends ItemPackTableSceneController implements
 
         searchBar.setText("");
 
+        ParsedQueryInformation queryInformation = queryParser.parse("", wishlistMode);
+
         itemPackTable.getItems().clear();
-        itemPackTable.getItems().addAll(itemPackDAO.defaultQueryItemPacks(activeProfile, itemMap, wishlistMode));
+        itemPackTable.getItems().addAll(itemPackDAO.queryItemPacks(activeProfile, itemMap, queryInformation));
         lateRefreshTable();
 
-        setMessageBarSearchText("");
+        setMessageBarSearchText(queryInformation.getSearchString());
         setMessageBarItemCountsText();
-        setMessageBarErrorText();
+        setMessageBarErrorText(queryInformation.getErrorString());
     }
 
     @Override
     public void populateInitialTable() {
-        itemPackTable.getItems().addAll(itemPackDAO.defaultQueryItemPacks(activeProfile, itemMap, wishlistMode));
+        itemPackTable.getItems().addAll(itemPackDAO.queryItemPacks(activeProfile, itemMap, queryParser.parse("", wishlistMode)));
         itemPackTable.refresh();
         setMessageBarItemCountsText();
     }
