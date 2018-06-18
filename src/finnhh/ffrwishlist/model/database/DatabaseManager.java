@@ -35,7 +35,7 @@ import finnhh.ffrwishlist.model.database.dao.ItemDAO;
 import finnhh.ffrwishlist.model.database.dao.ProfileDAO;
 import finnhh.ffrwishlist.model.database.dao.SetDAO;
 import finnhh.ffrwishlist.model.database.dao.VersionDAO;
-import finnhh.ffrwishlist.model.database.dao.itempack.ItemPackDAO;
+import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
 import finnhh.ffrwishlist.resources.ResourceLoader;
 
 import java.io.File;

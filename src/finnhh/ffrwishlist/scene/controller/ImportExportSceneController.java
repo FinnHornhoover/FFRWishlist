@@ -36,7 +36,9 @@ import finnhh.ffrwishlist.model.ItemPack;
 import finnhh.ffrwishlist.model.Profile;
 import finnhh.ffrwishlist.model.constants.item.Amount;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
-import finnhh.ffrwishlist.model.database.dao.itempack.ItemPackDAO;
+import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
+import finnhh.ffrwishlist.model.parser.ParsedQueryInformation;
+import finnhh.ffrwishlist.model.parser.QueryParser;
 import finnhh.ffrwishlist.scene.controller.base.DatabaseConnected;
 import finnhh.ffrwishlist.scene.controller.profile.ProfileSceneController;
 import finnhh.ffrwishlist.scene.holder.ImportExportSceneHolder;
@@ -84,7 +86,9 @@ public class ImportExportSceneController extends ProfileSceneController implemen
     }
 
     private void setWishlistItems() {
-        List<ItemPack> wishlistItemPacks = itemPackDAO.defaultQueryItemPacks(activeProfile, itemMap, true);
+        ParsedQueryInformation queryInformation = new QueryParser().parse("", true);
+
+        List<ItemPack> wishlistItemPacks = itemPackDAO.queryItemPacks(activeProfile, itemMap, queryInformation);
 
         wishlistItemsMap.clear();
         wishlistItemPacks.forEach(wip -> wishlistItemsMap.put(wip.getItem(), wip.getAmount()));

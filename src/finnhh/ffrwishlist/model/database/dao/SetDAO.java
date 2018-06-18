@@ -38,7 +38,7 @@ import finnhh.ffrwishlist.model.constants.database.tables.ItemSetSchemaColumn;
 import finnhh.ffrwishlist.model.constants.database.tables.SetSchemaColumn;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
-import finnhh.ffrwishlist.model.database.dao.itempack.query.QueryParser;
+import finnhh.ffrwishlist.model.parser.QueryParser;
 
 import java.sql.*;
 import java.util.*;
