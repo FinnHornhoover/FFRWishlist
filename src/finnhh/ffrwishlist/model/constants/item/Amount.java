@@ -31,9 +31,15 @@
 
 package finnhh.ffrwishlist.model.constants.item;
 
+import finnhh.ffrwishlist.model.constants.base.CorrespondsToColumn;
 import finnhh.ffrwishlist.model.constants.base.ItemAttribute;
+import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
 
+import java.util.Locale;
+
+@CorrespondsToColumn(QueryableColumn.AMOUNT)
 public enum Amount implements ItemAttribute {
+    @InvalidConstant
     INVALID_AMOUNT(-1,
             new String[0]),
 
@@ -45,29 +51,24 @@ public enum Amount implements ItemAttribute {
             new String[] {"max"});
 
     private final int value;
-    private final String[] alternateRepresentations;
+    private final String[] allRepresentations;
 
     Amount(int value, String[] alternateRepresentations) {
         this.value = value;
-        this.alternateRepresentations = alternateRepresentations;
-    }
+        this.allRepresentations = new String[alternateRepresentations.length + 1];
 
-    @Override
-    public boolean matchesString(String v) {
-        if (this.name().equalsIgnoreCase(v))
-            return true;
-
-        for (String s : alternateRepresentations) {
-            if (s.equalsIgnoreCase(v))
-                return true;
-        }
-
-        return false;
+        allRepresentations[0] = this.name().toLowerCase(Locale.ENGLISH);
+        System.arraycopy(alternateRepresentations, 0, allRepresentations, 1, alternateRepresentations.length);
     }
 
     @Override
     public int intValue() {
         return value;
+    }
+
+    @Override
+    public String[] getAllRepresentations() {
+        return allRepresentations;
     }
 
     public static boolean isValidAmount(int k) {

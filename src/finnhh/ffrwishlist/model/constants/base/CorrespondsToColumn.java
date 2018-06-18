@@ -33,16 +33,13 @@ package finnhh.ffrwishlist.model.constants.base;
 
 import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
 
-public interface ItemAttribute extends IntegerValued, MultipleRepresentations, InvalidEnumConstants {
-    default QueryableColumn correspondingColumn() {
-        try {
-            return getClass().getAnnotation(CorrespondsToColumn.class).value();
-        } catch (NullPointerException e) {
-            return QueryableColumn.INVALID_COLUMN;
-        }
-    }
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    default boolean usesSingularFilters() {
-        return getClass().isAnnotationPresent(SingularFilters.class);
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface CorrespondsToColumn {
+    QueryableColumn value();
 }

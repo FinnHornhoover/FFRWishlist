@@ -31,9 +31,15 @@
 
 package finnhh.ffrwishlist.model.constants.item;
 
+import finnhh.ffrwishlist.model.constants.base.CorrespondsToColumn;
 import finnhh.ffrwishlist.model.constants.base.ItemAttribute;
+import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
 
+import java.util.Locale;
+
+@CorrespondsToColumn(QueryableColumn.LEVEL)
 public enum Level implements ItemAttribute {
+    @InvalidConstant
     INVALID_LEVEL(-2, "Invalid Level",
             new String[0]),
 
@@ -46,24 +52,16 @@ public enum Level implements ItemAttribute {
 
     private final int value;
     private final String name;
-    private final String[] alternateRepresentations;
+    private final String[] allRepresentations;
 
     Level(int value, String name, String[] alternateRepresentations) {
         this.value = value;
         this.name = name;
-        this.alternateRepresentations = alternateRepresentations;
-    }
+        this.allRepresentations = new String[alternateRepresentations.length + 2];
 
-    @Override
-    public boolean matchesString(String v) {
-        if (this.toString().equalsIgnoreCase(v) || this.name().equalsIgnoreCase(v))
-            return true;
-
-        for (String s : alternateRepresentations)
-            if (s.equalsIgnoreCase(v))
-                return true;
-
-        return false;
+        allRepresentations[0] = this.name().toLowerCase(Locale.ENGLISH);
+        allRepresentations[1] = name.toLowerCase(Locale.ENGLISH);
+        System.arraycopy(alternateRepresentations, 0, allRepresentations, 2, alternateRepresentations.length);
     }
 
     @Override
@@ -74,6 +72,11 @@ public enum Level implements ItemAttribute {
     @Override
     public int intValue() {
         return value;
+    }
+
+    @Override
+    public String[] getAllRepresentations() {
+        return allRepresentations;
     }
 
     public static Level correspondingTo(String v) {

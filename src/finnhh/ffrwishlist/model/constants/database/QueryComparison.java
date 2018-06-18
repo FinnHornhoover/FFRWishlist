@@ -31,22 +31,31 @@
 
 package finnhh.ffrwishlist.model.constants.database;
 
+import finnhh.ffrwishlist.model.constants.base.EnumSubcategories;
+import finnhh.ffrwishlist.model.constants.base.InvalidEnumConstants;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-public enum QueryComparison {
+public enum QueryComparison implements EnumSubcategories, InvalidEnumConstants {
+    @InvalidConstant
     NO_COMPARISON(""),
 
-    @NonNumericComparison
+    @BasicComparison
+    @NumericComparison
     EQUAL_TO("="),
-    @NonNumericComparison
+    @BasicComparison
+    @NumericComparison
     NOT_EQUAL_TO("!="),
-
+    @NumericComparison
     LESS_THAN("<"),
+    @NumericComparison
     LESS_THAN_OR_EQUAL_TO("<="),
+    @NumericComparison
     GREATER_THAN_OR_EQUAL_TO(">="),
+    @NumericComparison
     GREATER_THAN(">");
 
     private final String operator;
@@ -60,8 +69,12 @@ public enum QueryComparison {
         return operator;
     }
 
-    public boolean isNonNumericComparison() {
-        return this == EQUAL_TO || this == NOT_EQUAL_TO;
+    public boolean isBasicComparison() {
+        return fitsSubcategory(BasicComparison.class);
+    }
+
+    public boolean isNumericComparison() {
+        return fitsSubcategory(NumericComparison.class);
     }
 
     public static QueryComparison containsOperator(String v) {
@@ -85,6 +98,11 @@ public enum QueryComparison {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
-    public @interface NonNumericComparison {
+    public @interface BasicComparison {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface NumericComparison {
     }
 }

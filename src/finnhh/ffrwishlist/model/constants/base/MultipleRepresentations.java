@@ -31,18 +31,16 @@
 
 package finnhh.ffrwishlist.model.constants.base;
 
-import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
+public interface MultipleRepresentations extends StringMatcher {
+    String[] getAllRepresentations();
 
-public interface ItemAttribute extends IntegerValued, MultipleRepresentations, InvalidEnumConstants {
-    default QueryableColumn correspondingColumn() {
-        try {
-            return getClass().getAnnotation(CorrespondsToColumn.class).value();
-        } catch (NullPointerException e) {
-            return QueryableColumn.INVALID_COLUMN;
+    @Override
+    default boolean matchesString(String v) {
+        for (String s : getAllRepresentations()) {
+            if (s.equalsIgnoreCase(v))
+                return true;
         }
-    }
 
-    default boolean usesSingularFilters() {
-        return getClass().isAnnotationPresent(SingularFilters.class);
+        return false;
     }
 }
