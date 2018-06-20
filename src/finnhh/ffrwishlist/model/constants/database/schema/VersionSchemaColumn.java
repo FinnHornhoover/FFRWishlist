@@ -29,14 +29,22 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.constants.base;
+package finnhh.ffrwishlist.model.constants.database.schema;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import finnhh.ffrwishlist.model.constants.base.SchemaColumn;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface SingularFilters {
+public enum VersionSchemaColumn implements SchemaColumn {
+    DBID(1),
+    VERSION(2);
+
+    private final int value;
+
+    VersionSchemaColumn(int value) {
+        this.value = value;
+    }
+
+    @Override
+    public int intValue() {
+        return value;
+    }
 }

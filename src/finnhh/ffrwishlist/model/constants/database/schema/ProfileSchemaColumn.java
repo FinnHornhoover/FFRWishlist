@@ -29,17 +29,23 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.constants.base;
+package finnhh.ffrwishlist.model.constants.database.schema;
 
-import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
+import finnhh.ffrwishlist.model.constants.base.SchemaColumn;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public enum ProfileSchemaColumn implements SchemaColumn {
+    PROFILEID(1),
+    PROFILENAME(2),
+    ACTIVE(3);
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface CorrespondsToColumn {
-    QueryableColumn value();
+    private final int value;
+
+    ProfileSchemaColumn(int value) {
+        this.value = value;
+    }
+
+    @Override
+    public int intValue() {
+        return value;
+    }
 }

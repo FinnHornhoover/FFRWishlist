@@ -31,7 +31,7 @@
 
 package finnhh.ffrwishlist.model.constants.item;
 
-import finnhh.ffrwishlist.model.constants.base.CorrespondsToColumn;
+import finnhh.ffrwishlist.model.constants.base.annotation.CorrespondsToColumn;
 import finnhh.ffrwishlist.model.constants.base.ItemAttribute;
 import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
 

@@ -31,7 +31,7 @@
 
 package finnhh.ffrwishlist.model.database.dao;
 
-import finnhh.ffrwishlist.model.constants.database.tables.VersionSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.VersionSchemaColumn;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
 

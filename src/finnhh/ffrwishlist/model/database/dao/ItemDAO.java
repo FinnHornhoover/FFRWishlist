@@ -33,8 +33,8 @@ package finnhh.ffrwishlist.model.database.dao;
 
 import finnhh.ffrwishlist.model.Item;
 import finnhh.ffrwishlist.model.Set;
-import finnhh.ffrwishlist.model.constants.database.tables.ItemSchemaColumn;
-import finnhh.ffrwishlist.model.constants.database.tables.ItemSetSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.ItemSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.ItemSetSchemaColumn;
 import finnhh.ffrwishlist.model.constants.item.Rarity;
 import finnhh.ffrwishlist.model.constants.item.Type;
 import finnhh.ffrwishlist.model.database.DatabaseManager;

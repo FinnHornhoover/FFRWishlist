@@ -29,22 +29,14 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.constants.base;
+package finnhh.ffrwishlist.model.constants.base.annotation;
 
-import finnhh.ffrwishlist.model.constants.base.annotation.CorrespondsToColumn;
-import finnhh.ffrwishlist.model.constants.base.annotation.SingularFilters;
-import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public interface ItemAttribute extends IntegerValued, MultipleRepresentations, InvalidEnumConstants {
-    default QueryableColumn correspondingColumn() {
-        try {
-            return getClass().getAnnotation(CorrespondsToColumn.class).value();
-        } catch (NullPointerException e) {
-            return QueryableColumn.INVALID_COLUMN;
-        }
-    }
-
-    default boolean usesSingularFilters() {
-        return getClass().isAnnotationPresent(SingularFilters.class);
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface SingularFilters {
 }

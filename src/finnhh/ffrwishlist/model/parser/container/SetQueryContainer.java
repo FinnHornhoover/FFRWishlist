@@ -32,7 +32,7 @@
 package finnhh.ffrwishlist.model.parser.container;
 
 import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
-import finnhh.ffrwishlist.model.constants.database.tables.ItemSetSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.ItemSetSchemaColumn;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
 
 import java.util.ArrayDeque;

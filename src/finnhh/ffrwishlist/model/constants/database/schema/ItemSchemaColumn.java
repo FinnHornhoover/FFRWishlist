@@ -29,22 +29,26 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.constants.base;
+package finnhh.ffrwishlist.model.constants.database.schema;
 
-import finnhh.ffrwishlist.model.constants.base.annotation.CorrespondsToColumn;
-import finnhh.ffrwishlist.model.constants.base.annotation.SingularFilters;
-import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
+import finnhh.ffrwishlist.model.constants.base.SchemaColumn;
 
-public interface ItemAttribute extends IntegerValued, MultipleRepresentations, InvalidEnumConstants {
-    default QueryableColumn correspondingColumn() {
-        try {
-            return getClass().getAnnotation(CorrespondsToColumn.class).value();
-        } catch (NullPointerException e) {
-            return QueryableColumn.INVALID_COLUMN;
-        }
+public enum ItemSchemaColumn implements SchemaColumn {
+    ITEMID(1),
+    ICON(2),
+    NAME(3),
+    LEVEL(4),
+    TYPE(5),
+    RARITY(6);
+
+    private final int value;
+
+    ItemSchemaColumn(int value) {
+        this.value = value;
     }
 
-    default boolean usesSingularFilters() {
-        return getClass().isAnnotationPresent(SingularFilters.class);
+    @Override
+    public int intValue() {
+        return value;
     }
 }

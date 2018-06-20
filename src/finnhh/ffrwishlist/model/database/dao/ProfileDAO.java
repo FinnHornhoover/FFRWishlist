@@ -32,7 +32,7 @@
 package finnhh.ffrwishlist.model.database.dao;
 
 import finnhh.ffrwishlist.model.Profile;
-import finnhh.ffrwishlist.model.constants.database.tables.ProfileSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.ProfileSchemaColumn;
 import finnhh.ffrwishlist.model.constants.profile.ProfileState;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
