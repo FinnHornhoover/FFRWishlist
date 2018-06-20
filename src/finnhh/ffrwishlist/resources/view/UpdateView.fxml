@@ -36,7 +36,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.layout.VBox?>
-
 <VBox alignment="TOP_RIGHT" spacing="15.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="finnhh.ffrwishlist.scene.controller.UpdateSceneController">
     <prefWidth>
         <StageInfo fx:constant="UPDATE_STAGE_WIDTH" />
