@@ -31,12 +31,11 @@
   ~ SOFTWARE.
   -->
 
-<?import finnhh.ffrwishlist.scene.controller.SetMenuSceneController?>
+<?import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable?>
+<?import finnhh.ffrwishlist.scene.component.tablecolumn.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
-
 <VBox spacing="10.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="finnhh.ffrwishlist.scene.controller.SetMenuSceneController">
     <children>
         <Label styleClass="pageHeader" text="Set Menu" textFill="#01ae3e" />
@@ -53,34 +52,16 @@
                 <Label fx:id="profileLabel" styleClass="profileLabel" textFill="white" BorderPane.alignment="CENTER" />
             </right>
         </BorderPane>
-        <TableView styleClass="itemPackTable" fx:id="itemPackTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+        <ItemPackTable fx:id="itemPackTable" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="iconColumn" editable="false" resizable="false" sortable="false" text="Icon">
-                    <minWidth>
-                        <SetMenuSceneController fx:constant="ICON_COL_WIDTH" />
-                    </minWidth>
-                    <maxWidth>
-                        <SetMenuSceneController fx:constant="ICON_COL_WIDTH" />
-                    </maxWidth>
-                </TableColumn>
-                <TableColumn fx:id="nameColumn" editable="false" prefWidth="75.0" text="Name">
-                    <minWidth>
-                        <SetMenuSceneController fx:constant="NAME_COL_MIN_WIDTH" />
-                    </minWidth>
-                </TableColumn>
-                <TableColumn fx:id="levelColumn" editable="false" prefWidth="75.0" text="Level" />
-                <TableColumn fx:id="typeColumn" editable="false" prefWidth="75.0" text="Type" />
-                <TableColumn fx:id="rarityColumn" editable="false" prefWidth="75.0" text="Rarity" />
-                <TableColumn fx:id="amountColumn" editable="false" prefWidth="75.0" text="Amount">
-                    <minWidth>
-                        <SetMenuSceneController fx:constant="AMOUNT_COL_MIN_WIDTH" />
-                    </minWidth>
-                </TableColumn>
+                <IconColumn />
+                <NameColumn />
+                <LevelColumn />
+                <TypeColumn />
+                <RarityColumn />
+                <AmountColumn onItemPackAdd="#onItemPackAdd" onItemPackIncreaseAmount="#onItemPackIncreaseAmount" onItemPackDecreaseAmount="#onItemPackDecreaseAmount" />
             </columns>
-            <columnResizePolicy>
-                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-            </columnResizePolicy>
-        </TableView>
+        </ItemPackTable>
         <ButtonBar prefHeight="40.0" prefWidth="200.0">
             <buttons>
                 <Button onAction="#onIncrementAllItemAmountsButtonClicked" mnemonicParsing="false" text="Increment All Item Amounts" />

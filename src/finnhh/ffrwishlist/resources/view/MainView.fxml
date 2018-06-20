@@ -33,15 +33,15 @@
 
 <?import finnhh.ffrwishlist.model.constants.stage.StageInfo?>
 <?import finnhh.ffrwishlist.resources.ResourceLoader?>
-<?import finnhh.ffrwishlist.scene.controller.*?>
+<?import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable?>
+<?import finnhh.ffrwishlist.scene.component.tablecolumn.*?>
 <?import finnhh.ffrwishlist.scene.component.textfield.AutoCompleteItemSearchBar?>
+<?import finnhh.ffrwishlist.scene.controller.MainSceneController?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import java.lang.Double?>
-
-
 <VBox alignment="TOP_CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="finnhh.ffrwishlist.scene.controller.MainSceneController">
     <prefWidth>
         <StageInfo fx:constant="MAIN_STAGE_WIDTH" />
@@ -55,11 +55,7 @@
     <children>
         <Label id="mainStageHeader" alignment="CENTER" contentDisplay="CENTER" text="FFR Wishlist" textAlignment="CENTER" textFill="#01ae3e" />
         <HBox alignment="CENTER_LEFT" spacing="10.0">
-            <AutoCompleteItemSearchBar fx:id="searchBar" onAction="#onSearchBarQueryEntered" HBox.hgrow="ALWAYS">
-                <promptText>
-                    <AutoCompleteItemSearchBar fx:constant="SEARCH_BAR_PROMPT_TEXT_DEFAULT" />
-                </promptText>
-            </AutoCompleteItemSearchBar>
+            <AutoCompleteItemSearchBar fx:id="searchBar" onAction="#onSearchBarQueryEntered" HBox.hgrow="ALWAYS" />
             <ComboBox fx:id="profileComboBox" onAction="#onProfileChanged" prefWidth="$mainButtonSize" />
         </HBox>
         <HBox alignment="CENTER_LEFT">
@@ -72,7 +68,7 @@
                         <graphic>
                             <ImageView preserveRatio="true">
                                 <fitWidth>
-                                    <MainSceneController fx:constant="BUTTON_ICONS_SIZE" />
+                                    <ResourceLoader fx:constant="BUTTON_ICONS_SIZE" />
                                 </fitWidth>
                                 <ResourceLoader fx:constant="SET_ICON" />
                             </ImageView>
@@ -85,7 +81,7 @@
                         <graphic>
                             <ImageView fx:id="topButtonImageView" preserveRatio="true">
                                 <fitHeight>
-                                    <MainSceneController fx:constant="BUTTON_ICONS_SIZE" />
+                                    <ResourceLoader fx:constant="BUTTON_ICONS_SIZE" />
                                 </fitHeight>
                                 <ResourceLoader fx:constant="PLUS_ICON" />
                             </ImageView>
@@ -94,39 +90,17 @@
                 </buttons>
             </ButtonBar>
         </HBox>
-        <TableView styleClass="itemPackTable" fx:id="itemPackTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+        <ItemPackTable fx:id="itemPackTable" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="iconColumn" editable="false" resizable="false" sortable="false" text="Icon">
-                    <minWidth>
-                        <MainSceneController fx:constant="ICON_COL_WIDTH" />
-                    </minWidth>
-                    <maxWidth>
-                        <MainSceneController fx:constant="ICON_COL_WIDTH" />
-                    </maxWidth>
-                </TableColumn>
-                <TableColumn fx:id="nameColumn" editable="false" prefWidth="75.0" text="Name">
-                    <minWidth>
-                        <MainSceneController fx:constant="NAME_COL_MIN_WIDTH" />
-                    </minWidth>
-                </TableColumn>
-                <TableColumn fx:id="levelColumn" editable="false" prefWidth="75.0" text="Level" />
-                <TableColumn fx:id="typeColumn" editable="false" prefWidth="75.0" text="Type" />
-                <TableColumn fx:id="rarityColumn" editable="false" prefWidth="75.0" text="Rarity" />
-                <TableColumn fx:id="setsColumn" editable="false" prefWidth="75.0" sortable="false" text="Sets">
-                    <minWidth>
-                        <MainSceneController fx:constant="SET_COL_MIN_WIDTH" />
-                    </minWidth>
-                </TableColumn>
-                <TableColumn fx:id="amountColumn" editable="false" prefWidth="75.0" text="Amount">
-                    <minWidth>
-                        <MainSceneController fx:constant="AMOUNT_COL_MIN_WIDTH" />
-                    </minWidth>
-                </TableColumn>
+                <IconColumn />
+                <NameColumn />
+                <LevelColumn />
+                <TypeColumn />
+                <RarityColumn />
+                <SetsColumn onSetSelectedFromTable="#onSetSelectedFromTable" />
+                <AmountColumn fx:id="amountColumn" onItemPackAdd="#onItemPackAdd" onItemPackIncreaseAmount="#onItemPackIncreaseAmount" onItemPackDecreaseAmount="#onItemPackDecreaseAmount" />
             </columns>
-            <columnResizePolicy>
-                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-            </columnResizePolicy>
-        </TableView>
+        </ItemPackTable>
         <HBox alignment="CENTER" spacing="20.0">
             <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                 <Label fx:id="messageBarSearchText" textFill="#01ae3e" />

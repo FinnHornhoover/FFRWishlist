@@ -43,6 +43,8 @@ public final class ResourceLoader {
     private static final String SCENE_FXML_DIR      = "view/";
     private static final String STYLE_CSS_DIR       = "styles/";
 
+    public static final int     BUTTON_ICONS_SIZE   = 32;
+
     //pre-loaded static final resources
     public static final Image   PROGRAM_ICON        = getImage("icon.png");
     public static final Image   NO_PICTURE          = getImage("No_Picture.jpg");

@@ -134,7 +134,7 @@ public class MainApp extends Application {
             void controllerSetup() {
                 ImportExportSceneController importExportSceneController = (ImportExportSceneController) getSceneController();
 
-                importExportSceneController.bindMapData(sourceSceneController.getItemMap());
+                importExportSceneController.setItemMap(sourceSceneController.getItemMap());
                 importExportSceneController.setAsActiveProfile(sourceSceneController.getActiveProfile());
                 importExportSceneController.setDatabaseConnections(appDatabaseManager);
             }
@@ -176,7 +176,8 @@ public class MainApp extends Application {
             void controllerSetup() {
                 SetMenuSceneController setMenuSceneController = (SetMenuSceneController) getSceneController();
 
-                setMenuSceneController.bindMapData(sourceSceneController.getItemMap(), sourceSceneController.getSetMap());
+                setMenuSceneController.setItemMap(sourceSceneController.getItemMap());
+                setMenuSceneController.setSetMap(sourceSceneController.getSetMap());
                 setMenuSceneController.setDatabaseConnections(appDatabaseManager);
                 setMenuSceneController.setAsActiveProfile(sourceSceneController.getActiveProfile());
                 setMenuSceneController.selectSet(setSpecified, selectedSet);

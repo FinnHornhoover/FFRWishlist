@@ -32,34 +32,41 @@
 package finnhh.ffrwishlist.scene.controller;
 
 import finnhh.ffrwishlist.MainApp;
+import finnhh.ffrwishlist.model.Item;
 import finnhh.ffrwishlist.model.ItemPack;
 import finnhh.ffrwishlist.model.Profile;
 import finnhh.ffrwishlist.model.Set;
 import finnhh.ffrwishlist.model.constants.item.Amount;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.ItemDAO;
+import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
 import finnhh.ffrwishlist.model.database.dao.ProfileDAO;
 import finnhh.ffrwishlist.model.database.dao.SetDAO;
-import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
 import finnhh.ffrwishlist.model.parser.ParsedQueryInformation;
 import finnhh.ffrwishlist.model.parser.QueryParser;
 import finnhh.ffrwishlist.resources.ResourceLoader;
+import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable;
+import finnhh.ffrwishlist.scene.component.tablecolumn.AmountColumn;
+import finnhh.ffrwishlist.model.event.ModelEvent;
 import finnhh.ffrwishlist.scene.component.textfield.AutoCompleteItemSearchBar;
-import finnhh.ffrwishlist.scene.controller.base.DatabaseConnected;
-import finnhh.ffrwishlist.scene.controller.table.ItemPackTableSceneController;
+import finnhh.ffrwishlist.scene.controller.base.AppConnectedSceneController;
+import finnhh.ffrwishlist.scene.controller.base.database.DatabaseConnected;
+import finnhh.ffrwishlist.scene.controller.base.info.ItemMapOwner;
+import finnhh.ffrwishlist.scene.controller.base.info.SetMapOwner;
+import finnhh.ffrwishlist.scene.controller.base.profile.ProfileOwner;
 import finnhh.ffrwishlist.scene.holder.MainSceneHolder;
 import finnhh.ffrwishlist.scene.holder.base.ControlledSceneHolder;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
 
-public class MainSceneController extends ItemPackTableSceneController implements DatabaseConnected {
-    public static final int     SET_COL_MIN_WIDTH               = 132;
-    public static final int     TABLE_SETS_VBOX_SPACING         = 2;
-    public static final String  TABLE_SETS_LABELS_CSS_CLASS     = "setreference";
+import java.util.Map;
+
+public class MainSceneController extends AppConnectedSceneController implements DatabaseConnected, ProfileOwner, ItemMapOwner, SetMapOwner {
     public static final String  TOP_TEXT_WISHLIST_TRUE          = "List of items in your wishlist:";
     public static final String  TOP_TEXT_WISHLIST_FALSE         = "List of items you can add to your wishlist:";
     public static final String  TOP_BUTTON_TEXT_WISHLIST_TRUE   = "Add Items";
@@ -76,7 +83,9 @@ public class MainSceneController extends ItemPackTableSceneController implements
     @FXML
     private ImageView topButtonImageView;
     @FXML
-    private TableColumn<ItemPack, ObservableList<Set>> setsColumn;
+    private ItemPackTable itemPackTable;
+    @FXML
+    private AmountColumn amountColumn;
     @FXML
     private Label messageBarSearchText;
     @FXML
@@ -84,15 +93,18 @@ public class MainSceneController extends ItemPackTableSceneController implements
     @FXML
     private Label messageBarErrorText;
 
-    private QueryParser queryParser;
+    private Profile activeProfile;
+
+    private Map<Integer, Item> itemMap;
+    private Map<Integer, Set> setMap;
+
+    private QueryParser queryParser = new QueryParser();
     private boolean wishlistMode = true;
 
     private ProfileDAO  profileDAO;
     private ItemPackDAO itemPackDAO;
 
-    public MainSceneController() {
-        queryParser = new QueryParser();
-    }
+    public MainSceneController() { }
 
     @FXML
     private void onSearchBarQueryEntered() {
@@ -143,6 +155,52 @@ public class MainSceneController extends ItemPackTableSceneController implements
         ((MainApp) application).startSetMenuStage(this);
     }
 
+    @FXML
+    private void onItemPackAdd(ModelEvent<ItemPack> itemPackEvent) {
+        ItemPack itemPack = itemPackEvent.getModel();
+        itemPack.setAmount(Amount.MINIMUM.intValue());
+        itemPackDAO.insertAmount(activeProfile, itemPack);
+        itemPackTable.getItems().remove(itemPack);
+        itemPackTable.refresh();
+        setMessageBarItemCountsText();
+    }
+
+    @FXML
+    private void onItemPackIncreaseAmount(ModelEvent<ItemPack> itemPackEvent) {
+        ItemPack itemPack = itemPackEvent.getModel();
+        int currentAmount = itemPack.getAmount();
+
+        if (currentAmount < Amount.MAXIMUM.intValue()) {
+            itemPack.setAmount(currentAmount + 1);
+            itemPackDAO.updateAmount(activeProfile, itemPack, currentAmount + 1);
+            itemPackTable.refresh();
+            setMessageBarItemCountsText();
+        }
+    }
+
+    @FXML
+    private void onItemPackDecreaseAmount(ModelEvent<ItemPack> itemPackEvent) {
+        ItemPack itemPack = itemPackEvent.getModel();
+        int currentAmount = itemPack.getAmount();
+
+        if (currentAmount > Amount.MINIMUM.intValue()) {
+            itemPack.setAmount(currentAmount - 1);
+            itemPackDAO.updateAmount(activeProfile, itemPack, currentAmount - 1);
+            itemPackTable.refresh();
+            setMessageBarItemCountsText();
+        } else if (currentAmount == Amount.MINIMUM.intValue()) {
+            itemPackDAO.deleteAmount(activeProfile, itemPack);
+            itemPackTable.getItems().remove(itemPack);
+            itemPackTable.refresh();
+            setMessageBarItemCountsText();
+        }
+    }
+
+    @FXML
+    private void onSetSelectedFromTable(ModelEvent<Set> setEvent) {
+        ((MainApp) application).startSetMenuStage(this, true, setEvent.getModel());
+    }
+
     private void setMessageBarSearchText(String nameSearched) {
         messageBarSearchText.setText(nameSearched.equals("") ? "" : "Searching for \"" + nameSearched + "\"");
     }
@@ -167,88 +225,6 @@ public class MainSceneController extends ItemPackTableSceneController implements
         messageBarErrorText.setText(errorText);
     }
 
-    @Override
-    protected void setTableCellValueFactories() {
-        super.setTableCellValueFactories();
-
-        setsColumn.setCellValueFactory(cellData -> cellData.getValue().getItem().setsAssociatedProperty());
-    }
-
-    @Override
-    protected void setTableCellFactories() {
-        super.setTableCellFactories();
-
-        setsColumn.setCellFactory(cfData -> new TableCell<ItemPack, ObservableList<Set>>() {
-            private final VBox labelsBox;
-
-            {
-                labelsBox = new VBox(TABLE_SETS_VBOX_SPACING);
-                labelsBox.setAlignment(Pos.CENTER);
-            }
-
-            @Override
-            protected void updateItem(ObservableList<Set> item, boolean empty) {
-                super.updateItem(item, empty);
-
-                labelsBox.getChildren().clear();
-
-                if (!empty) {
-                    if (!item.isEmpty()) {
-                        item.forEach(s -> {
-                            final Label setLabel = new Label(s.getSetName());
-                            setLabel.getStyleClass().add(TABLE_SETS_LABELS_CSS_CLASS);
-                            setLabel.setOnMouseClicked(event ->
-                                    ((MainApp) application).startSetMenuStage(MainSceneController.this, true, s));
-                            labelsBox.getChildren().add(setLabel);
-                        });
-                    } else {
-                        labelsBox.getChildren().add(new Label("No Sets"));
-                    }
-
-                    setGraphic(labelsBox);
-                }
-            }
-        });
-    }
-
-    @Override
-    protected void onAmountInsertPlusButtonClicked(ItemPack itemPack) {
-        itemPack.setAmount(Amount.MINIMUM.intValue());
-        itemPackDAO.insertAmount(activeProfile, itemPack);
-        itemPackTable.getItems().remove(itemPack);
-        itemPackTable.refresh();
-        setMessageBarItemCountsText();
-    }
-
-    @Override
-    protected void onAmountUpdatePlusButtonClicked(ItemPack itemPack) {
-        int currentAmount = itemPack.getAmount();
-
-        if (currentAmount < Amount.MAXIMUM.intValue()) {
-            itemPack.setAmount(currentAmount + 1);
-            itemPackDAO.updateAmount(activeProfile, itemPack, currentAmount + 1);
-            itemPackTable.refresh();
-            setMessageBarItemCountsText();
-        }
-    }
-
-    @Override
-    protected void onAmountUpdateMinusButtonClicked(ItemPack itemPack) {
-        int currentAmount = itemPack.getAmount();
-
-        if (currentAmount > Amount.MINIMUM.intValue()) {
-            itemPack.setAmount(currentAmount - 1);
-            itemPackDAO.updateAmount(activeProfile, itemPack, currentAmount - 1);
-            itemPackTable.refresh();
-            setMessageBarItemCountsText();
-        } else if (currentAmount == Amount.MINIMUM.intValue()) {
-            itemPackDAO.deleteAmount(activeProfile, itemPack);
-            itemPackTable.getItems().remove(itemPack);
-            itemPackTable.refresh();
-            setMessageBarItemCountsText();
-        }
-    }
-
     public void profileChoiceBoxSetup() {
         ObservableList<Profile> profileList = profileComboBox.getItems();
 
@@ -270,16 +246,14 @@ public class MainSceneController extends ItemPackTableSceneController implements
     }
 
     public void switchToWishlistMode(boolean desiredMode) {
-        if (desiredMode) {
-            wishlistMode = true;
+        wishlistMode = desiredMode;
 
+        if (desiredMode) {
             topInfoText.setText(TOP_TEXT_WISHLIST_TRUE);
 
             topAddButton.setText(TOP_BUTTON_TEXT_WISHLIST_TRUE);
             topButtonImageView.setImage(ResourceLoader.PLUS_ICON);
         } else {
-            wishlistMode = false;
-
             topInfoText.setText(TOP_TEXT_WISHLIST_FALSE);
 
             topAddButton.setText(TOP_BUTTON_TEXT_WISHLIST_FALSE);
@@ -303,7 +277,6 @@ public class MainSceneController extends ItemPackTableSceneController implements
         setMessageBarErrorText(queryInformation.getErrorString());
     }
 
-    @Override
     public void populateInitialTable() {
         itemPackTable.getItems().addAll(itemPackDAO.queryItemPacks(activeProfile, itemMap, queryParser.parse("", wishlistMode)));
         itemPackTable.refresh();
@@ -323,9 +296,44 @@ public class MainSceneController extends ItemPackTableSceneController implements
         profileDAO      = databaseManager.getProfileDAO();
         itemPackDAO     = databaseManager.getItemPackDAO();
 
-        bindMapData(itemDAO.getAllItemsMap(), setDAO.getAllSetsMap());
+        setItemMap(itemDAO.getAllItemsMap());
+        setSetMap(setDAO.getAllSetsMap());
 
         itemDAO.makeItemSetAssociations(itemMap, setMap);
         setDAO.makeSetItemAssociations(setMap, itemMap);
+    }
+
+    @Override
+    public void setItemMap(Map<Integer, Item> itemMap) {
+        this.itemMap = itemMap;
+    }
+
+    @Override
+    public Map<Integer, Item> getItemMap() {
+        return itemMap;
+    }
+
+    @Override
+    public void setSetMap(Map<Integer, Set> setMap) {
+        this.setMap = setMap;
+    }
+
+    @Override
+    public Map<Integer, Set> getSetMap() {
+        return setMap;
+    }
+
+    @Override
+    public void setAsActiveProfile(Profile activeProfile) {
+        this.activeProfile = activeProfile;
+    }
+
+    @Override
+    public Profile getActiveProfile() {
+        return activeProfile;
+    }
+
+    public void lateRefreshTable() {
+        Platform.runLater(itemPackTable::refresh);
     }
 }
