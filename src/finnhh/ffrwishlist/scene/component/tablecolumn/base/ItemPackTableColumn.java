@@ -34,8 +34,6 @@ package finnhh.ffrwishlist.scene.component.tablecolumn.base;
 import finnhh.ffrwishlist.model.ItemPack;
 import finnhh.ffrwishlist.model.Set;
 import finnhh.ffrwishlist.model.event.ModelEvent;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.TableColumn;
@@ -44,11 +42,7 @@ public abstract class ItemPackTableColumn<T> extends TableColumn<ItemPack, T> {
     public static final EventHandler<ModelEvent<ItemPack>>  DEFAULT_ITEMPACK_EVENT_HANDLER  = Event::consume;
     public static final EventHandler<ModelEvent<Set>>       DEFAULT_SET_EVENT_HANDLER       = Event::consume;
 
-    private BooleanProperty enabled;
-
     public ItemPackTableColumn() {
-        enabled = new SimpleBooleanProperty(this, "enabled", true);
-
         setEditable(false);
 
         setItemPackTableCellValueFactory();
@@ -63,16 +57,4 @@ public abstract class ItemPackTableColumn<T> extends TableColumn<ItemPack, T> {
     protected void setItemPackTableCellFactory() { }
 
     protected void setItemPackTableColumnComparator() { }
-
-    public boolean isEnabled() {
-        return enabled.get();
-    }
-
-    public BooleanProperty enabledProperty() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled.set(enabled);
-    }
 }
