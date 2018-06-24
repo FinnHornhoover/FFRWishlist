@@ -51,6 +51,10 @@ public class DatabaseManager {
     public static final String DATABASE_FILE_DIR    = System.getProperty("user.home") + "/FFRWishlistData/db";
     public static final String DATABASE_URL         = "jdbc:sqlite:" + DATABASE_FILE_DIR + "/ffrw.db";
 
+    private static final Set<String> EXPECTED_TABLE_NAMES = Arrays.stream(Table.values())
+                                                                    .map(Table::name)
+                                                                    .collect(Collectors.toSet());
+
     private final VersionDAO    versionDAO;
 
     private final ProfileDAO    profileDAO;
@@ -75,6 +79,29 @@ public class DatabaseManager {
         this.itemPackDAO = new ItemPackDAO();
     }
 
+    private Set<String> getExistingTableNames() {
+        Set<String> receivedNames = new HashSet<>();
+
+        try {
+            Class.forName(DRIVER_NAME);
+
+            try (Connection connection = DriverManager.getConnection(DATABASE_URL)) {
+                ResultSet mdRes = connection.getMetaData().getTables(null, null, "%", null);
+
+                while (mdRes.next())
+                    receivedNames.add(mdRes.getString(3));
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return receivedNames;
+    }
+
     private void initializeDataSource() throws IOException, SQLException, ClassNotFoundException {
         File dbDir = new File(DATABASE_FILE_DIR);
         if (!dbDir.exists())
@@ -85,18 +112,7 @@ public class DatabaseManager {
         try (Connection connection = DriverManager.getConnection(DATABASE_URL);
              Statement statement = connection.createStatement()) {
 
-            Set<String> expectedNames = Arrays.stream(Table.values()).map(Table::name).collect(Collectors.toSet());
-            Set<String> receivedNames = new HashSet<>();
-
-            ResultSet mdRes = connection.getMetaData().getTables(null, null, "%", null);
-
-            while (mdRes.next())
-                receivedNames.add(mdRes.getString(3));
-
-            if (!receivedNames.containsAll(expectedNames)) {
-                for (String tableName : receivedNames)
-                    statement.executeUpdate("DROP TABLE IF EXISTS " + tableName + ";");
-
+            if (Collections.disjoint(getExistingTableNames(), EXPECTED_TABLE_NAMES)) {
                 Scanner scanner = new Scanner(ResourceLoader.getSQLFileResourceAsStream("ffrw.sql"));
                 scanner.useDelimiter(Pattern.compile(";"));
 
@@ -136,6 +152,11 @@ public class DatabaseManager {
         return databaseVersion;
     }
 
+    public boolean allTablesExist() {
+        return getExistingTableNames().containsAll(EXPECTED_TABLE_NAMES);
+
+    }
+
     public ProfileDAO getProfileDAO() {
         return profileDAO;
     }
@@ -158,6 +179,6 @@ public class DatabaseManager {
         PROFILES,
         SETS,
         ITEMS_SETS,
-        ITEMS_PROFILES;
+        ITEMS_PROFILES
     }
 }

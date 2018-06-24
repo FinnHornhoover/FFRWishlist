@@ -101,7 +101,7 @@ public class UpdateSceneController extends AppConnectedSceneController implement
                             });
 
                             do {
-                                if (isCancelled())
+                                if (isCancelled() && databaseManager.allTablesExist())
                                     break;
 
                                 webUpdater.updateOnce(databaseManager);
