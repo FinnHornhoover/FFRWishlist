@@ -264,8 +264,6 @@ public class MainSceneController extends AppConnectedSceneController implements 
 
         amountColumn.setSortable(wishlistMode);
 
-        searchBar.setText("");
-
         ParsedQueryInformation queryInformation = queryParser.parse("", wishlistMode);
 
         itemPackTable.getItems().clear();
