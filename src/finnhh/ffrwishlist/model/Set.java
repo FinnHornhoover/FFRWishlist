@@ -31,14 +31,19 @@
 
 package finnhh.ffrwishlist.model;
 
+import finnhh.ffrwishlist.model.event.ModelEvent;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 
 import java.util.List;
 import java.util.Objects;
 
 public class Set {
+    public static final EventHandler<ModelEvent<Set>> DEFAULT_SET_EVENT_HANDLER = Event::consume;
+
     private final IntegerProperty       setID;
     private final StringProperty        setName;
     private final ListProperty<Item>    itemsAssociated;

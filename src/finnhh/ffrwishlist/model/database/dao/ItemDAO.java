@@ -101,23 +101,23 @@ public class ItemDAO extends DataAccessObject {
             try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
                  Statement statement = connection.createStatement()) {
 
-                String groupSeparator = ";";
-
                 ResultSet resultSet = statement.executeQuery(
                         "SELECT " +
                                 ItemSetSchemaColumn.ITEMID + ", " +
-                                "GROUP_CONCAT(" + ItemSetSchemaColumn.SETID + ", \'" + groupSeparator + "\') " +
+                                "GROUP_CONCAT(" + ItemSetSchemaColumn.SETID + ", \'" + GROUP_SEPARATOR + "\') " +
                         "FROM " + DatabaseManager.Table.ITEMS_SETS + " " +
                         "GROUP BY " + ItemSetSchemaColumn.ITEMID + ";"
                 );
 
                 while (resultSet.next()) {
                     Item curItem = itemMap.get(resultSet.getInt(ItemSetSchemaColumn.ITEMID.name()));
-                    String[] setids = resultSet.getString(2).split(groupSeparator);
+                    String[] setids = resultSet.getString(2).split(GROUP_SEPARATOR);
 
-                    curItem.addAllToSetsAssociated(Arrays.stream(setids)
-                            .map(sid -> setMap.get(Integer.parseInt(sid)))
-                            .collect(Collectors.toList()));
+                    curItem.addAllToSetsAssociated(
+                            Arrays.stream(setids)
+                                    .map(sid -> setMap.get(Integer.parseInt(sid)))
+                                    .collect(Collectors.toList())
+                    );
                 }
 
             } catch (SQLException e) {

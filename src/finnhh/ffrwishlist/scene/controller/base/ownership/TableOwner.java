@@ -29,26 +29,8 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.scene.component.tablecolumn.base;
+package finnhh.ffrwishlist.scene.controller.base.ownership;
 
-import finnhh.ffrwishlist.model.ItemPack;
-import javafx.scene.control.TableColumn;
-
-public abstract class ItemPackTableColumn<T> extends TableColumn<ItemPack, T> {
-
-    protected ItemPackTableColumn() {
-        setEditable(false);
-
-        setItemPackTableCellValueFactory();
-
-        setItemPackTableCellFactory();
-
-        setItemPackTableColumnComparator();
-    }
-
-    protected abstract void setItemPackTableCellValueFactory();
-
-    protected void setItemPackTableCellFactory() { }
-
-    protected void setItemPackTableColumnComparator() { }
+public interface TableOwner {
+    void lateRefreshTable();
 }

@@ -47,13 +47,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class DatabaseManager {
-    public static final String DRIVER_NAME          = "org.sqlite.JDBC";
-    public static final String DATABASE_FILE_DIR    = System.getProperty("user.home") + "/FFRWishlistData/db";
-    public static final String DATABASE_URL         = "jdbc:sqlite:" + DATABASE_FILE_DIR + "/ffrw.db";
+    public static final String          DRIVER_NAME             = "org.sqlite.JDBC";
+    public static final String          DATABASE_FILE_DIR       = System.getProperty("user.home") + "/FFRWishlistData/db";
+    public static final String          DATABASE_URL            = "jdbc:sqlite:" + DATABASE_FILE_DIR + "/ffrw.db";
 
-    private static final Set<String> EXPECTED_TABLE_NAMES = Arrays.stream(Table.values())
-                                                                    .map(Table::name)
-                                                                    .collect(Collectors.toSet());
+    private static final Set<String>    EXPECTED_TABLE_NAMES    = Arrays.stream(Table.values())
+                                                                        .map(Table::name)
+                                                                        .collect(Collectors.toSet());
 
     private final VersionDAO    versionDAO;
 
@@ -67,16 +67,13 @@ public class DatabaseManager {
     public DatabaseManager() throws IOException, SQLException, ClassNotFoundException {
         initializeDataSource();
 
-        this.versionDAO = new VersionDAO();
+        versionDAO              = new VersionDAO();
         databaseVersion = versionDAO.getVersion();
 
-        this.profileDAO  = new ProfileDAO();
-
-        this.itemDAO     = new ItemDAO();
-
-        this.setDAO      = new SetDAO();
-
-        this.itemPackDAO = new ItemPackDAO();
+        profileDAO              = new ProfileDAO();
+        itemDAO                 = new ItemDAO();
+        setDAO                  = new SetDAO();
+        itemPackDAO             = new ItemPackDAO();
     }
 
     private Set<String> getExistingTableNames() {
@@ -154,7 +151,6 @@ public class DatabaseManager {
 
     public boolean allTablesExist() {
         return getExistingTableNames().containsAll(EXPECTED_TABLE_NAMES);
-
     }
 
     public ProfileDAO getProfileDAO() {

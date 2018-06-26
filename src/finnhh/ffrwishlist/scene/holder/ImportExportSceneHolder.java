@@ -43,7 +43,7 @@ public class ImportExportSceneHolder extends ControlledSceneHolder {
     public ImportExportSceneHolder(Parent root, int sceneWidth, int sceneHeight, String sceneCSS) {
         super(root, sceneWidth, sceneHeight, sceneCSS);
 
-        this.importItemPackList = FXCollections.observableArrayList();
+        importItemPackList = FXCollections.observableArrayList();
     }
 
     public ObservableList<ItemPack> getImportItemPackList() {

@@ -48,8 +48,8 @@ public class IncludeExcludeQueryContainer<T> extends QueryContainer<T> {
     public IncludeExcludeQueryContainer(QueryableColumn referencedColumn) {
         super(referencedColumn);
 
-        this.includeEntryList = new ArrayList<>();
-        this.excludeEntryList = new ArrayList<>();
+        includeEntryList = new ArrayList<>();
+        excludeEntryList = new ArrayList<>();
     }
 
     @Override

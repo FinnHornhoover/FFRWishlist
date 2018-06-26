@@ -50,10 +50,11 @@ import finnhh.ffrwishlist.scene.component.tablecolumn.AmountColumn;
 import finnhh.ffrwishlist.model.event.ModelEvent;
 import finnhh.ffrwishlist.scene.component.textfield.AutoCompleteItemSearchBar;
 import finnhh.ffrwishlist.scene.controller.base.AppConnectedSceneController;
-import finnhh.ffrwishlist.scene.controller.base.database.DatabaseConnected;
-import finnhh.ffrwishlist.scene.controller.base.info.ItemMapOwner;
-import finnhh.ffrwishlist.scene.controller.base.info.SetMapOwner;
-import finnhh.ffrwishlist.scene.controller.base.profile.ProfileOwner;
+import finnhh.ffrwishlist.scene.controller.base.connections.DatabaseConnected;
+import finnhh.ffrwishlist.scene.controller.base.ownership.ItemMapOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.SetMapOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.ProfileOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.TableOwner;
 import finnhh.ffrwishlist.scene.holder.MainSceneHolder;
 import finnhh.ffrwishlist.scene.holder.base.ControlledSceneHolder;
 import javafx.application.Platform;
@@ -66,7 +67,9 @@ import javafx.scene.image.ImageView;
 
 import java.util.Map;
 
-public class MainSceneController extends AppConnectedSceneController implements DatabaseConnected, ProfileOwner, ItemMapOwner, SetMapOwner {
+public class MainSceneController extends AppConnectedSceneController implements DatabaseConnected, ProfileOwner,
+                                                                                ItemMapOwner, SetMapOwner,
+                                                                                TableOwner {
     public static final String  TOP_TEXT_WISHLIST_TRUE          = "List of items in your wishlist:";
     public static final String  TOP_TEXT_WISHLIST_FALSE         = "List of items you can add to your wishlist:";
     public static final String  TOP_BUTTON_TEXT_WISHLIST_TRUE   = "Add Items";
@@ -93,18 +96,49 @@ public class MainSceneController extends AppConnectedSceneController implements 
     @FXML
     private Label messageBarErrorText;
 
+    private ProfileDAO  profileDAO;
+    private ItemPackDAO itemPackDAO;
+
     private Profile activeProfile;
 
     private Map<Integer, Item> itemMap;
     private Map<Integer, Set> setMap;
 
-    private QueryParser queryParser = new QueryParser();
+    private QueryParser queryParser;
+
     private boolean wishlistMode = true;
 
-    private ProfileDAO  profileDAO;
-    private ItemPackDAO itemPackDAO;
+    public MainSceneController() {
+        queryParser = new QueryParser();
+    }
 
-    public MainSceneController() { }
+    private void setMessageBarSearchText(String nameSearched) {
+        messageBarSearchText.setText(nameSearched.isEmpty() ? "" : "Searching for \"" + nameSearched + "\"");
+    }
+
+    private void setMessageBarItemCountsText() {
+        ObservableList<ItemPack> itemPackList = itemPackTable.getItems();
+        int distinctItems = itemPackList.size();
+
+        if (wishlistMode) {
+            messageBarItemCountsText.setText(
+                    String.format("Showing %d distinct item%s (Total = %d)",
+                            distinctItems,
+                            (distinctItems == 1) ? "" : "s",
+                            itemPackList.stream().mapToInt(ItemPack::getAmount).sum())
+            );
+        } else {
+            messageBarItemCountsText.setText(
+                    String.format("Showing %d item%s",
+                            distinctItems,
+                            (distinctItems == 1) ? "" : "s")
+            );
+        }
+    }
+
+    private void setMessageBarErrorText(String errorText) {
+        messageBarErrorText.setText(errorText);
+    }
 
     @FXML
     private void onSearchBarQueryEntered() {
@@ -201,30 +235,6 @@ public class MainSceneController extends AppConnectedSceneController implements 
         ((MainApp) application).startSetMenuStage(this, true, setEvent.getModel());
     }
 
-    private void setMessageBarSearchText(String nameSearched) {
-        messageBarSearchText.setText(nameSearched.equals("") ? "" : "Searching for \"" + nameSearched + "\"");
-    }
-
-    private void setMessageBarItemCountsText() {
-        ObservableList<ItemPack> itemPackList = itemPackTable.getItems();
-        int distinctItems = itemPackList.size();
-
-        if (wishlistMode) {
-            messageBarItemCountsText.setText(String.format("Showing %d distinct item%s (Total = %d)",
-                    distinctItems,
-                    (distinctItems == 1) ? "" : "s",
-                    itemPackList.stream().mapToInt(ItemPack::getAmount).sum()));
-        } else {
-            messageBarItemCountsText.setText(String.format("Showing %d item%s",
-                    distinctItems,
-                    (distinctItems == 1) ? "" : "s"));
-        }
-    }
-
-    private void setMessageBarErrorText(String errorText) {
-        messageBarErrorText.setText(errorText);
-    }
-
     public void profileChoiceBoxSetup() {
         ObservableList<Profile> profileList = profileComboBox.getItems();
 
@@ -248,7 +258,7 @@ public class MainSceneController extends AppConnectedSceneController implements 
     public void switchToWishlistMode(boolean desiredMode) {
         wishlistMode = desiredMode;
 
-        if (desiredMode) {
+        if (wishlistMode) {
             topInfoText.setText(TOP_TEXT_WISHLIST_TRUE);
 
             topAddButton.setText(TOP_BUTTON_TEXT_WISHLIST_TRUE);
@@ -302,23 +312,8 @@ public class MainSceneController extends AppConnectedSceneController implements 
     }
 
     @Override
-    public void setItemMap(Map<Integer, Item> itemMap) {
-        this.itemMap = itemMap;
-    }
-
-    @Override
-    public Map<Integer, Item> getItemMap() {
-        return itemMap;
-    }
-
-    @Override
-    public void setSetMap(Map<Integer, Set> setMap) {
-        this.setMap = setMap;
-    }
-
-    @Override
-    public Map<Integer, Set> getSetMap() {
-        return setMap;
+    public Profile getActiveProfile() {
+        return activeProfile;
     }
 
     @Override
@@ -327,10 +322,26 @@ public class MainSceneController extends AppConnectedSceneController implements 
     }
 
     @Override
-    public Profile getActiveProfile() {
-        return activeProfile;
+    public Map<Integer, Item> getItemMap() {
+        return itemMap;
     }
 
+    @Override
+    public void setItemMap(Map<Integer, Item> itemMap) {
+        this.itemMap = itemMap;
+    }
+
+    @Override
+    public Map<Integer, Set> getSetMap() {
+        return setMap;
+    }
+
+    @Override
+    public void setSetMap(Map<Integer, Set> setMap) {
+        this.setMap = setMap;
+    }
+
+    @Override
     public void lateRefreshTable() {
         Platform.runLater(itemPackTable::refresh);
     }

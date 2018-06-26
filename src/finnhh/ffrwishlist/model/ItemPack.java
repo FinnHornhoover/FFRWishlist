@@ -31,18 +31,23 @@
 
 package finnhh.ffrwishlist.model;
 
+import finnhh.ffrwishlist.model.event.ModelEvent;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 
 public class ItemPack {
+    public static final EventHandler<ModelEvent<ItemPack>> DEFAULT_ITEMPACK_EVENT_HANDLER = Event::consume;
+
     private final ObjectProperty<Item>  item;
     private final IntegerProperty       amount;
 
     public ItemPack(Item item, int amount) {
-        this.item   = new SimpleObjectProperty<>(item);
-        this.amount = new SimpleIntegerProperty(amount);
+        this.item                       = new SimpleObjectProperty<>(item);
+        this.amount                     = new SimpleIntegerProperty(amount);
     }
 
     @Override

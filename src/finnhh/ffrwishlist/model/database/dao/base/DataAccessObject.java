@@ -32,6 +32,7 @@
 package finnhh.ffrwishlist.model.database.dao.base;
 
 public abstract class DataAccessObject {
+    protected static final String GROUP_SEPARATOR = ";";
 
     protected DataAccessObject() { }
 

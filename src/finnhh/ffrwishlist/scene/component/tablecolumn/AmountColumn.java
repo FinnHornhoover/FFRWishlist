@@ -53,15 +53,11 @@ public class AmountColumn extends ItemPackTableColumn<ItemPack> {
     public static final int     AMOUNT_BUTTONS_SIZE         = ResourceLoader.BUTTON_ICONS_SIZE + 8;
     public static final String  COLUMN_NAME                 = "Amount";
 
-    private EventHandler<ModelEvent<ItemPack>> onItemPackAdd;
-    private EventHandler<ModelEvent<ItemPack>> onItemPackIncreaseAmount;
-    private EventHandler<ModelEvent<ItemPack>> onItemPackDecreaseAmount;
+    private EventHandler<ModelEvent<ItemPack>> onItemPackAdd            = ItemPack.DEFAULT_ITEMPACK_EVENT_HANDLER;
+    private EventHandler<ModelEvent<ItemPack>> onItemPackIncreaseAmount = ItemPack.DEFAULT_ITEMPACK_EVENT_HANDLER;
+    private EventHandler<ModelEvent<ItemPack>> onItemPackDecreaseAmount = ItemPack.DEFAULT_ITEMPACK_EVENT_HANDLER;
 
     public AmountColumn() {
-        onItemPackAdd = DEFAULT_ITEMPACK_EVENT_HANDLER;
-        onItemPackIncreaseAmount = DEFAULT_ITEMPACK_EVENT_HANDLER;
-        onItemPackDecreaseAmount = DEFAULT_ITEMPACK_EVENT_HANDLER;
-
         setMinWidth(AMOUNT_COL_MIN_WIDTH);
         setText(COLUMN_NAME);
     }

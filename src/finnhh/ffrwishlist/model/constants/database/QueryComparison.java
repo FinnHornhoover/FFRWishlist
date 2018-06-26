@@ -64,17 +64,17 @@ public enum QueryComparison implements EnumSubcategories, InvalidEnumConstants {
         this.operator = operator;
     }
 
-    @Override
-    public String toString() {
-        return operator;
-    }
-
     public boolean isBasicComparison() {
         return fitsSubcategory(BasicComparison.class);
     }
 
     public boolean isNumericComparison() {
         return fitsSubcategory(NumericComparison.class);
+    }
+
+    @Override
+    public String toString() {
+        return operator;
     }
 
     public static QueryComparison containsOperator(String v) {

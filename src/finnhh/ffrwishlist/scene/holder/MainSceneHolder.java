@@ -40,8 +40,8 @@ import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 
 public class MainSceneHolder extends ControlledSceneHolder {
-    private ObservableList<ItemPack>    itemPackList;
-    private ObservableList<Profile>     profileList;
+    private ObservableList<ItemPack> itemPackList;
+    private ObservableList<Profile> profileList;
 
     public MainSceneHolder(Parent root, int sceneWidth, int sceneHeight, String sceneCSS) {
         super(root, sceneWidth, sceneHeight, sceneCSS);
@@ -51,8 +51,8 @@ public class MainSceneHolder extends ControlledSceneHolder {
         scene.heightProperty().addListener((observable, oldValue, newValue) ->
                 ((MainSceneController) sceneController).lateRefreshTable());
 
-        this.itemPackList   = FXCollections.observableArrayList();
-        this.profileList    = FXCollections.observableArrayList();
+        itemPackList = FXCollections.observableArrayList();
+        profileList = FXCollections.observableArrayList();
     }
 
     @Override

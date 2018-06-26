@@ -51,11 +51,26 @@ public final class AutoCompleteItemSearchBar extends TextField {
     private static final int SUGGESTION_LIMIT = 6;
 
     private ContextMenu suggestionsMenu;
-
-    private Set<String> columnAutoCompleteStrings;
-    private Set<AutoCompleteValue> valueAutoCompleteStrings;
-
     private Set<String> suggestedStrings;
+
+    private Set<String>             columnAutoCompleteStrings;
+    private Set<AutoCompleteValue>  valueAutoCompleteStrings;
+
+    public AutoCompleteItemSearchBar() {
+        suggestionsMenu = new ContextMenu();
+        suggestedStrings = new TreeSet<>();
+
+        columnAutoCompleteStrings   = new TreeSet<>();
+        valueAutoCompleteStrings    = new TreeSet<>(Comparator.comparing(AutoCompleteValue::getString));
+
+        configurePromptTexts();
+
+        fillColumnAutoCompleteStrings();
+
+        fillValueAutoCompleteStrings();
+
+        addAutoCompleteListener();
+    }
 
     private void configurePromptTexts() {
         focusedProperty().addListener((observable, wasFocused, isFocused) -> {
@@ -252,23 +267,6 @@ public final class AutoCompleteItemSearchBar extends TextField {
             setText(relevantPartReplacement + irrelevantPart);
             positionCaret(relevantPartReplacement.length());
         }
-    }
-
-    public AutoCompleteItemSearchBar() {
-        suggestionsMenu = new ContextMenu();
-
-        columnAutoCompleteStrings = new TreeSet<>();
-        valueAutoCompleteStrings = new TreeSet<>(Comparator.comparing(AutoCompleteValue::getString));
-
-        suggestedStrings = new TreeSet<>();
-
-        configurePromptTexts();
-
-        fillColumnAutoCompleteStrings();
-
-        fillValueAutoCompleteStrings();
-
-        addAutoCompleteListener();
     }
 
     private static class AutoCompleteValue {

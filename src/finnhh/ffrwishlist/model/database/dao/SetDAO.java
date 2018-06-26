@@ -48,10 +48,6 @@ public class SetDAO extends DataAccessObject {
 
     public SetDAO() { }
 
-    public List<Set> defaultQuerySets(Map<Integer, Set> setMap) {
-        return querySets(setMap, "");
-    }
-
     public List<Set> querySets(Map<Integer, Set> setMap, String name) {
         List<Set> matchedSets = new ArrayList<>();
 
@@ -87,6 +83,10 @@ public class SetDAO extends DataAccessObject {
         }
 
         return matchedSets;
+    }
+
+    public List<Set> defaultQuerySets(Map<Integer, Set> setMap) {
+        return querySets(setMap, "");
     }
 
     public Map<Integer, Set> getAllSetsMap() {
@@ -129,23 +129,23 @@ public class SetDAO extends DataAccessObject {
             try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
                  Statement statement = connection.createStatement()) {
 
-                String groupSeparator = ";";
-
                 ResultSet resultSet = statement.executeQuery(
                         "SELECT " +
                                 ItemSetSchemaColumn.SETID + ", " +
-                                "GROUP_CONCAT(" + ItemSetSchemaColumn.ITEMID + ", \'" + groupSeparator + "\') " +
+                                "GROUP_CONCAT(" + ItemSetSchemaColumn.ITEMID + ", \'" + GROUP_SEPARATOR + "\') " +
                         "FROM " + DatabaseManager.Table.ITEMS_SETS + " " +
                         "GROUP BY " + ItemSetSchemaColumn.SETID + ";"
                 );
 
                 while (resultSet.next()) {
                     Set curSet = setMap.get(resultSet.getInt(ItemSetSchemaColumn.SETID.name()));
-                    String[] itemids = resultSet.getString(2).split(groupSeparator);
+                    String[] itemids = resultSet.getString(2).split(GROUP_SEPARATOR);
 
-                    curSet.addAllToItemsAssociated(Arrays.stream(itemids)
-                            .map(iid -> itemMap.get(Integer.parseInt(iid)))
-                            .collect(Collectors.toList()));
+                    curSet.addAllToItemsAssociated(
+                            Arrays.stream(itemids)
+                                    .map(iid -> itemMap.get(Integer.parseInt(iid)))
+                                    .collect(Collectors.toList())
+                    );
                 }
 
             } catch (SQLException e) {

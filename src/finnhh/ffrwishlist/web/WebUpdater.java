@@ -52,7 +52,7 @@ public class WebUpdater {
     private Queue<UpdateSegment> updateSegmentQueue;
 
     public WebUpdater() {
-        this.updateSegmentQueue = new ArrayDeque<>();
+        updateSegmentQueue = new ArrayDeque<>();
     }
 
     public void connectAndFetchData(int currentDatabaseVersion) throws IOException, HTTPException {

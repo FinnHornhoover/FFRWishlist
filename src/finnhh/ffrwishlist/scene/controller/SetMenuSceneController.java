@@ -41,11 +41,12 @@ import finnhh.ffrwishlist.model.database.dao.SetDAO;
 import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
 import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable;
 import finnhh.ffrwishlist.model.event.ModelEvent;
-import finnhh.ffrwishlist.scene.controller.base.database.DatabaseConnected;
+import finnhh.ffrwishlist.scene.controller.base.connections.DatabaseConnected;
 import finnhh.ffrwishlist.scene.controller.base.SceneController;
-import finnhh.ffrwishlist.scene.controller.base.info.ItemMapOwner;
-import finnhh.ffrwishlist.scene.controller.base.info.SetMapOwner;
-import finnhh.ffrwishlist.scene.controller.base.profile.ProfileOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.ItemMapOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.SetMapOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.ProfileOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.TableOwner;
 import finnhh.ffrwishlist.scene.holder.SetMenuSceneHolder;
 import finnhh.ffrwishlist.scene.holder.base.ControlledSceneHolder;
 import javafx.application.Platform;
@@ -57,7 +58,8 @@ import javafx.scene.control.TextField;
 
 import java.util.*;
 
-public class SetMenuSceneController extends SceneController implements DatabaseConnected, ProfileOwner, ItemMapOwner, SetMapOwner {
+public class SetMenuSceneController extends SceneController implements DatabaseConnected, ProfileOwner, ItemMapOwner,
+                                                                        SetMapOwner, TableOwner {
     @FXML
     private TextField setSearchBar;
     @FXML
@@ -67,17 +69,19 @@ public class SetMenuSceneController extends SceneController implements DatabaseC
     @FXML
     private ItemPackTable itemPackTable;
 
-    private Profile activeProfile;
-
     private ItemPackDAO itemPackDAO;
     private SetDAO setDAO;
+
+    private Profile activeProfile;
 
     private Map<Integer, Item> itemMap;
     private Map<Integer, Set> setMap;
 
-    private Map<Item, Integer> alteredItemAmountsMap = new HashMap<>();
+    private Map<Item, Integer> alteredItemAmountsMap;
 
-    public SetMenuSceneController() { }
+    public SetMenuSceneController() {
+        alteredItemAmountsMap = new HashMap<>();
+    }
 
     private void manageAlteredItemAmounts(ItemPack itemPack, int nextValue) {
         Item itemToCheck = itemPack.getItem();
@@ -251,10 +255,6 @@ public class SetMenuSceneController extends SceneController implements DatabaseC
         return !alteredItemAmountsMap.isEmpty();
     }
 
-    public void lateRefreshTable() {
-        Platform.runLater(itemPackTable::refresh);
-    }
-
     @Override
     public void bindHolderData(ControlledSceneHolder sceneHolder) {
         itemPackTable.setItems(((SetMenuSceneHolder) sceneHolder).getItemPackList());
@@ -270,20 +270,15 @@ public class SetMenuSceneController extends SceneController implements DatabaseC
     }
 
     @Override
-    public void setAsActiveProfile(Profile activeProfile) {
-        this.activeProfile = activeProfile;
-
-        profileLabel.setText(activeProfile.toString());
-    }
-
-    @Override
     public Profile getActiveProfile() {
         return activeProfile;
     }
 
     @Override
-    public void setItemMap(Map<Integer, Item> itemMap) {
-        this.itemMap = itemMap;
+    public void setAsActiveProfile(Profile activeProfile) {
+        this.activeProfile = activeProfile;
+
+        profileLabel.setText(activeProfile.toString());
     }
 
     @Override
@@ -292,12 +287,22 @@ public class SetMenuSceneController extends SceneController implements DatabaseC
     }
 
     @Override
-    public void setSetMap(Map<Integer, Set> setMap) {
-        this.setMap = setMap;
+    public void setItemMap(Map<Integer, Item> itemMap) {
+        this.itemMap = itemMap;
     }
 
     @Override
     public Map<Integer, Set> getSetMap() {
         return setMap;
+    }
+
+    @Override
+    public void setSetMap(Map<Integer, Set> setMap) {
+        this.setMap = setMap;
+    }
+
+    @Override
+    public void lateRefreshTable() {
+        Platform.runLater(itemPackTable::refresh);
     }
 }

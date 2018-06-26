@@ -236,6 +236,31 @@ public class ItemPackDAO extends DataAccessObject {
         }
     }
 
+    public void updateAmount(Profile activeProfile, ItemPack itemPack, int newAmount) {
+        try {
+            Class.forName(DatabaseManager.DRIVER_NAME);
+
+            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
+                 Statement statement = connection.createStatement()) {
+
+                statement.executeUpdate(
+                        "UPDATE " + DatabaseManager.Table.ITEMS_PROFILES + " " +
+                                "SET " + ItemProfileSchemaColumn.AMOUNT + " = " + newAmount + " " +
+                                "WHERE " +
+                                ItemProfileSchemaColumn.ITEMID + " = " + itemPack.getItem().getItemID() + " " +
+                                "AND " +
+                                ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() + ";"
+                );
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void batchUpdateAmount(Profile activeProfile, List<ItemPack> updateItemPackList) {
         try {
             Class.forName(DatabaseManager.DRIVER_NAME);
@@ -259,31 +284,6 @@ public class ItemPackDAO extends DataAccessObject {
                 statement.executeBatch();
 
                 connection.setAutoCommit(true);
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void updateAmount(Profile activeProfile, ItemPack itemPack, int newAmount) {
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
-
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
-
-                statement.executeUpdate(
-                        "UPDATE " + DatabaseManager.Table.ITEMS_PROFILES + " " +
-                        "SET " + ItemProfileSchemaColumn.AMOUNT + " = " + newAmount + " " +
-                        "WHERE " +
-                                ItemProfileSchemaColumn.ITEMID + " = " + itemPack.getItem().getItemID() + " " +
-                                "AND " +
-                                ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() + ";"
-                );
 
             } catch (SQLException e) {
                 e.printStackTrace();

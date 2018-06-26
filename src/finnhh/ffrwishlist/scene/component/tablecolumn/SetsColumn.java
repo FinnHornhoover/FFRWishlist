@@ -48,11 +48,9 @@ public class SetsColumn extends ItemPackTableColumn<ObservableList<Set>> {
     public static final String  SETS_LABELS_CSS_CLASS   = "setreference";
     public static final String  COLUMN_NAME             = "Sets";
 
-    private EventHandler<ModelEvent<Set>> onSetSelectedFromTable;
+    private EventHandler<ModelEvent<Set>> onSetSelectedFromTable = Set.DEFAULT_SET_EVENT_HANDLER;
 
     public SetsColumn() {
-        onSetSelectedFromTable = DEFAULT_SET_EVENT_HANDLER;
-
         setMinWidth(SETS_COL_MIN_WIDTH);
         setSortable(false);
         setText(COLUMN_NAME);

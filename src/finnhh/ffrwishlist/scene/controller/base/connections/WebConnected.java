@@ -29,14 +29,10 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.scene.controller.base.info;
+package finnhh.ffrwishlist.scene.controller.base.connections;
 
-import finnhh.ffrwishlist.model.Set;
+import finnhh.ffrwishlist.web.WebUpdater;
 
-import java.util.Map;
-
-public interface SetMapOwner {
-    void setSetMap(Map<Integer, Set> setMap);
-
-    Map<Integer, Set> getSetMap();
+public interface WebConnected {
+    void setWebConnections(WebUpdater webUpdater);
 }

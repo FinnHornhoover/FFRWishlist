@@ -35,8 +35,8 @@ import finnhh.ffrwishlist.MainApp;
 import finnhh.ffrwishlist.model.constants.stage.StageInfo;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.scene.controller.base.AppConnectedSceneController;
-import finnhh.ffrwishlist.scene.controller.base.database.DatabaseConnected;
-import finnhh.ffrwishlist.scene.controller.base.web.WebConnected;
+import finnhh.ffrwishlist.scene.controller.base.connections.DatabaseConnected;
+import finnhh.ffrwishlist.scene.controller.base.connections.WebConnected;
 import finnhh.ffrwishlist.scene.holder.base.ControlledSceneHolder;
 import finnhh.ffrwishlist.web.WebUpdater;
 import javafx.application.Platform;
@@ -53,9 +53,9 @@ public class UpdateSceneController extends AppConnectedSceneController implement
     @FXML
     private ProgressIndicator progressIndicator;
 
-    private WebUpdater webUpdater;
-
     private DatabaseManager databaseManager;
+
+    private WebUpdater webUpdater;
 
     public UpdateSceneController() { }
 
@@ -159,12 +159,12 @@ public class UpdateSceneController extends AppConnectedSceneController implement
     public void bindHolderData(ControlledSceneHolder sceneHolder) { }
 
     @Override
-    public void setWebConnections(WebUpdater webUpdater) {
-        this.webUpdater = webUpdater;
+    public void setDatabaseConnections(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
     }
 
     @Override
-    public void setDatabaseConnections(DatabaseManager databaseManager) {
-        this.databaseManager = databaseManager;
+    public void setWebConnections(WebUpdater webUpdater) {
+        this.webUpdater = webUpdater;
     }
 }

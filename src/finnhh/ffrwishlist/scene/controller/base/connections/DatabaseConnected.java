@@ -29,14 +29,10 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.scene.controller.base.info;
+package finnhh.ffrwishlist.scene.controller.base.connections;
 
-import finnhh.ffrwishlist.model.Item;
+import finnhh.ffrwishlist.model.database.DatabaseManager;
 
-import java.util.Map;
-
-public interface ItemMapOwner {
-    void setItemMap(Map<Integer, Item> itemMap);
-
-    Map<Integer, Item> getItemMap();
+public interface DatabaseConnected {
+    void setDatabaseConnections(DatabaseManager databaseManager);
 }

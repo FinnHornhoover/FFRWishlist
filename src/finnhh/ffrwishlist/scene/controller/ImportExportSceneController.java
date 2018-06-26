@@ -39,10 +39,10 @@ import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
 import finnhh.ffrwishlist.model.parser.ParsedQueryInformation;
 import finnhh.ffrwishlist.model.parser.QueryParser;
-import finnhh.ffrwishlist.scene.controller.base.database.DatabaseConnected;
+import finnhh.ffrwishlist.scene.controller.base.connections.DatabaseConnected;
 import finnhh.ffrwishlist.scene.controller.base.SceneController;
-import finnhh.ffrwishlist.scene.controller.base.info.ItemMapOwner;
-import finnhh.ffrwishlist.scene.controller.base.profile.ProfileOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.ItemMapOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.ProfileOwner;
 import finnhh.ffrwishlist.scene.holder.ImportExportSceneHolder;
 import finnhh.ffrwishlist.scene.holder.base.ControlledSceneHolder;
 import javafx.application.Platform;
@@ -55,7 +55,8 @@ import javafx.scene.control.TextArea;
 
 import java.util.*;
 
-public class ImportExportSceneController extends SceneController implements DatabaseConnected, ProfileOwner, ItemMapOwner {
+public class ImportExportSceneController extends SceneController implements DatabaseConnected, ProfileOwner,
+                                                                            ItemMapOwner {
     public static final String PARSE_FAIL_MESSAGE       = "There have been errors, please check the import code.";
     public static final String AMOUNT_EXCEEDED_MESSAGE  = "One or more of the specified amounts are invalid.";
     public static final String IMPORT_SUCCESS_MESSAGE   = "Successfully added the items in the list!";
@@ -86,7 +87,7 @@ public class ImportExportSceneController extends SceneController implements Data
     private boolean wishlistAltered = false;
 
     public ImportExportSceneController() {
-        this.wishlistItemsMap = new HashMap<>();
+        wishlistItemsMap = new HashMap<>();
     }
 
     private void setWishlistItems() {
@@ -233,6 +234,18 @@ public class ImportExportSceneController extends SceneController implements Data
     }
 
     @Override
+    public void setDatabaseConnections(DatabaseManager databaseManager) {
+        itemPackDAO = databaseManager.getItemPackDAO();
+
+        setWishlistItems();
+    }
+
+    @Override
+    public Profile getActiveProfile() {
+        return activeProfile;
+    }
+
+    @Override
     public void setAsActiveProfile(Profile activeProfile) {
         this.activeProfile = activeProfile;
 
@@ -243,24 +256,12 @@ public class ImportExportSceneController extends SceneController implements Data
     }
 
     @Override
-    public Profile getActiveProfile() {
-        return activeProfile;
-    }
-
-    @Override
-    public void setDatabaseConnections(DatabaseManager databaseManager) {
-        itemPackDAO = databaseManager.getItemPackDAO();
-
-        setWishlistItems();
+    public Map<Integer, Item> getItemMap() {
+        return itemMap;
     }
 
     @Override
     public void setItemMap(Map<Integer, Item> itemMap) {
         this.itemMap = itemMap;
-    }
-
-    @Override
-    public Map<Integer, Item> getItemMap() {
-        return itemMap;
     }
 }

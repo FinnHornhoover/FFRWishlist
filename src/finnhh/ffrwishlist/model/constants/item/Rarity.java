@@ -69,13 +69,13 @@ public enum Rarity implements ItemAttribute {
     }
 
     @Override
-    public int intValue() {
-        return value;
+    public String toString() {
+        return name;
     }
 
     @Override
-    public String toString() {
-        return name;
+    public int intValue() {
+        return value;
     }
 
     @Override

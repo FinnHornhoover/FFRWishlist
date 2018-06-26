@@ -50,13 +50,13 @@ public class Item {
     private final ListProperty<Set>         setsAssociated;
 
     public Item(int itemID, byte[] iconBytes, String name, int level, Type type, Rarity rarity) {
-        this.itemID         = new SimpleIntegerProperty(itemID);
-        this.iconBytes      = new SimpleObjectProperty<>(iconBytes);
-        this.name           = new SimpleStringProperty(name);
-        this.level          = new SimpleIntegerProperty(level);
-        this.type           = new SimpleObjectProperty<>(type);
-        this.rarity         = new SimpleObjectProperty<>(rarity);
-        this.setsAssociated = new SimpleListProperty<>(FXCollections.observableArrayList());
+        this.itemID                         = new SimpleIntegerProperty(itemID);
+        this.iconBytes                      = new SimpleObjectProperty<>(iconBytes);
+        this.name                           = new SimpleStringProperty(name);
+        this.level                          = new SimpleIntegerProperty(level);
+        this.type                           = new SimpleObjectProperty<>(type);
+        this.rarity                         = new SimpleObjectProperty<>(rarity);
+        this.setsAssociated                 = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
     @Override

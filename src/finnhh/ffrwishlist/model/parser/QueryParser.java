@@ -58,16 +58,16 @@ public class QueryParser {
     private Queue<String>           valuesToInsertToQuery;
 
     public QueryParser() {
-        this.levelQueries           = new NumericQueryContainer(QueryableColumn.LEVEL);
-        this.amountQueries          = new NumericQueryContainer(QueryableColumn.AMOUNT);
-        this.typeQueries            = new IncludeExcludeQueryContainer<>(QueryableColumn.TYPE);
-        this.rarityQueries          = new IncludeExcludeQueryContainer<>(QueryableColumn.RARITY);
-        this.setQueries             = new SetQueryContainer();
+        levelQueries                = new NumericQueryContainer(QueryableColumn.LEVEL);
+        amountQueries               = new NumericQueryContainer(QueryableColumn.AMOUNT);
+        typeQueries                 = new IncludeExcludeQueryContainer<>(QueryableColumn.TYPE);
+        rarityQueries               = new IncludeExcludeQueryContainer<>(QueryableColumn.RARITY);
+        setQueries                  = new SetQueryContainer();
 
-        this.rawStringQueries       = new ArrayList<>();
-        this.invalidQueries         = new ArrayList<>();
+        rawStringQueries            = new ArrayList<>();
+        invalidQueries              = new ArrayList<>();
 
-        this.valuesToInsertToQuery  = new ArrayDeque<>();
+        valuesToInsertToQuery       = new ArrayDeque<>();
     }
 
     private void resetQueryParser() {

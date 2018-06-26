@@ -40,7 +40,7 @@ public class ParsedQueryInformation {
     private String whereStatementChecks;
     private Queue<String> valuesToInsertToQuery;
 
-    public ParsedQueryInformation(String searchString, String errorString, String whereStatementChecks,
+    ParsedQueryInformation(String searchString, String errorString, String whereStatementChecks,
                                   Queue<String> valuesToInsertToQuery) {
         this.searchString = searchString;
         this.errorString = errorString;

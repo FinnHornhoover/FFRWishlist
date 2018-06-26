@@ -45,7 +45,8 @@ public class NumericQueryContainer extends QueryContainer<Integer> {
 
     public NumericQueryContainer(QueryableColumn referencedColumn) {
         super(referencedColumn);
-        this.entryList = new ArrayList<>();
+
+        entryList = new ArrayList<>();
     }
 
     @Override

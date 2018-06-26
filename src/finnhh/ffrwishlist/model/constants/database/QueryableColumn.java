@@ -100,21 +100,6 @@ public enum QueryableColumn implements MultipleRepresentations, EnumSubcategorie
         return INVALID_COLUMN;
     }
 
-    public static QueryableColumn correspondingTo(Class<? extends ItemAttribute> attributeClass) {
-        if (attributeClass == Amount.class)
-            return QueryableColumn.AMOUNT;
-        else if (attributeClass == Level.class)
-            return QueryableColumn.LEVEL;
-        else if (attributeClass == Rarity.class)
-            return QueryableColumn.RARITY;
-        else if (attributeClass == Type.class)
-            return QueryableColumn.TYPE;
-        else if (attributeClass == Supertype.class)
-            return QueryableColumn.TYPE;
-        else
-            return QueryableColumn.INVALID_COLUMN;
-    }
-
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     public @interface FilterColumn {

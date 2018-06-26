@@ -41,9 +41,9 @@ public class Profile {
     private final BooleanProperty   active;
 
     public Profile(int profileID, String profileName, boolean active) {
-        this.profileID      = new SimpleIntegerProperty(profileID);
-        this.profileName    = new SimpleStringProperty(profileName);
-        this.active         = new SimpleBooleanProperty(active);
+        this.profileID              = new SimpleIntegerProperty(profileID);
+        this.profileName            = new SimpleStringProperty(profileName);
+        this.active                 = new SimpleBooleanProperty(active);
     }
 
     @Override

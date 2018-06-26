@@ -29,12 +29,12 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.scene.controller.base.profile;
+package finnhh.ffrwishlist.scene.controller.base.ownership;
 
 import finnhh.ffrwishlist.model.Profile;
 
 public interface ProfileOwner {
-    void setAsActiveProfile(Profile activeProfile);
-
     Profile getActiveProfile();
+
+    void setAsActiveProfile(Profile activeProfile);
 }
