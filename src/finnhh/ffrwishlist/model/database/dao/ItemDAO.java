@@ -40,7 +40,7 @@ import finnhh.ffrwishlist.model.constants.item.Type;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
 
-import java.sql.*;
+import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;

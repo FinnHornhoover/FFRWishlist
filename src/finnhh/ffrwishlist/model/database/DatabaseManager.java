@@ -31,19 +31,17 @@
 
 package finnhh.ffrwishlist.model.database;
 
-import finnhh.ffrwishlist.model.database.dao.ItemDAO;
-import finnhh.ffrwishlist.model.database.dao.ProfileDAO;
-import finnhh.ffrwishlist.model.database.dao.SetDAO;
-import finnhh.ffrwishlist.model.database.dao.VersionDAO;
-import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
-import finnhh.ffrwishlist.resources.ResourceHolder;
+import finnhh.ffrwishlist.model.database.dao.*;
+import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.sql.*;
-import java.util.*;
-import java.util.regex.Pattern;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Queue;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DatabaseManager {
@@ -76,67 +74,17 @@ public class DatabaseManager {
         itemPackDAO = new ItemPackDAO();
     }
 
-    private Set<String> getExistingTableNames() {
-        Set<String> receivedNames = new HashSet<>();
-
-        try {
-            Class.forName(DRIVER_NAME);
-
-            try (Connection connection = DriverManager.getConnection(DATABASE_URL)) {
-                ResultSet mdRes = connection.getMetaData().getTables(null, null, "%", null);
-
-                while (mdRes.next())
-                    receivedNames.add(mdRes.getString(3));
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        return receivedNames;
-    }
-
     private void initializeDataSource() throws IOException, SQLException, ClassNotFoundException {
         File dbDir = new File(DATABASE_FILE_DIR);
         if (!dbDir.exists())
             Files.createDirectories(dbDir.toPath());
 
-        Class.forName(DRIVER_NAME);
-
-        try (Connection connection = DriverManager.getConnection(DATABASE_URL);
-             Statement statement = connection.createStatement()) {
-
-            if (Collections.disjoint(getExistingTableNames(), EXPECTED_TABLE_NAMES)) {
-                Scanner scanner = new Scanner(ResourceHolder.getSQLFileResourceAsStream("ffrw.sql"));
-                scanner.useDelimiter(Pattern.compile(";"));
-
-                while (scanner.hasNext())
-                    statement.executeUpdate(scanner.next() + ";");
-            }
-
-        }
+        if (noTablesExist())
+            DataAccessObject.initializeDataSource();
     }
 
-    public void rawUpdate(Queue<String> updateQueue) {
-        try {
-            Class.forName(DRIVER_NAME);
-
-            try (Connection connection = DriverManager.getConnection(DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
-
-                while (!updateQueue.isEmpty())
-                    statement.executeUpdate(updateQueue.remove() + ";");
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+    public void rawUpdate(final Queue<String> updateQueue) {
+        DataAccessObject.rawUpdate(updateQueue);
     }
 
     public void setDatabaseVersion(int version) {
@@ -150,7 +98,11 @@ public class DatabaseManager {
     }
 
     public boolean allTablesExist() {
-        return getExistingTableNames().containsAll(EXPECTED_TABLE_NAMES);
+        return DataAccessObject.getExistingTableNames().containsAll(EXPECTED_TABLE_NAMES);
+    }
+
+    public boolean noTablesExist() {
+        return Collections.disjoint(DataAccessObject.getExistingTableNames(), EXPECTED_TABLE_NAMES);
     }
 
     public ProfileDAO getProfileDAO() {
