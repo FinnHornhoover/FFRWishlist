@@ -85,7 +85,7 @@ public final class StageInfo {
                 HELP_STAGE_FXML, false, SceneHolder.class),
         SET_MENU(SET_MENU_STAGE_WIDTH, SET_MENU_STAGE_HEIGHT, SET_MENU_STAGE_TITLE,
                 SET_MENU_STAGE_FXML, true, SetMenuSceneHolder.class),
-        INFORMATION_STAGE(INFORMATION_STAGE_WIDTH, INFORMATION_STAGE_HEIGHT, INFORMATION_STAGE_TITLE,
+        INFORMATION(INFORMATION_STAGE_WIDTH, INFORMATION_STAGE_HEIGHT, INFORMATION_STAGE_TITLE,
                 INFORMATION_STAGE_FXML, false, ControlledSceneHolder.class);
 
         private final int stageWidth;
@@ -138,12 +138,12 @@ public final class StageInfo {
             return sceneHolderClass;
         }
 
-        public void setScreenLock(boolean screenLock) {
-            this.screenLock = screenLock;
-        }
-
         public boolean hasScreenLock() {
             return screenLock;
+        }
+
+        public void setScreenLock(boolean screenLock) {
+            this.screenLock = screenLock;
         }
     }
 }

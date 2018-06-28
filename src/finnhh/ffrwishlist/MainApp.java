@@ -197,7 +197,7 @@ public class MainApp extends Application {
     }
 
     public void startInformationStage() {
-        StageHolder stageHolder = new StageHolder(new Stage(), StageInfo.StageState.INFORMATION_STAGE) {
+        StageHolder stageHolder = new StageHolder(new Stage(), StageInfo.StageState.INFORMATION) {
             @Override
             void controllerSetup() {
                 ((InformationSceneController) getSceneController()).setWebConnections(appUpdater);
