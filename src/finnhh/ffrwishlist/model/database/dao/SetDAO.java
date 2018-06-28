@@ -48,39 +48,27 @@ public class SetDAO extends DataAccessObject {
 
     public SetDAO() { }
 
-    public List<Set> querySets(Map<Integer, Set> setMap, String name) {
-        List<Set> matchedSets = new ArrayList<>();
+    public List<Set> querySets(final Map<Integer, Set> setMap, final String name) {
+        final List<Set> matchedSets = new ArrayList<>();
 
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
+        String query =
+                "SELECT " +
+                        SetSchemaColumn.SETID + " " +
+                "FROM " +
+                        DatabaseManager.Table.SETS + " " +
+                "WHERE " +
+                        QueryableColumn.SETNAME + " LIKE ? " +
+                "ORDER BY " +
+                        SetSchemaColumn.SETNAME + ";";
 
-            String query =
-                    "SELECT " +
-                            SetSchemaColumn.SETID + " " +
-                    "FROM " +
-                            DatabaseManager.Table.SETS + " " +
-                    "WHERE " +
-                            QueryableColumn.SETNAME + " LIKE ? " +
-                    "ORDER BY " +
-                            SetSchemaColumn.SETNAME + ";";
+        runOnPreparedStatementNoThrow(query, preparedStatement -> {
+            preparedStatement.setString(1, QueryParser.likeQueryArgument(name));
 
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
 
-                preparedStatement.setString(1, QueryParser.likeQueryArgument(name));
-
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                while (resultSet.next())
-                    matchedSets.add(setMap.get(resultSet.getInt(SetSchemaColumn.SETID.name())));
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+            while (resultSet.next())
+                matchedSets.add(setMap.get(resultSet.getInt(SetSchemaColumn.SETID.name())));
+        });
 
         return matchedSets;
     }
@@ -90,70 +78,46 @@ public class SetDAO extends DataAccessObject {
     }
 
     public Map<Integer, Set> getAllSetsMap() {
-        Map<Integer, Set> allSets = new HashMap<>();
+        final Map<Integer, Set> allSets = new HashMap<>();
 
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
+        runOnStatementNoThrow(statement -> {
+            ResultSet resultSet = statement.executeQuery(
+                    "SELECT " +
+                            SetSchemaColumn.SETID    + ", " +
+                            SetSchemaColumn.SETNAME  + " " +
+                    "FROM " + DatabaseManager.Table.SETS + ";"
+            );
 
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
+            while (resultSet.next()) {
+                int setid = resultSet.getInt(SetSchemaColumn.SETID.name());
 
-                ResultSet resultSet = statement.executeQuery(
-                        "SELECT " +
-                                SetSchemaColumn.SETID    + ", " +
-                                SetSchemaColumn.SETNAME  + " " +
-                        "FROM " + DatabaseManager.Table.SETS + ";"
-                );
-
-                while (resultSet.next()) {
-                    int setid = resultSet.getInt(SetSchemaColumn.SETID.name());
-
-                    allSets.put(setid, new Set(setid, resultSet.getString(SetSchemaColumn.SETNAME.name())));
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
+                allSets.put(setid, new Set(setid, resultSet.getString(SetSchemaColumn.SETNAME.name())));
             }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        });
 
         return allSets;
     }
 
-    public void makeSetItemAssociations(Map<Integer, Set> setMap, final Map<Integer, Item> itemMap) {
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
+    public void makeSetItemAssociations(final Map<Integer, Set> setMap, final Map<Integer, Item> itemMap) {
+        runOnStatementNoThrow(statement -> {
+            ResultSet resultSet = statement.executeQuery(
+                    "SELECT " +
+                            ItemSetSchemaColumn.SETID + ", " +
+                            "GROUP_CONCAT(" + ItemSetSchemaColumn.ITEMID + ", \'" + GROUP_SEPARATOR + "\') " +
+                    "FROM " + DatabaseManager.Table.ITEMS_SETS + " " +
+                    "GROUP BY " + ItemSetSchemaColumn.SETID + ";"
+            );
 
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
+            while (resultSet.next()) {
+                Set curSet = setMap.get(resultSet.getInt(ItemSetSchemaColumn.SETID.name()));
+                String[] itemids = resultSet.getString(2).split(GROUP_SEPARATOR);
 
-                ResultSet resultSet = statement.executeQuery(
-                        "SELECT " +
-                                ItemSetSchemaColumn.SETID + ", " +
-                                "GROUP_CONCAT(" + ItemSetSchemaColumn.ITEMID + ", \'" + GROUP_SEPARATOR + "\') " +
-                        "FROM " + DatabaseManager.Table.ITEMS_SETS + " " +
-                        "GROUP BY " + ItemSetSchemaColumn.SETID + ";"
+                curSet.addAllToItemsAssociated(
+                        Arrays.stream(itemids)
+                                .map(iid -> itemMap.get(Integer.parseInt(iid)))
+                                .collect(Collectors.toList())
                 );
-
-                while (resultSet.next()) {
-                    Set curSet = setMap.get(resultSet.getInt(ItemSetSchemaColumn.SETID.name()));
-                    String[] itemids = resultSet.getString(2).split(GROUP_SEPARATOR);
-
-                    curSet.addAllToItemsAssociated(
-                            Arrays.stream(itemids)
-                                    .map(iid -> itemMap.get(Integer.parseInt(iid)))
-                                    .collect(Collectors.toList())
-                    );
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        });
     }
 }

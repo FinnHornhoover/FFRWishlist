@@ -51,82 +51,57 @@ public class ItemDAO extends DataAccessObject {
     public ItemDAO() { }
 
     public Map<Integer, Item> getAllItemsMap() {
-        Map<Integer, Item> allItems = new HashMap<>();
+        final Map<Integer, Item> allItems = new HashMap<>();
 
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
+        runOnStatementNoThrow(statement -> {
+            ResultSet resultSet = statement.executeQuery(
+                    "SELECT " +
+                            ItemSchemaColumn.ITEMID + ", " +
+                            ItemSchemaColumn.ICON + ", " +
+                            ItemSchemaColumn.NAME + ", " +
+                            ItemSchemaColumn.LEVEL + ", " +
+                            ItemSchemaColumn.TYPE + ", " +
+                            ItemSchemaColumn.RARITY + " " +
+                    "FROM " + DatabaseManager.Table.ITEMS + ";"
+            );
 
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
+            while (resultSet.next()) {
+                int itemid = resultSet.getInt(ItemSchemaColumn.ITEMID.name());
 
-                ResultSet resultSet = statement.executeQuery(
-                        "SELECT " +
-                                ItemSchemaColumn.ITEMID + ", " +
-                                ItemSchemaColumn.ICON + ", " +
-                                ItemSchemaColumn.NAME + ", " +
-                                ItemSchemaColumn.LEVEL + ", " +
-                                ItemSchemaColumn.TYPE + ", " +
-                                ItemSchemaColumn.RARITY + " " +
-                        "FROM " + DatabaseManager.Table.ITEMS + ";"
-                );
-
-                while (resultSet.next()) {
-                    int itemid = resultSet.getInt(ItemSchemaColumn.ITEMID.name());
-
-                    allItems.put(itemid, new Item(
-                            itemid,
-                            resultSet.getBytes(ItemSchemaColumn.ICON.name()),
-                            resultSet.getString(ItemSchemaColumn.NAME.name()),
-                            resultSet.getInt(ItemSchemaColumn.LEVEL.name()),
-                            Type.correspondingTo(resultSet.getInt(ItemSchemaColumn.TYPE.name())),
-                            Rarity.correspondingTo(resultSet.getInt(ItemSchemaColumn.RARITY.name()))
-                    ));
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
+                allItems.put(itemid, new Item(
+                        itemid,
+                        resultSet.getBytes(ItemSchemaColumn.ICON.name()),
+                        resultSet.getString(ItemSchemaColumn.NAME.name()),
+                        resultSet.getInt(ItemSchemaColumn.LEVEL.name()),
+                        Type.correspondingTo(resultSet.getInt(ItemSchemaColumn.TYPE.name())),
+                        Rarity.correspondingTo(resultSet.getInt(ItemSchemaColumn.RARITY.name()))
+                ));
             }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        });
 
         return allItems;
     }
 
-    public void makeItemSetAssociations(Map<Integer, Item> itemMap, final Map<Integer, Set> setMap) {
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
+    public void makeItemSetAssociations(final Map<Integer, Item> itemMap, final Map<Integer, Set> setMap) {
+        runOnStatementNoThrow(statement -> {
+            ResultSet resultSet = statement.executeQuery(
+                    "SELECT " +
+                            ItemSetSchemaColumn.ITEMID + ", " +
+                            "GROUP_CONCAT(" + ItemSetSchemaColumn.SETID + ", \'" + GROUP_SEPARATOR + "\') " +
+                    "FROM " + DatabaseManager.Table.ITEMS_SETS + " " +
+                    "GROUP BY " + ItemSetSchemaColumn.ITEMID + ";"
+            );
 
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
+            while (resultSet.next()) {
+                Item curItem = itemMap.get(resultSet.getInt(ItemSetSchemaColumn.ITEMID.name()));
+                String[] setids = resultSet.getString(2).split(GROUP_SEPARATOR);
 
-                ResultSet resultSet = statement.executeQuery(
-                        "SELECT " +
-                                ItemSetSchemaColumn.ITEMID + ", " +
-                                "GROUP_CONCAT(" + ItemSetSchemaColumn.SETID + ", \'" + GROUP_SEPARATOR + "\') " +
-                        "FROM " + DatabaseManager.Table.ITEMS_SETS + " " +
-                        "GROUP BY " + ItemSetSchemaColumn.ITEMID + ";"
+                curItem.addAllToSetsAssociated(
+                        Arrays.stream(setids)
+                                .map(sid -> setMap.get(Integer.parseInt(sid)))
+                                .collect(Collectors.toList())
                 );
-
-                while (resultSet.next()) {
-                    Item curItem = itemMap.get(resultSet.getInt(ItemSetSchemaColumn.ITEMID.name()));
-                    String[] setids = resultSet.getString(2).split(GROUP_SEPARATOR);
-
-                    curItem.addAllToSetsAssociated(
-                            Arrays.stream(setids)
-                                    .map(sid -> setMap.get(Integer.parseInt(sid)))
-                                    .collect(Collectors.toList())
-                    );
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        });
     }
-
 }

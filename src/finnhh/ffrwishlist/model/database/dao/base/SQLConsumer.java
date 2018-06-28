@@ -29,9 +29,11 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.constants.base;
+package finnhh.ffrwishlist.model.database.dao.base;
 
-public interface SchemaColumn extends IntegerValued {
-    @Override
-    String toString();
+import java.sql.SQLException;
+
+@FunctionalInterface
+public interface SQLConsumer<T> {
+    void accept(T t) throws SQLException;
 }

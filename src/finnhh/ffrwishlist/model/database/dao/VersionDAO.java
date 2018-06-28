@@ -34,6 +34,8 @@ package finnhh.ffrwishlist.model.database.dao;
 import finnhh.ffrwishlist.model.constants.database.schema.VersionSchemaColumn;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 import java.sql.*;
 
@@ -42,41 +44,27 @@ public class VersionDAO extends DataAccessObject {
 
     public VersionDAO() { }
 
-    public int getVersion() throws SQLException, ClassNotFoundException {
-        Class.forName(DatabaseManager.DRIVER_NAME);
+    public int getVersion() throws ClassNotFoundException, SQLException {
+        final IntegerProperty version = new SimpleIntegerProperty();
 
-        try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-             Statement statement = connection.createStatement()) {
-
+        runOnStatement(statement -> {
             ResultSet resultSet = statement.executeQuery(
                     "SELECT " + VersionSchemaColumn.VERSION + " " +
                     "FROM " + DatabaseManager.Table.VERSIONS + " " +
                     "WHERE " + VersionSchemaColumn.DBID + " = " + DB_ID + ";"
             );
 
-            return resultSet.getInt(VersionSchemaColumn.VERSION.name());
-        }
+            version.setValue(resultSet.getInt(VersionSchemaColumn.VERSION.name()));
+        });
+
+        return version.get();
     }
 
     public void updateVersion(int newVersion) {
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
-
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
-
-                statement.executeUpdate(
-                        "UPDATE " + DatabaseManager.Table.VERSIONS + " " +
-                        "SET " + VersionSchemaColumn.VERSION + " = " + newVersion + " " +
-                        "WHERE " + VersionSchemaColumn.DBID + " = " + DB_ID + ";"
-                );
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        runOnStatementNoThrow(statement -> statement.executeUpdate(
+                "UPDATE " + DatabaseManager.Table.VERSIONS + " " +
+                "SET " + VersionSchemaColumn.VERSION + " = " + newVersion + " " +
+                "WHERE " + VersionSchemaColumn.DBID + " = " + DB_ID + ";"
+        ));
     }
 }

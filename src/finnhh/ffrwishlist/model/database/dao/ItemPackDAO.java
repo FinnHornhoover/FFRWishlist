@@ -54,130 +54,118 @@ public class ItemPackDAO extends DataAccessObject {
 
     public ItemPackDAO() { }
 
-    public List<ItemPack> queryItemPacks(Profile activeProfile, Map<Integer, Item> itemMap,
-                                         ParsedQueryInformation parsedQueryInformation) {
-        List<ItemPack> matchedItemPacks = new ArrayList<>();
+    public List<ItemPack> queryItemPacks(Profile activeProfile, final Map<Integer, Item> itemMap,
+                                         final ParsedQueryInformation parsedQueryInformation) {
+        final List<ItemPack> matchedItemPacks = new ArrayList<>();
 
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
+        String query =
+                "SELECT " +
+                        ItemSchemaColumn.ITEMID + ", " +
+                        ItemProfileSchemaColumn.AMOUNT + " " +
+                "FROM " +
+                        DatabaseManager.Table.ITEMS + " " +
+                        "LEFT JOIN (" +
+                                "SELECT " +
+                                        ItemProfileSchemaColumn.ITEMID + ", " +
+                                        ItemProfileSchemaColumn.AMOUNT + " " +
+                                "FROM " +
+                                        DatabaseManager.Table.ITEMS_PROFILES + " " +
+                                "WHERE " +
+                                        ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() +
+                        ") " +
+                        "USING (" + ItemProfileSchemaColumn.ITEMID + ") " +
+                "WHERE " +
+                        parsedQueryInformation.getWhereStatementChecks() + " " +
+                "ORDER BY " +
+                        ItemSchemaColumn.RARITY + " DESC, " +
+                        ItemSchemaColumn.LEVEL  + " DESC, " +
+                        ItemSchemaColumn.TYPE   + " ASC, " +
+                        ItemSchemaColumn.NAME   + " ASC;";
 
-            String query =
-                    "SELECT " +
-                            ItemSchemaColumn.ITEMID + ", " +
-                            ItemProfileSchemaColumn.AMOUNT + " " +
-                    "FROM " +
-                            DatabaseManager.Table.ITEMS + " " +
-                            "LEFT JOIN (" +
-                                    "SELECT " +
-                                            ItemProfileSchemaColumn.ITEMID + ", " +
-                                            ItemProfileSchemaColumn.AMOUNT + " " +
-                                    "FROM " +
-                                            DatabaseManager.Table.ITEMS_PROFILES + " " +
-                                    "WHERE " +
-                                            ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() +
-                            ") " +
-                            "USING (" + ItemProfileSchemaColumn.ITEMID + ") " +
-                    "WHERE " +
-                            parsedQueryInformation.getWhereStatementChecks() + " " +
-                    "ORDER BY " +
-                            ItemSchemaColumn.RARITY + " DESC, " +
-                            ItemSchemaColumn.LEVEL  + " DESC, " +
-                            ItemSchemaColumn.TYPE   + " ASC, " +
-                            ItemSchemaColumn.NAME   + " ASC;";
+        runOnPreparedStatementNoThrow(query, preparedStatement -> {
+            Queue<String> valuesToInsertToQuery = parsedQueryInformation.getValuesToInsertToQuery();
 
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            int i = 1;
+            while (!valuesToInsertToQuery.isEmpty())
+                preparedStatement.setString(i++, valuesToInsertToQuery.remove());
 
-                Queue<String> valuesToInsertToQuery = parsedQueryInformation.getValuesToInsertToQuery();
+            ResultSet resultSet = preparedStatement.executeQuery();
 
-                int i = 1;
-                while (!valuesToInsertToQuery.isEmpty())
-                    preparedStatement.setString(i++, valuesToInsertToQuery.remove());
-
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                while (resultSet.next()) {
-                    matchedItemPacks.add(new ItemPack(
-                            itemMap.get(resultSet.getInt(ItemProfileSchemaColumn.ITEMID.name())),
-                            resultSet.getInt(ItemProfileSchemaColumn.AMOUNT.name())
-                    ));
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
+            while (resultSet.next()) {
+                matchedItemPacks.add(new ItemPack(
+                        itemMap.get(resultSet.getInt(ItemProfileSchemaColumn.ITEMID.name())),
+                        resultSet.getInt(ItemProfileSchemaColumn.AMOUNT.name())
+                ));
             }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        });
 
         return matchedItemPacks;
     }
 
-    public List<ItemPack> queryItemPacksBySet(Profile activeProfile, Map<Integer, Item> itemMap, Set set) {
-        List<ItemPack> matchedItemPacks = new ArrayList<>();
+    public List<ItemPack> queryItemPacksBySet(Profile activeProfile, final Map<Integer, Item> itemMap, Set set) {
+        final List<ItemPack> matchedItemPacks = new ArrayList<>();
 
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
+        String query =
+                "SELECT " +
+                        ItemSchemaColumn.ITEMID + ", " +
+                        ItemProfileSchemaColumn.AMOUNT + " " +
+                "FROM " +
+                        DatabaseManager.Table.ITEMS + " " +
+                        "LEFT JOIN (" +
+                                "SELECT " +
+                                        ItemProfileSchemaColumn.ITEMID + ", " +
+                                        ItemProfileSchemaColumn.AMOUNT + " " +
+                                "FROM " +
+                                        DatabaseManager.Table.ITEMS_PROFILES + " " +
+                                "WHERE " +
+                                        ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() +
+                        ") " +
+                        "USING (" + ItemProfileSchemaColumn.ITEMID + ") " +
+                        "JOIN " +
+                        DatabaseManager.Table.ITEMS_SETS + " " +
+                        "USING (" + ItemSetSchemaColumn.ITEMID + ") " +
+                "WHERE " +
+                        QueryableColumn.SETID + " = " + set.getSetID() + " " +
+                "ORDER BY " +
+                        ItemSchemaColumn.TYPE   + " ASC, " +
+                        ItemSchemaColumn.LEVEL  + " ASC, " +
+                        ItemSchemaColumn.NAME   + " ASC;";
 
-            String query =
-                    "SELECT " +
-                            ItemSchemaColumn.ITEMID + ", " +
-                            ItemProfileSchemaColumn.AMOUNT + " " +
-                    "FROM " +
-                            DatabaseManager.Table.ITEMS + " " +
-                            "LEFT JOIN (" +
-                                    "SELECT " +
-                                            ItemProfileSchemaColumn.ITEMID + ", " +
-                                            ItemProfileSchemaColumn.AMOUNT + " " +
-                                    "FROM " +
-                                            DatabaseManager.Table.ITEMS_PROFILES + " " +
-                                    "WHERE " +
-                                            ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() +
-                            ") " +
-                            "USING (" + ItemProfileSchemaColumn.ITEMID + ") " +
-                            "JOIN " +
-                            DatabaseManager.Table.ITEMS_SETS + " " +
-                            "USING (" + ItemSetSchemaColumn.ITEMID + ") " +
-                    "WHERE " +
-                            QueryableColumn.SETID + " = " + set.getSetID() + " " +
-                    "ORDER BY " +
-                            ItemSchemaColumn.TYPE   + " ASC, " +
-                            ItemSchemaColumn.LEVEL  + " ASC, " +
-                            ItemSchemaColumn.NAME   + " ASC;";
+        runOnStatementNoThrow(statement -> {
+            ResultSet resultSet = statement.executeQuery(query);
 
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
-
-                ResultSet resultSet = statement.executeQuery(query);
-
-                while (resultSet.next()) {
-                    matchedItemPacks.add(new ItemPack(
-                            itemMap.get(resultSet.getInt(ItemProfileSchemaColumn.ITEMID.name())),
-                            resultSet.getInt(ItemProfileSchemaColumn.AMOUNT.name())
-                    ));
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
+            while (resultSet.next()) {
+                matchedItemPacks.add(new ItemPack(
+                        itemMap.get(resultSet.getInt(ItemProfileSchemaColumn.ITEMID.name())),
+                        resultSet.getInt(ItemProfileSchemaColumn.AMOUNT.name())
+                ));
             }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
+        });
 
         return matchedItemPacks;
     }
 
-    public void insertAmount(Profile activeProfile, ItemPack itemPack) {
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
+    public void insertAmount(final Profile activeProfile, final ItemPack itemPack) {
+        runOnStatementNoThrow(statement -> statement.executeUpdate(
+                "INSERT INTO " + DatabaseManager.Table.ITEMS_PROFILES + " (" +
+                        ItemProfileSchemaColumn.ITEMID + ", " +
+                        ItemProfileSchemaColumn.PROFILEID + ", " +
+                        ItemProfileSchemaColumn.AMOUNT + " " +
+                ") " +
+                "VALUES (" +
+                        itemPack.getItem().getItemID() + ", " +
+                        activeProfile.getProfileID() + ", " +
+                        Amount.MINIMUM.intValue() +
+                ");"
+        ));
+    }
 
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
+    public void batchInsertAmount(final Profile activeProfile, final List<ItemPack> insertItemPackList) {
+        runOnConnectionAndStatementNoThrow((connection, statement) -> {
+            connection.setAutoCommit(false);
 
-                statement.executeUpdate(
+            for (ItemPack itemPack : insertItemPackList) {
+                statement.addBatch(
                         "INSERT INTO " + DatabaseManager.Table.ITEMS_PROFILES + " (" +
                                 ItemProfileSchemaColumn.ITEMID + ", " +
                                 ItemProfileSchemaColumn.PROFILEID + ", " +
@@ -186,135 +174,56 @@ public class ItemPackDAO extends DataAccessObject {
                         "VALUES (" +
                                 itemPack.getItem().getItemID() + ", " +
                                 activeProfile.getProfileID() + ", " +
-                                Amount.MINIMUM.intValue() +
+                                itemPack.getAmount() +
                         ");"
                 );
-
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
 
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+            statement.executeBatch();
+
+            connection.setAutoCommit(true);
+        });
     }
 
-    public void batchInsertAmount(Profile activeProfile, List<ItemPack> insertItemPackList) {
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
-
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
-
-                connection.setAutoCommit(false);
-
-                for (ItemPack itemPack : insertItemPackList) {
-                    statement.addBatch(
-                            "INSERT INTO " + DatabaseManager.Table.ITEMS_PROFILES + " (" +
-                                    ItemProfileSchemaColumn.ITEMID + ", " +
-                                    ItemProfileSchemaColumn.PROFILEID + ", " +
-                                    ItemProfileSchemaColumn.AMOUNT + " " +
-                            ") " +
-                            "VALUES (" +
-                                    itemPack.getItem().getItemID() + ", " +
-                                    activeProfile.getProfileID() + ", " +
-                                    itemPack.getAmount() +
-                            ");"
-                    );
-                }
-
-                statement.executeBatch();
-
-                connection.setAutoCommit(true);
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+    public void updateAmount(final Profile activeProfile, final ItemPack itemPack, int newAmount) {
+        runOnStatementNoThrow(statement -> statement.executeUpdate(
+                "UPDATE " + DatabaseManager.Table.ITEMS_PROFILES + " " +
+                "SET " + ItemProfileSchemaColumn.AMOUNT + " = " + newAmount + " " +
+                "WHERE " +
+                        ItemProfileSchemaColumn.ITEMID + " = " + itemPack.getItem().getItemID() + " " +
+                        "AND " +
+                        ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() + ";"
+        ));
     }
 
-    public void updateAmount(Profile activeProfile, ItemPack itemPack, int newAmount) {
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
+    public void batchUpdateAmount(final Profile activeProfile, final List<ItemPack> updateItemPackList) {
+        runOnConnectionAndStatementNoThrow((connection, statement) -> {
+            connection.setAutoCommit(false);
 
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
-
-                statement.executeUpdate(
+            for (ItemPack itemPack : updateItemPackList) {
+                statement.addBatch(
                         "UPDATE " + DatabaseManager.Table.ITEMS_PROFILES + " " +
-                                "SET " + ItemProfileSchemaColumn.AMOUNT + " = " + newAmount + " " +
-                                "WHERE " +
-                                ItemProfileSchemaColumn.ITEMID + " = " + itemPack.getItem().getItemID() + " " +
-                                "AND " +
-                                ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() + ";"
-                );
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void batchUpdateAmount(Profile activeProfile, List<ItemPack> updateItemPackList) {
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
-
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
-
-                connection.setAutoCommit(false);
-
-                for (ItemPack itemPack : updateItemPackList) {
-                    statement.addBatch(
-                            "UPDATE " + DatabaseManager.Table.ITEMS_PROFILES + " " +
-                            "SET " + ItemProfileSchemaColumn.AMOUNT + " = " + itemPack.getAmount() + " " +
-                            "WHERE " +
-                                    ItemProfileSchemaColumn.ITEMID + " = " + itemPack.getItem().getItemID() + " " +
-                                    "AND " +
-                                    ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() + ";"
-                    );
-                }
-
-                statement.executeBatch();
-
-                connection.setAutoCommit(true);
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void deleteAmount(Profile activeProfile, ItemPack itemPack) {
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
-
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
-
-                statement.executeUpdate(
-                        "DELETE FROM " + DatabaseManager.Table.ITEMS_PROFILES + " " +
+                        "SET " + ItemProfileSchemaColumn.AMOUNT + " = " + itemPack.getAmount() + " " +
                         "WHERE " +
                                 ItemProfileSchemaColumn.ITEMID + " = " + itemPack.getItem().getItemID() + " " +
                                 "AND " +
                                 ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() + ";"
                 );
-
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
 
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+            statement.executeBatch();
+
+            connection.setAutoCommit(true);
+        });
+    }
+
+    public void deleteAmount(Profile activeProfile, ItemPack itemPack) {
+        runOnStatementNoThrow(statement -> statement.executeUpdate(
+                "DELETE FROM " + DatabaseManager.Table.ITEMS_PROFILES + " " +
+                "WHERE " +
+                        ItemProfileSchemaColumn.ITEMID + " = " + itemPack.getItem().getItemID() + " " +
+                        "AND " +
+                        ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() + ";"
+        ));
     }
 }

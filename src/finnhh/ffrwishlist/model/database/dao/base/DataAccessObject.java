@@ -31,9 +31,115 @@
 
 package finnhh.ffrwishlist.model.database.dao.base;
 
+import finnhh.ffrwishlist.model.database.DatabaseManager;
+
+import java.sql.*;
+import java.util.Objects;
+
 public abstract class DataAccessObject {
     protected static final String GROUP_SEPARATOR = ";";
 
     protected DataAccessObject() { }
 
+    protected final void runOnConnection(SQLConsumer<Connection> consumer) throws ClassNotFoundException, SQLException {
+        Objects.requireNonNull(consumer);
+
+        Class.forName(DatabaseManager.DRIVER_NAME);
+
+        try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL)) {
+
+            consumer.accept(connection);
+        }
+    }
+
+    protected final void runOnConnectionNoThrow(SQLConsumer<Connection> consumer) {
+        try {
+            runOnConnection(consumer);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected final void runOnStatement(SQLConsumer<Statement> consumer) throws ClassNotFoundException, SQLException {
+        Objects.requireNonNull(consumer);
+
+        Class.forName(DatabaseManager.DRIVER_NAME);
+
+        try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
+             Statement statement = connection.createStatement()) {
+
+            consumer.accept(statement);
+        }
+    }
+
+    protected final void runOnStatementNoThrow(SQLConsumer<Statement> consumer) {
+        try {
+            runOnStatement(consumer);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected final void runOnPreparedStatement(String sql, SQLConsumer<PreparedStatement> consumer)
+            throws ClassNotFoundException, SQLException {
+        Objects.requireNonNull(consumer);
+
+        Class.forName(DatabaseManager.DRIVER_NAME);
+
+        try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            consumer.accept(preparedStatement);
+        }
+    }
+
+    protected final void runOnPreparedStatementNoThrow(String sql, SQLConsumer<PreparedStatement> consumer) {
+        try {
+            runOnPreparedStatement(sql, consumer);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected final void runOnConnectionAndStatement(SQLBiConsumer<Connection, Statement> consumer)
+            throws ClassNotFoundException, SQLException {
+        Objects.requireNonNull(consumer);
+
+        Class.forName(DatabaseManager.DRIVER_NAME);
+
+        try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
+             Statement statement = connection.createStatement()) {
+
+            consumer.accept(connection, statement);
+        }
+    }
+
+    protected final void runOnConnectionAndStatementNoThrow(SQLBiConsumer<Connection, Statement> consumer) {
+        try {
+            runOnConnectionAndStatement(consumer);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected final void runOnConnectionAndPreparedStatement(String sql, SQLBiConsumer<Connection, PreparedStatement> consumer)
+            throws ClassNotFoundException, SQLException {
+        Objects.requireNonNull(consumer);
+
+        Class.forName(DatabaseManager.DRIVER_NAME);
+
+        try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            consumer.accept(connection, preparedStatement);
+        }
+    }
+
+    protected final void runOnConnectionAndPreparedStatementNoThrow(String sql, SQLBiConsumer<Connection, PreparedStatement> consumer) {
+        try {
+            runOnConnectionAndPreparedStatement(sql, consumer);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
