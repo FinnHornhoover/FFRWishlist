@@ -41,37 +41,22 @@ import java.util.List;
 import java.util.Objects;
 
 public class Item {
-    private final IntegerProperty           itemID;
-    private final ObjectProperty<byte[]>    iconBytes;
-    private final StringProperty            name;
-    private final IntegerProperty           level;
-    private final ObjectProperty<Type>      type;
-    private final ObjectProperty<Rarity>    rarity;
-    private final ListProperty<Set>         setsAssociated;
+    private final IntegerProperty itemID;
+    private final ObjectProperty<byte[]> iconBytes;
+    private final StringProperty name;
+    private final IntegerProperty level;
+    private final ObjectProperty<Type> type;
+    private final ObjectProperty<Rarity> rarity;
+    private final ListProperty<Set> setsAssociated;
 
     public Item(int itemID, byte[] iconBytes, String name, int level, Type type, Rarity rarity) {
-        this.itemID                         = new SimpleIntegerProperty(itemID);
-        this.iconBytes                      = new SimpleObjectProperty<>(iconBytes);
-        this.name                           = new SimpleStringProperty(name);
-        this.level                          = new SimpleIntegerProperty(level);
-        this.type                           = new SimpleObjectProperty<>(type);
-        this.rarity                         = new SimpleObjectProperty<>(rarity);
-        this.setsAssociated                 = new SimpleListProperty<>(FXCollections.observableArrayList());
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Item && itemID.get() == ((Item) obj).itemID.get();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(itemID.get());
-    }
-
-    @Override
-    public String toString() {
-        return name.get();
+        this.itemID = new SimpleIntegerProperty(itemID);
+        this.iconBytes = new SimpleObjectProperty<>(iconBytes);
+        this.name = new SimpleStringProperty(name);
+        this.level = new SimpleIntegerProperty(level);
+        this.type = new SimpleObjectProperty<>(type);
+        this.rarity = new SimpleObjectProperty<>(rarity);
+        this.setsAssociated = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
     public int getItemID() {
@@ -132,5 +117,20 @@ public class Item {
 
     public ListProperty<Set> setsAssociatedProperty() {
         return setsAssociated;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Item && itemID.get() == ((Item) obj).itemID.get();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(itemID.get());
+    }
+
+    @Override
+    public String toString() {
+        return name.get();
     }
 }

@@ -33,7 +33,7 @@ package finnhh.ffrwishlist.scene.component.tablecolumn;
 
 import finnhh.ffrwishlist.model.ItemPack;
 import finnhh.ffrwishlist.model.constants.item.Amount;
-import finnhh.ffrwishlist.resources.ResourceLoader;
+import finnhh.ffrwishlist.resources.ResourceHolder;
 import finnhh.ffrwishlist.scene.component.tablecolumn.base.ItemPackTableColumn;
 import finnhh.ffrwishlist.model.event.ModelEvent;
 import javafx.beans.property.SimpleObjectProperty;
@@ -50,10 +50,10 @@ import java.util.Comparator;
 public class AmountColumn extends ItemPackTableColumn<ItemPack> {
     public static final int     AMOUNT_COL_MIN_WIDTH        = 96;
     public static final int     AMOUNT_TILEPANE_MIN_WIDTH   = 140;
-    public static final int     AMOUNT_BUTTONS_SIZE         = ResourceLoader.BUTTON_ICONS_SIZE + 8;
+    public static final int     AMOUNT_BUTTONS_SIZE         = ResourceHolder.BUTTON_ICONS_SIZE + 8;
     public static final String  COLUMN_NAME                 = "Amount";
 
-    private EventHandler<ModelEvent<ItemPack>> onItemPackAdd            = ItemPack.DEFAULT_ITEMPACK_EVENT_HANDLER;
+    private EventHandler<ModelEvent<ItemPack>> onItemPackAdd = ItemPack.DEFAULT_ITEMPACK_EVENT_HANDLER;
     private EventHandler<ModelEvent<ItemPack>> onItemPackIncreaseAmount = ItemPack.DEFAULT_ITEMPACK_EVENT_HANDLER;
     private EventHandler<ModelEvent<ItemPack>> onItemPackDecreaseAmount = ItemPack.DEFAULT_ITEMPACK_EVENT_HANDLER;
 
@@ -73,23 +73,23 @@ public class AmountColumn extends ItemPackTableColumn<ItemPack> {
             private final ImageView plusImageViewInsert;
             private final ImageView plusImageView;
             private final ImageView minusImageView;
-            private final Button    plusButtonInsert;
-            private final Button    plusButton;
-            private final Button    minusButton;
-            private final Label     amountLabel;
-            private final TilePane  tilePane;
+            private final Button plusButtonInsert;
+            private final Button plusButton;
+            private final Button minusButton;
+            private final Label amountLabel;
+            private final TilePane tilePane;
 
             {
                 plusImageViewInsert = new ImageView();
-                plusImageViewInsert.setFitWidth(ResourceLoader.BUTTON_ICONS_SIZE);
+                plusImageViewInsert.setFitWidth(ResourceHolder.BUTTON_ICONS_SIZE);
                 plusImageViewInsert.setPreserveRatio(true);
 
                 plusImageView = new ImageView();
-                plusImageView.setFitWidth(ResourceLoader.BUTTON_ICONS_SIZE);
+                plusImageView.setFitWidth(ResourceHolder.BUTTON_ICONS_SIZE);
                 plusImageView.setPreserveRatio(true);
 
                 minusImageView = new ImageView();
-                minusImageView.setFitWidth(ResourceLoader.BUTTON_ICONS_SIZE);
+                minusImageView.setFitWidth(ResourceHolder.BUTTON_ICONS_SIZE);
                 minusImageView.setPreserveRatio(true);
 
                 plusButtonInsert = new Button();
@@ -123,17 +123,17 @@ public class AmountColumn extends ItemPackTableColumn<ItemPack> {
 
                 if (!empty) {
                     if (item.getAmount() < Amount.MINIMUM.intValue()) {
-                        plusImageViewInsert.setImage(ResourceLoader.PLUS_ICON);
+                        plusImageViewInsert.setImage(ResourceHolder.PLUS_ICON);
 
                         plusButtonInsert.setOnAction(event -> onItemPackAdd.handle(new ModelEvent<>(event, item)));
 
                         setGraphic(plusButtonInsert);
                     } else {
-                        plusImageView.setImage(ResourceLoader.PLUS_ICON);
+                        plusImageView.setImage(ResourceHolder.PLUS_ICON);
 
                         plusButton.setOnAction(event -> onItemPackIncreaseAmount.handle(new ModelEvent<>(event, item)));
 
-                        minusImageView.setImage(ResourceLoader.MINUS_ICON);
+                        minusImageView.setImage(ResourceHolder.MINUS_ICON);
 
                         minusButton.setOnAction(event -> onItemPackDecreaseAmount.handle(new ModelEvent<>(event, item)));
 

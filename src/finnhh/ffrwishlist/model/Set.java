@@ -44,29 +44,14 @@ import java.util.Objects;
 public class Set {
     public static final EventHandler<ModelEvent<Set>> DEFAULT_SET_EVENT_HANDLER = Event::consume;
 
-    private final IntegerProperty       setID;
-    private final StringProperty        setName;
-    private final ListProperty<Item>    itemsAssociated;
+    private final IntegerProperty setID;
+    private final StringProperty setName;
+    private final ListProperty<Item> itemsAssociated;
 
     public Set(int setID, String setName) {
-        this.setID              = new SimpleIntegerProperty(setID);
-        this.setName            = new SimpleStringProperty(setName);
-        this.itemsAssociated    = new SimpleListProperty<>(FXCollections.observableArrayList());
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Set && setID.get() == ((Set) obj).setID.get();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(setID.get());
-    }
-
-    @Override
-    public String toString() {
-        return setName.get();
+        this.setID = new SimpleIntegerProperty(setID);
+        this.setName = new SimpleStringProperty(setName);
+        this.itemsAssociated = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
     public int getSetID() {
@@ -95,5 +80,20 @@ public class Set {
 
     public ListProperty<Item> itemsAssociatedProperty() {
         return itemsAssociated;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Set && setID.get() == ((Set) obj).setID.get();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(setID.get());
+    }
+
+    @Override
+    public String toString() {
+        return setName.get();
     }
 }

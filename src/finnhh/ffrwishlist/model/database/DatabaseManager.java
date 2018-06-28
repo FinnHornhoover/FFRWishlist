@@ -36,7 +36,7 @@ import finnhh.ffrwishlist.model.database.dao.ProfileDAO;
 import finnhh.ffrwishlist.model.database.dao.SetDAO;
 import finnhh.ffrwishlist.model.database.dao.VersionDAO;
 import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
-import finnhh.ffrwishlist.resources.ResourceLoader;
+import finnhh.ffrwishlist.resources.ResourceHolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,25 +55,25 @@ public class DatabaseManager {
                                                                         .map(Table::name)
                                                                         .collect(Collectors.toSet());
 
-    private final VersionDAO    versionDAO;
+    private final VersionDAO versionDAO;
 
-    private final ProfileDAO    profileDAO;
-    private final ItemDAO       itemDAO;
-    private final SetDAO        setDAO;
-    private final ItemPackDAO   itemPackDAO;
+    private final ProfileDAO profileDAO;
+    private final ItemDAO itemDAO;
+    private final SetDAO setDAO;
+    private final ItemPackDAO itemPackDAO;
 
     private int databaseVersion;
 
     public DatabaseManager() throws IOException, SQLException, ClassNotFoundException {
         initializeDataSource();
 
-        versionDAO              = new VersionDAO();
+        versionDAO = new VersionDAO();
         databaseVersion = versionDAO.getVersion();
 
-        profileDAO              = new ProfileDAO();
-        itemDAO                 = new ItemDAO();
-        setDAO                  = new SetDAO();
-        itemPackDAO             = new ItemPackDAO();
+        profileDAO = new ProfileDAO();
+        itemDAO = new ItemDAO();
+        setDAO = new SetDAO();
+        itemPackDAO = new ItemPackDAO();
     }
 
     private Set<String> getExistingTableNames() {
@@ -110,7 +110,7 @@ public class DatabaseManager {
              Statement statement = connection.createStatement()) {
 
             if (Collections.disjoint(getExistingTableNames(), EXPECTED_TABLE_NAMES)) {
-                Scanner scanner = new Scanner(ResourceLoader.getSQLFileResourceAsStream("ffrw.sql"));
+                Scanner scanner = new Scanner(ResourceHolder.getSQLFileResourceAsStream("ffrw.sql"));
                 scanner.useDelimiter(Pattern.compile(";"));
 
                 while (scanner.hasNext())

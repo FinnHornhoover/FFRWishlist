@@ -42,29 +42,12 @@ import javafx.event.EventHandler;
 public class ItemPack {
     public static final EventHandler<ModelEvent<ItemPack>> DEFAULT_ITEMPACK_EVENT_HANDLER = Event::consume;
 
-    private final ObjectProperty<Item>  item;
-    private final IntegerProperty       amount;
+    private final ObjectProperty<Item> item;
+    private final IntegerProperty amount;
 
     public ItemPack(Item item, int amount) {
-        this.item                       = new SimpleObjectProperty<>(item);
-        this.amount                     = new SimpleIntegerProperty(amount);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof ItemPack
-                && item.get() == ((ItemPack) obj).item.get()
-                && amount.get() == ((ItemPack) obj).amount.get();
-    }
-
-    @Override
-    public int hashCode() {
-        return item.get().hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%s (Amount: %d)", item.get().toString(), amount.get());
+        this.item = new SimpleObjectProperty<>(item);
+        this.amount = new SimpleIntegerProperty(amount);
     }
 
     public Item getItem() {
@@ -85,5 +68,22 @@ public class ItemPack {
 
     public IntegerProperty amountProperty() {
         return amount;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof ItemPack
+                && item.get() == ((ItemPack) obj).item.get()
+                && amount.get() == ((ItemPack) obj).amount.get();
+    }
+
+    @Override
+    public int hashCode() {
+        return item.get().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s (Amount: %d)", item.get().toString(), amount.get());
     }
 }

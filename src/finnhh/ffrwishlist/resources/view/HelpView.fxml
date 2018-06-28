@@ -32,7 +32,7 @@
   -->
 
 <?import finnhh.ffrwishlist.model.constants.stage.StageInfo?>
-<?import finnhh.ffrwishlist.resources.ResourceLoader?>
+<?import finnhh.ffrwishlist.resources.ResourceHolder?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
@@ -53,7 +53,7 @@
                     <Separator prefWidth="200.0" />
                     <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
                         <ImageView fitWidth="64.0" preserveRatio="true">
-                            <ResourceLoader fx:constant="PROGRAM_ICON" />
+                            <ResourceHolder fx:constant="PROGRAM_ICON" />
                         </ImageView>
                         <Label styleClass="helpTextLarge" text="Welcome to FFR Wishlist, the only program you will need to keep track of your wanted items!" textAlignment="CENTER" textFill="#018e3e" wrapText="true" />
                         <Label text="FFR Wishlist is the must-have program of the organized FusionFaller! The program allows you to easily make and maintain a list of items to get in FusionFall Retro." textAlignment="CENTER" textFill="white" wrapText="true" />
@@ -331,6 +331,26 @@
                         <Label text="The updater only appears when there's an update to be made, but your program will check if there's an update to make every time you open the program." textAlignment="CENTER" textFill="white" wrapText="true" />
                         <Label text="You can see your database version from the title of your program, the number after the version number is the database version. It might take a couple seconds for the updater to realize there are no updates to make, after that it should update the title of the program with the current database version." textAlignment="CENTER" textFill="white" wrapText="true" />
                         <Label text="FFR Wishlist was designed to run offline with no problems, you only need to connect to the internet when you want a recent database update to be applied." textAlignment="CENTER" textFill="white" wrapText="true" />
+                    </VBox>
+                </children>
+                <padding>
+                    <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+            </VBox>
+        </Tab>
+        <Tab closable="false" text="Information Popups">
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                <children>
+                    <Label styleClass="pageHeader" text="Updater" textFill="#01ae3e" />
+                    <Separator prefWidth="200.0" />
+                    <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
+                        <Label text="The program comes equipped with an information popup as well. Much like the database updater, the button for the popup only appears when there's a new information." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="If you see this button on the top right corner of the program, it means that there's something you should know:" textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <ImageView fitWidth="64.0" preserveRatio="true">
+                            <ResourceHolder fx:constant="INFO_ICON" />
+                        </ImageView>
+                        <Label text="Information popups exist mainly for public announcements for the program's users. Clicking on the button reveals the message." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="A great use case for information popups is a program update. So when there's a new version of FFR Wishlist publicly available, you'll know first!" textAlignment="CENTER" textFill="white" wrapText="true" />
                     </VBox>
                 </children>
                 <padding>

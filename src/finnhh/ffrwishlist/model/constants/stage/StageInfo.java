@@ -56,7 +56,7 @@ public final class StageInfo {
     public static final String  IMPORT_EXPORT_STAGE_TITLE   = "Import / Export Wishlist";
     public static final String  IMPORT_EXPORT_STAGE_FXML    = "ImportExportView.fxml";
 
-    public static final int     HELP_STAGE_WIDTH            = 750;
+    public static final int     HELP_STAGE_WIDTH            = 900;
     public static final int     HELP_STAGE_HEIGHT           = 600;
     public static final String  HELP_STAGE_TITLE            = "Help";
     public static final String  HELP_STAGE_FXML             = "HelpView.fxml";
@@ -65,6 +65,11 @@ public final class StageInfo {
     public static final int     SET_MENU_STAGE_HEIGHT       = 600;
     public static final String  SET_MENU_STAGE_TITLE        = "Set Menu";
     public static final String  SET_MENU_STAGE_FXML         = "SetMenuView.fxml";
+
+    public static final int     INFORMATION_STAGE_WIDTH     = 300;
+    public static final int     INFORMATION_STAGE_HEIGHT    = 200;
+    public static final String  INFORMATION_STAGE_TITLE     = "Information";
+    public static final String  INFORMATION_STAGE_FXML      = "InformationView.fxml";
 
     //private constructor to disable instantiations
     private StageInfo() { }
@@ -79,7 +84,9 @@ public final class StageInfo {
         HELP(HELP_STAGE_WIDTH, HELP_STAGE_HEIGHT, HELP_STAGE_TITLE,
                 HELP_STAGE_FXML, false, SceneHolder.class),
         SET_MENU(SET_MENU_STAGE_WIDTH, SET_MENU_STAGE_HEIGHT, SET_MENU_STAGE_TITLE,
-                SET_MENU_STAGE_FXML, true, SetMenuSceneHolder.class);
+                SET_MENU_STAGE_FXML, true, SetMenuSceneHolder.class),
+        INFORMATION_STAGE(INFORMATION_STAGE_WIDTH, INFORMATION_STAGE_HEIGHT, INFORMATION_STAGE_TITLE,
+                INFORMATION_STAGE_FXML, false, ControlledSceneHolder.class);
 
         private final int stageWidth;
         private final int stageHeight;

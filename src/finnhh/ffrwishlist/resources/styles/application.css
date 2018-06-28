@@ -54,6 +54,15 @@
      -fx-background-color: gainsboro;
 }
 
+.iconButton {
+     -fx-background-color: transparent;
+}
+
+.iconButton:hover {
+     -fx-scale-x: 1.1;
+     -fx-scale-y: 1.1;
+}
+
 #mainStageHeader {
      -fx-font-size: 48px;
 }

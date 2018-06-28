@@ -45,7 +45,7 @@ import javafx.scene.control.TextField;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public final class AutoCompleteItemSearchBar extends TextField {
+public class AutoCompleteItemSearchBar extends TextField {
     public static final String SEARCH_BAR_PROMPT_TEXT_DEFAULT = "Search for an item";
 
     private static final int SUGGESTION_LIMIT = 6;
@@ -53,15 +53,15 @@ public final class AutoCompleteItemSearchBar extends TextField {
     private ContextMenu suggestionsMenu;
     private Set<String> suggestedStrings;
 
-    private Set<String>             columnAutoCompleteStrings;
-    private Set<AutoCompleteValue>  valueAutoCompleteStrings;
+    private Set<String> columnAutoCompleteStrings;
+    private Set<AutoCompleteValue> valueAutoCompleteStrings;
 
     public AutoCompleteItemSearchBar() {
         suggestionsMenu = new ContextMenu();
         suggestedStrings = new TreeSet<>();
 
-        columnAutoCompleteStrings   = new TreeSet<>();
-        valueAutoCompleteStrings    = new TreeSet<>(Comparator.comparing(AutoCompleteValue::getString));
+        columnAutoCompleteStrings = new TreeSet<>();
+        valueAutoCompleteStrings = new TreeSet<>(Comparator.comparing(AutoCompleteValue::getString));
 
         configurePromptTexts();
 

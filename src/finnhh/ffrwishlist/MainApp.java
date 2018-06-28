@@ -34,11 +34,8 @@ package finnhh.ffrwishlist;
 import finnhh.ffrwishlist.model.Set;
 import finnhh.ffrwishlist.model.constants.stage.StageInfo;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
-import finnhh.ffrwishlist.resources.ResourceLoader;
-import finnhh.ffrwishlist.scene.controller.ImportExportSceneController;
-import finnhh.ffrwishlist.scene.controller.MainSceneController;
-import finnhh.ffrwishlist.scene.controller.SetMenuSceneController;
-import finnhh.ffrwishlist.scene.controller.UpdateSceneController;
+import finnhh.ffrwishlist.resources.ResourceHolder;
+import finnhh.ffrwishlist.scene.controller.*;
 import finnhh.ffrwishlist.scene.controller.base.SceneController;
 import finnhh.ffrwishlist.scene.holder.base.ControlledSceneHolder;
 import finnhh.ffrwishlist.scene.holder.base.SceneHolder;
@@ -54,13 +51,13 @@ public class MainApp extends Application {
     public static final String VERSION = "1.1";
 
     private DatabaseManager appDatabaseManager;
-    private WebUpdater appDBUpdater;
+    private WebUpdater appUpdater;
 
     private StageHolder primaryStageHolder;
 
     private void setSingletons() throws Exception {
         appDatabaseManager = new DatabaseManager();
-        appDBUpdater = new WebUpdater();
+        appUpdater = new WebUpdater();
     }
 
     private void startUpdateStage() {
@@ -70,7 +67,7 @@ public class MainApp extends Application {
                 UpdateSceneController updateSceneController = (UpdateSceneController) getSceneController();
 
                 updateSceneController.setApp(MainApp.this);
-                updateSceneController.setWebConnections(appDBUpdater);
+                updateSceneController.setWebConnections(appUpdater);
                 updateSceneController.setDatabaseConnections(appDatabaseManager);
             }
 
@@ -199,10 +196,29 @@ public class MainApp extends Application {
         }
     }
 
+    public void startInformationStage() {
+        StageHolder stageHolder = new StageHolder(new Stage(), StageInfo.StageState.INFORMATION_STAGE) {
+            @Override
+            void controllerSetup() {
+                ((InformationSceneController) getSceneController()).setWebConnections(appUpdater);
+            }
+        };
+
+        try {
+            stageHolder.startStage();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void appendToPrimaryStageTitle(String s) {
         Stage primaryStage = primaryStageHolder.getStage();
 
         primaryStage.setTitle(primaryStage.getTitle() + s);
+    }
+
+    public void showInfoIconButton() {
+        ((MainSceneController) primaryStageHolder.getSceneController()).showInfoIconButton();
     }
 
     private static class StageHolder {
@@ -220,7 +236,7 @@ public class MainApp extends Application {
             if (!stageState.hasScreenLock()) {
                 stageState.setScreenLock(true);
 
-                FXMLLoader fxmlLoader = new FXMLLoader(ResourceLoader.getSceneFXMLResource(stageState.getFXMLName()));
+                FXMLLoader fxmlLoader = new FXMLLoader(ResourceHolder.getSceneFXMLResource(stageState.getFXMLName()));
                 Parent root = fxmlLoader.load();
 
                 sceneHolder = stageState.getSceneHolderClass()
@@ -244,7 +260,7 @@ public class MainApp extends Application {
                 stage.setMinHeight(stageState.getStageHeight());
                 stage.setResizable(stageState.isResizable());
                 stage.setTitle(stageState.getTitle());
-                stage.getIcons().add(ResourceLoader.PROGRAM_ICON);
+                stage.getIcons().add(ResourceHolder.PROGRAM_ICON);
                 stage.setOnCloseRequest(this::onStageExit);
                 stage.setScene(sceneHolder.getScene());
 

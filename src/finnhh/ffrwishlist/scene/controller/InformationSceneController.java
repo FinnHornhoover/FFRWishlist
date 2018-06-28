@@ -29,51 +29,23 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.parser.container.base;
+package finnhh.ffrwishlist.scene.controller;
 
-import finnhh.ffrwishlist.model.constants.base.IntegerValued;
-import finnhh.ffrwishlist.model.constants.database.QueryComparison;
+import finnhh.ffrwishlist.scene.controller.base.SceneController;
+import finnhh.ffrwishlist.scene.controller.base.connections.WebConnected;
+import finnhh.ffrwishlist.web.WebUpdater;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 
-import java.util.Objects;
-
-public class QueryEntry<T> {
-    private final QueryComparison queryComparison;
-    private final T value;
-
-    public QueryEntry(QueryComparison queryComparison, T value) {
-        this.queryComparison = queryComparison;
-        this.value = value;
-    }
-
-    public QueryComparison getQueryComparison() {
-        return queryComparison;
-    }
-
-    public T getValue() {
-        return value;
-    }
-
-    public String getValueAsString() {
-        if (value instanceof IntegerValued)
-            return String.valueOf(((IntegerValued) value).intValue());
-        else
-            return value.toString();
-    }
+public class InformationSceneController extends SceneController implements WebConnected {
+    @FXML
+    private Label titleLabel;
+    @FXML
+    private Label bodyLabel;
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof QueryEntry
-                && this.queryComparison == ((QueryEntry) obj).queryComparison
-                && this.value.equals(((QueryEntry) obj).value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(queryComparison, value);
-    }
-
-    @Override
-    public String toString() {
-        return queryComparison + " " + getValueAsString();
+    public void setWebConnections(WebUpdater webUpdater) {
+        titleLabel.setText(webUpdater.getMessageTitle());
+        bodyLabel.setText(webUpdater.getMessageBody());
     }
 }

@@ -42,18 +42,18 @@ import finnhh.ffrwishlist.model.database.dao.ItemDAO;
 import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
 import finnhh.ffrwishlist.model.database.dao.ProfileDAO;
 import finnhh.ffrwishlist.model.database.dao.SetDAO;
+import finnhh.ffrwishlist.model.event.ModelEvent;
 import finnhh.ffrwishlist.model.parser.ParsedQueryInformation;
 import finnhh.ffrwishlist.model.parser.QueryParser;
-import finnhh.ffrwishlist.resources.ResourceLoader;
-import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable;
+import finnhh.ffrwishlist.resources.ResourceHolder;
 import finnhh.ffrwishlist.scene.component.tablecolumn.AmountColumn;
-import finnhh.ffrwishlist.model.event.ModelEvent;
+import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable;
 import finnhh.ffrwishlist.scene.component.textfield.AutoCompleteItemSearchBar;
 import finnhh.ffrwishlist.scene.controller.base.AppConnectedSceneController;
 import finnhh.ffrwishlist.scene.controller.base.connections.DatabaseConnected;
 import finnhh.ffrwishlist.scene.controller.base.ownership.ItemMapOwner;
-import finnhh.ffrwishlist.scene.controller.base.ownership.SetMapOwner;
 import finnhh.ffrwishlist.scene.controller.base.ownership.ProfileOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.SetMapOwner;
 import finnhh.ffrwishlist.scene.controller.base.ownership.TableOwner;
 import finnhh.ffrwishlist.scene.holder.MainSceneHolder;
 import finnhh.ffrwishlist.scene.holder.base.ControlledSceneHolder;
@@ -76,6 +76,8 @@ public class MainSceneController extends AppConnectedSceneController implements 
     public static final String  TOP_BUTTON_TEXT_WISHLIST_FALSE  = "Done";
 
     @FXML
+    private Button infoIconButton;
+    @FXML
     private AutoCompleteItemSearchBar searchBar;
     @FXML
     private ComboBox<Profile> profileComboBox;
@@ -96,7 +98,7 @@ public class MainSceneController extends AppConnectedSceneController implements 
     @FXML
     private Label messageBarErrorText;
 
-    private ProfileDAO  profileDAO;
+    private ProfileDAO profileDAO;
     private ItemPackDAO itemPackDAO;
 
     private Profile activeProfile;
@@ -175,21 +177,6 @@ public class MainSceneController extends AppConnectedSceneController implements 
     }
 
     @FXML
-    private void onImportExportButtonClicked() {
-        ((MainApp) application).startImportExportStage(this);
-    }
-
-    @FXML
-    private void onHelpButtonClicked() {
-        ((MainApp) application).startHelpStage();
-    }
-
-    @FXML
-    private void onSetMenuButtonClicked() {
-        ((MainApp) application).startSetMenuStage(this);
-    }
-
-    @FXML
     private void onItemPackAdd(ModelEvent<ItemPack> itemPackEvent) {
         ItemPack itemPack = itemPackEvent.getModel();
         itemPack.setAmount(Amount.MINIMUM.intValue());
@@ -235,6 +222,30 @@ public class MainSceneController extends AppConnectedSceneController implements 
         ((MainApp) application).startSetMenuStage(this, true, setEvent.getModel());
     }
 
+    @FXML
+    private void onInformationButtonClicked() {
+        ((MainApp) application).startInformationStage();
+    }
+
+    @FXML
+    private void onSetMenuButtonClicked() {
+        ((MainApp) application).startSetMenuStage(this);
+    }
+
+    @FXML
+    private void onImportExportButtonClicked() {
+        ((MainApp) application).startImportExportStage(this);
+    }
+
+    @FXML
+    private void onHelpButtonClicked() {
+        ((MainApp) application).startHelpStage();
+    }
+
+    public void showInfoIconButton() {
+        infoIconButton.setVisible(true);
+    }
+
     public void profileChoiceBoxSetup() {
         ObservableList<Profile> profileList = profileComboBox.getItems();
 
@@ -262,12 +273,12 @@ public class MainSceneController extends AppConnectedSceneController implements 
             topInfoText.setText(TOP_TEXT_WISHLIST_TRUE);
 
             topAddButton.setText(TOP_BUTTON_TEXT_WISHLIST_TRUE);
-            topButtonImageView.setImage(ResourceLoader.PLUS_ICON);
+            topButtonImageView.setImage(ResourceHolder.PLUS_ICON);
         } else {
             topInfoText.setText(TOP_TEXT_WISHLIST_FALSE);
 
             topAddButton.setText(TOP_BUTTON_TEXT_WISHLIST_FALSE);
-            topButtonImageView.setImage(ResourceLoader.DONE_ICON);
+            topButtonImageView.setImage(ResourceHolder.DONE_ICON);
         }
 
         itemPackTable.getSortOrder().clear();

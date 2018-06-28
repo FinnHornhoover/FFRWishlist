@@ -32,7 +32,7 @@
 package finnhh.ffrwishlist.scene.component.tablecolumn;
 
 import finnhh.ffrwishlist.model.ItemPack;
-import finnhh.ffrwishlist.resources.ResourceLoader;
+import finnhh.ffrwishlist.resources.ResourceHolder;
 import finnhh.ffrwishlist.scene.component.tablecolumn.base.ItemPackTableColumn;
 import javafx.geometry.Pos;
 import javafx.scene.control.TableCell;
@@ -88,7 +88,7 @@ public class IconColumn extends ItemPackTableColumn<byte[]> {
                     if (item != null)
                         imageView.setImage(new Image(new ByteArrayInputStream(item)));
                     else
-                        imageView.setImage(ResourceLoader.NO_PICTURE);
+                        imageView.setImage(ResourceHolder.NO_PICTURE);
                 }
 
                 //setGraphic to imageViewVBox regardless to set the min row size

@@ -32,7 +32,7 @@
   -->
 
 <?import finnhh.ffrwishlist.model.constants.stage.StageInfo?>
-<?import finnhh.ffrwishlist.resources.ResourceLoader?>
+<?import finnhh.ffrwishlist.resources.ResourceHolder?>
 <?import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable?>
 <?import finnhh.ffrwishlist.scene.component.tablecolumn.*?>
 <?import finnhh.ffrwishlist.scene.component.textfield.AutoCompleteItemSearchBar?>
@@ -53,13 +53,29 @@
         <Double fx:id="mainButtonSize" fx:value="131.0" />
     </fx:define>
     <children>
-        <Label id="mainStageHeader" alignment="CENTER" contentDisplay="CENTER" text="FFR Wishlist" textAlignment="CENTER" textFill="#01ae3e" />
+        <BorderPane>
+            <center>
+                <Label id="mainStageHeader" text="FFR Wishlist" textAlignment="CENTER" textFill="#01ae3e" BorderPane.alignment="CENTER" />
+            </center>
+            <right>
+                <Button fx:id="infoIconButton" visible="false" styleClass="iconButton" mnemonicParsing="false" onAction="#onInformationButtonClicked" BorderPane.alignment="CENTER">
+                    <graphic>
+                        <ImageView preserveRatio="true">
+                            <fitWidth>
+                                <ResourceHolder fx:constant="BUTTON_ICONS_SIZE" />
+                            </fitWidth>
+                            <ResourceHolder fx:constant="INFO_ICON" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </right>
+        </BorderPane>
         <HBox alignment="CENTER_LEFT" spacing="10.0">
             <AutoCompleteItemSearchBar fx:id="searchBar" onAction="#onSearchBarQueryEntered" HBox.hgrow="ALWAYS" />
             <ComboBox fx:id="profileComboBox" onAction="#onProfileChanged" prefWidth="$mainButtonSize" />
         </HBox>
         <HBox alignment="CENTER_LEFT">
-            <Label fx:id="topInfoText" textFill="WHITE">
+            <Label fx:id="topInfoText" textFill="white">
                 <MainSceneController fx:constant="TOP_TEXT_WISHLIST_TRUE" />
             </Label>
             <ButtonBar buttonMinWidth="$mainButtonSize" HBox.hgrow="ALWAYS">
@@ -68,9 +84,9 @@
                         <graphic>
                             <ImageView preserveRatio="true">
                                 <fitWidth>
-                                    <ResourceLoader fx:constant="BUTTON_ICONS_SIZE" />
+                                    <ResourceHolder fx:constant="BUTTON_ICONS_SIZE" />
                                 </fitWidth>
-                                <ResourceLoader fx:constant="SET_ICON" />
+                                <ResourceHolder fx:constant="SET_ICON" />
                             </ImageView>
                         </graphic>
                     </Button>
@@ -81,9 +97,9 @@
                         <graphic>
                             <ImageView fx:id="topButtonImageView" preserveRatio="true">
                                 <fitHeight>
-                                    <ResourceLoader fx:constant="BUTTON_ICONS_SIZE" />
+                                    <ResourceHolder fx:constant="BUTTON_ICONS_SIZE" />
                                 </fitHeight>
-                                <ResourceLoader fx:constant="PLUS_ICON" />
+                                <ResourceHolder fx:constant="PLUS_ICON" />
                             </ImageView>
                         </graphic>
                     </Button>

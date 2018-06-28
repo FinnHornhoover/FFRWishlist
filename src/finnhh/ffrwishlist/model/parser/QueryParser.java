@@ -48,26 +48,26 @@ public class QueryParser {
 
     private QueryContainer<Integer> levelQueries;
     private QueryContainer<Integer> amountQueries;
-    private QueryContainer<Type>    typeQueries;
-    private QueryContainer<Rarity>  rarityQueries;
-    private SetQueryContainer       setQueries;
+    private QueryContainer<Type> typeQueries;
+    private QueryContainer<Rarity> rarityQueries;
+    private SetQueryContainer setQueries;
 
-    private List<String>            rawStringQueries;
-    private List<String>            invalidQueries;
+    private List<String> rawStringQueries;
+    private List<String> invalidQueries;
 
-    private Queue<String>           valuesToInsertToQuery;
+    private Queue<String> valuesToInsertToQuery;
 
     public QueryParser() {
-        levelQueries                = new NumericQueryContainer(QueryableColumn.LEVEL);
-        amountQueries               = new NumericQueryContainer(QueryableColumn.AMOUNT);
-        typeQueries                 = new IncludeExcludeQueryContainer<>(QueryableColumn.TYPE);
-        rarityQueries               = new IncludeExcludeQueryContainer<>(QueryableColumn.RARITY);
-        setQueries                  = new SetQueryContainer();
+        levelQueries = new NumericQueryContainer(QueryableColumn.LEVEL);
+        amountQueries = new NumericQueryContainer(QueryableColumn.AMOUNT);
+        typeQueries = new IncludeExcludeQueryContainer<>(QueryableColumn.TYPE);
+        rarityQueries = new IncludeExcludeQueryContainer<>(QueryableColumn.RARITY);
+        setQueries = new SetQueryContainer();
 
-        rawStringQueries            = new ArrayList<>();
-        invalidQueries              = new ArrayList<>();
+        rawStringQueries = new ArrayList<>();
+        invalidQueries = new ArrayList<>();
 
-        valuesToInsertToQuery       = new ArrayDeque<>();
+        valuesToInsertToQuery = new ArrayDeque<>();
     }
 
     private void resetQueryParser() {
