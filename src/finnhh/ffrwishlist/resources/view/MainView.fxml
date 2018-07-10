@@ -32,9 +32,9 @@
   -->
 
 <?import finnhh.ffrwishlist.model.constants.stage.StageInfo?>
-<?import finnhh.ffrwishlist.resources.ResourceHolder?>
-<?import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable?>
+<?import finnhh.ffrwishlist.resources.*?>
 <?import finnhh.ffrwishlist.scene.component.tablecolumn.*?>
+<?import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable?>
 <?import finnhh.ffrwishlist.scene.component.textfield.AutoCompleteItemSearchBar?>
 <?import finnhh.ffrwishlist.scene.controller.MainSceneController?>
 <?import javafx.geometry.Insets?>

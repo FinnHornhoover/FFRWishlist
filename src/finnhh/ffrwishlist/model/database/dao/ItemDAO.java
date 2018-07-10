@@ -40,7 +40,6 @@ import finnhh.ffrwishlist.model.constants.item.Rarity;
 import finnhh.ffrwishlist.model.constants.item.Type;
 import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
 import finnhh.ffrwishlist.model.database.sql.SQLBuilders;
-import finnhh.ffrwishlist.model.database.sql.statement.SelectSQLStatement;
 import finnhh.ffrwishlist.model.database.sql.expression.column.FunctionExpression;
 
 import java.sql.ResultSet;

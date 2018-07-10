@@ -43,7 +43,7 @@ public final class StageInfo {
 
     public static final int     MAIN_STAGE_WIDTH            = 1050;
     public static final int     MAIN_STAGE_HEIGHT           = 600;
-    public static final String  MAIN_STAGE_TITLE            = "FFRWishlist v" + MainApp.VERSION;
+    public static final String  MAIN_STAGE_TITLE            = "FFR Wishlist v" + MainApp.VERSION;
     public static final String  MAIN_STAGE_FXML             = "MainView.fxml";
 
     public static final int     UPDATE_STAGE_WIDTH          = 300;

@@ -45,8 +45,7 @@ import java.net.URL;
 import java.util.*;
 
 public class WebUpdater {
-    //String JSON_URL = "https://dl.dropboxusercontent.com/s/4y8psrl66n9qvnh/ffrw.json?dl=1";
-    private static final String JSON_URL = "https://www.dropbox.com/s/17h8xtkylunik7f/ffrw_test.json?dl=1";
+    private static final String JSON_URL = "https://dl.dropboxusercontent.com/s/4y8psrl66n9qvnh/ffrw.json?dl=1";
 
     private int targetDBVersion;
     private Queue<UpdateSegment> updateSegmentQueue;

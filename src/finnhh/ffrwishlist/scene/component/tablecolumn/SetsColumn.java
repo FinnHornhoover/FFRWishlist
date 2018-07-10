@@ -33,8 +33,8 @@ package finnhh.ffrwishlist.scene.component.tablecolumn;
 
 import finnhh.ffrwishlist.model.ItemPack;
 import finnhh.ffrwishlist.model.Set;
-import finnhh.ffrwishlist.scene.component.tablecolumn.base.ItemPackTableColumn;
 import finnhh.ffrwishlist.model.event.ModelEvent;
+import finnhh.ffrwishlist.scene.component.tablecolumn.base.ItemPackTableColumn;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;

@@ -34,9 +34,10 @@
 <?import finnhh.ffrwishlist.model.constants.stage.StageInfo?>
 <?import finnhh.ffrwishlist.resources.ResourceHolder?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <BorderPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="finnhh.ffrwishlist.scene.controller.InformationSceneController">
     <prefWidth>
         <StageInfo fx:constant="INFORMATION_STAGE_WIDTH" />

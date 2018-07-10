@@ -31,8 +31,8 @@
   ~ SOFTWARE.
   -->
 
-<?import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable?>
 <?import finnhh.ffrwishlist.scene.component.tablecolumn.*?>
+<?import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>

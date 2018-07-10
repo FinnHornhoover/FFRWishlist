@@ -33,9 +33,7 @@ package finnhh.ffrwishlist.model.constants.database;
 
 import finnhh.ffrwishlist.model.constants.base.EnumSubcategories;
 import finnhh.ffrwishlist.model.constants.base.InvalidEnumConstants;
-import finnhh.ffrwishlist.model.constants.base.ItemAttribute;
 import finnhh.ffrwishlist.model.constants.base.MultipleRepresentations;
-import finnhh.ffrwishlist.model.constants.item.*;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -37,15 +37,15 @@ import finnhh.ffrwishlist.model.Profile;
 import finnhh.ffrwishlist.model.Set;
 import finnhh.ffrwishlist.model.constants.item.Amount;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
-import finnhh.ffrwishlist.model.database.dao.SetDAO;
 import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
-import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable;
+import finnhh.ffrwishlist.model.database.dao.SetDAO;
 import finnhh.ffrwishlist.model.event.ModelEvent;
-import finnhh.ffrwishlist.scene.controller.base.connections.DatabaseConnected;
+import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable;
 import finnhh.ffrwishlist.scene.controller.base.SceneController;
+import finnhh.ffrwishlist.scene.controller.base.connections.DatabaseConnected;
 import finnhh.ffrwishlist.scene.controller.base.ownership.ItemMapOwner;
-import finnhh.ffrwishlist.scene.controller.base.ownership.SetMapOwner;
 import finnhh.ffrwishlist.scene.controller.base.ownership.ProfileOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.SetMapOwner;
 import finnhh.ffrwishlist.scene.controller.base.ownership.TableOwner;
 import finnhh.ffrwishlist.scene.holder.SetMenuSceneHolder;
 import finnhh.ffrwishlist.scene.holder.base.ControlledSceneHolder;
@@ -56,7 +56,10 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class SetMenuSceneController extends SceneController implements DatabaseConnected, ProfileOwner, ItemMapOwner,
                                                                         SetMapOwner, TableOwner {

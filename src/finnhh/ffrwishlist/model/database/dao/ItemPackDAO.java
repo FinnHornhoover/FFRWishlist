@@ -45,8 +45,8 @@ import finnhh.ffrwishlist.model.constants.item.Amount;
 import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
 import finnhh.ffrwishlist.model.database.sql.SQLBuilders;
 import finnhh.ffrwishlist.model.database.sql.expression.ConditionExpression;
-import finnhh.ffrwishlist.model.database.sql.expression.OrderExpression;
 import finnhh.ffrwishlist.model.database.sql.expression.InstructionExpression;
+import finnhh.ffrwishlist.model.database.sql.expression.OrderExpression;
 import finnhh.ffrwishlist.model.database.sql.expression.TableExpression;
 import finnhh.ffrwishlist.model.parser.ParsedQueryInformation;
 

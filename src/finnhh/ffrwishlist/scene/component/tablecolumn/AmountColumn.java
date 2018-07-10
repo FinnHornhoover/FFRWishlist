@@ -33,9 +33,9 @@ package finnhh.ffrwishlist.scene.component.tablecolumn;
 
 import finnhh.ffrwishlist.model.ItemPack;
 import finnhh.ffrwishlist.model.constants.item.Amount;
+import finnhh.ffrwishlist.model.event.ModelEvent;
 import finnhh.ffrwishlist.resources.ResourceHolder;
 import finnhh.ffrwishlist.scene.component.tablecolumn.base.ItemPackTableColumn;
-import finnhh.ffrwishlist.model.event.ModelEvent;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;

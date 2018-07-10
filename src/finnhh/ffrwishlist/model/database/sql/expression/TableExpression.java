@@ -32,8 +32,8 @@
 package finnhh.ffrwishlist.model.database.sql.expression;
 
 import finnhh.ffrwishlist.model.constants.database.schema.table.SchemaTable;
-import finnhh.ffrwishlist.model.database.sql.statement.SelectSQLStatement;
 import finnhh.ffrwishlist.model.database.sql.expression.base.SQLExpression;
+import finnhh.ffrwishlist.model.database.sql.statement.SelectSQLStatement;
 
 import java.util.Objects;
 

@@ -35,12 +35,10 @@ import finnhh.ffrwishlist.model.constants.database.QueryComparison;
 import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
 import finnhh.ffrwishlist.model.database.sql.expression.ConditionExpression;
 import finnhh.ffrwishlist.model.parser.container.base.QueryContainer;
-import finnhh.ffrwishlist.model.parser.container.base.QueryEntry;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 public class IncludeExcludeQueryContainer<T> extends QueryContainer<T> {
     protected List<T> includeEntryList;
