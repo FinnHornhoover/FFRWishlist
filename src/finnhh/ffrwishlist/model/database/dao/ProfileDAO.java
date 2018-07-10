@@ -32,12 +32,16 @@
 package finnhh.ffrwishlist.model.database.dao;
 
 import finnhh.ffrwishlist.model.Profile;
-import finnhh.ffrwishlist.model.constants.database.schema.ProfileSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.QueryComparison;
+import finnhh.ffrwishlist.model.constants.database.schema.column.ProfileSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.table.SchemaTable;
 import finnhh.ffrwishlist.model.constants.profile.ProfileState;
-import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
+import finnhh.ffrwishlist.model.database.sql.SQLBuilders;
+import finnhh.ffrwishlist.model.database.sql.expression.ConditionExpression;
+import finnhh.ffrwishlist.model.database.sql.expression.InstructionExpression;
 
-import java.sql.*;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,11 +54,14 @@ public class ProfileDAO extends DataAccessObject {
 
         runOnStatementNoThrow(statement -> {
             ResultSet resultSet = statement.executeQuery(
-                    "SELECT " +
-                            ProfileSchemaColumn.PROFILEID    + ", " +
-                            ProfileSchemaColumn.PROFILENAME  + ", " +
-                            ProfileSchemaColumn.ACTIVE       + " " +
-                    "FROM " + DatabaseManager.Table.PROFILES + ";"
+                    SQLBuilders.selectBuilder()
+                            .select(
+                                    ProfileSchemaColumn.PROFILEID,
+                                    ProfileSchemaColumn.PROFILENAME,
+                                    ProfileSchemaColumn.ACTIVE
+                            )
+                            .from(SchemaTable.PROFILES)
+                            .toString()
             );
 
             while (resultSet.next()) {
@@ -71,24 +78,47 @@ public class ProfileDAO extends DataAccessObject {
 
     public void activateProfile(final Profile profile) {
         runOnStatementNoThrow(statement -> statement.executeUpdate(
-                "UPDATE " + DatabaseManager.Table.PROFILES + " " +
-                "SET " + ProfileSchemaColumn.ACTIVE + " = " + ProfileState.ACTIVE.intValue() + " " +
-                "WHERE " + ProfileSchemaColumn.PROFILEID + " = " + profile.getProfileID() + ";"
+                SQLBuilders.updateBuilder()
+                        .update(SchemaTable.PROFILES)
+                        .set(InstructionExpression
+                                .forColumn(ProfileSchemaColumn.ACTIVE)
+                                .setValue(ProfileState.ACTIVE)
+                        )
+                        .where(ConditionExpression
+                                .forColumnExpression(ProfileSchemaColumn.PROFILEID)
+                                .check(QueryComparison.EQUAL_TO)
+                                .value(profile.getProfileID())
+                        )
+                        .toString()
         ));
     }
 
     public void deactivateProfile(final Profile profile) {
         runOnStatementNoThrow(statement -> statement.executeUpdate(
-                "UPDATE " + DatabaseManager.Table.PROFILES + " " +
-                "SET " + ProfileSchemaColumn.ACTIVE + " = " + ProfileState.INACTIVE.intValue() + " " +
-                "WHERE " + ProfileSchemaColumn.PROFILEID + " = " + profile.getProfileID() + ";"
+                SQLBuilders.updateBuilder()
+                        .update(SchemaTable.PROFILES)
+                        .set(InstructionExpression
+                                .forColumn(ProfileSchemaColumn.ACTIVE)
+                                .setValue(ProfileState.INACTIVE)
+                        )
+                        .where(ConditionExpression
+                                .forColumnExpression(ProfileSchemaColumn.PROFILEID)
+                                .check(QueryComparison.EQUAL_TO)
+                                .value(profile.getProfileID())
+                        )
+                        .toString()
         ));
     }
 
     public void clearAllActiveProfileStates() {
         runOnStatementNoThrow(statement -> statement.executeUpdate(
-                "UPDATE " + DatabaseManager.Table.PROFILES + " " +
-                "SET " + ProfileSchemaColumn.ACTIVE + " = " + ProfileState.INACTIVE.intValue() + ";"
+                SQLBuilders.updateBuilder()
+                        .update(SchemaTable.PROFILES)
+                        .set(InstructionExpression
+                                .forColumn(ProfileSchemaColumn.ACTIVE)
+                                .setValue(ProfileState.INACTIVE)
+                        )
+                        .toString()
         ));
     }
 }

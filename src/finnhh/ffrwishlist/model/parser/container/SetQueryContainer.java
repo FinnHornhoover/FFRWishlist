@@ -32,8 +32,11 @@
 package finnhh.ffrwishlist.model.parser.container;
 
 import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
-import finnhh.ffrwishlist.model.constants.database.schema.ItemSetSchemaColumn;
-import finnhh.ffrwishlist.model.database.DatabaseManager;
+import finnhh.ffrwishlist.model.constants.database.schema.column.ItemSetSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.table.SchemaTable;
+import finnhh.ffrwishlist.model.database.sql.SQLBuilders;
+import finnhh.ffrwishlist.model.database.sql.expression.ConditionExpression;
+import finnhh.ffrwishlist.model.database.sql.expression.TableExpression;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -47,47 +50,73 @@ public final class SetQueryContainer extends IncludeExcludeQueryContainer<String
     }
 
     public Queue<String> getInputQueue() {
-        final Queue<String> inputQueue = new ArrayDeque<>();
+        Queue<String> inputQueue = new ArrayDeque<>();
 
-        includeEntryList.forEach(ie -> inputQueue.add(ie.getValueAsString()));
-        excludeEntryList.forEach(ee -> inputQueue.add(ee.getValueAsString()));
+        inputQueue.addAll(includeEntryList);
+        inputQueue.addAll(excludeEntryList);
 
         return inputQueue;
     }
 
     @Override
     public String getJoinedString() {
-        String generalSubquery =
-                "SELECT " +
-                        ItemSetSchemaColumn.ITEMID + " " +
-                "FROM " +
-                        DatabaseManager.Table.ITEMS_SETS + " " +
-                        "JOIN " +
-                        DatabaseManager.Table.SETS + " " +
-                        "USING (" + ItemSetSchemaColumn.SETID + ") " +
-                "WHERE ";
-
         final StringJoiner setQueryJoiner = new StringJoiner(" AND ");
 
         if (!includeEntryList.isEmpty()) {
             setQueryJoiner.add(
-                    QueryableColumn.ITEMID + " IN (" +
-                    generalSubquery +
-                    includeEntryList.stream()
-                            .map(ie -> referencedColumn + " LIKE ?")
-                            .collect(Collectors.joining(" OR ")) +
-                    ")"
+                    ConditionExpression
+                            .forColumnExpression(QueryableColumn.ITEMID)
+                            .in()
+                            .valuesFromSubQuery(SQLBuilders.selectBuilder()
+                                    .select(ItemSetSchemaColumn.ITEMID)
+                                    .from(TableExpression
+                                            .fromTable(SchemaTable.ITEMS_SETS)
+                                            .join(SchemaTable.SETS)
+                                            .using(ItemSetSchemaColumn.SETID)
+                                    )
+                                    .where(
+                                            includeEntryList.stream()
+                                                    .map(ie ->
+                                                            ConditionExpression
+                                                                    .forColumnExpression(referencedColumn)
+                                                                    .like()
+                                                                    .placeholderValue()
+                                                                    .toString()
+                                                    )
+                                                    .collect(Collectors.joining(" OR "))
+                                    )
+
+                            )
+                            .toString()
             );
         }
 
         if (!excludeEntryList.isEmpty()) {
             setQueryJoiner.add(
-                    QueryableColumn.ITEMID + " NOT IN (" +
-                    generalSubquery +
-                    excludeEntryList.stream()
-                            .map(ee -> referencedColumn + " LIKE ?")
-                            .collect(Collectors.joining(" OR ")) +
-                    ")"
+                    ConditionExpression
+                            .forColumnExpression(QueryableColumn.ITEMID)
+                            .notIn()
+                            .valuesFromSubQuery(SQLBuilders.selectBuilder()
+                                    .select(ItemSetSchemaColumn.ITEMID)
+                                    .from(TableExpression
+                                            .fromTable(SchemaTable.ITEMS_SETS)
+                                            .join(SchemaTable.SETS)
+                                            .using(ItemSetSchemaColumn.SETID)
+                                    )
+                                    .where(
+                                            excludeEntryList.stream()
+                                                    .map(ee ->
+                                                            ConditionExpression
+                                                                    .forColumnExpression(referencedColumn)
+                                                                    .like()
+                                                                    .placeholderValue()
+                                                                    .toString()
+                                                    )
+                                                    .collect(Collectors.joining(" OR "))
+                                    )
+
+                            )
+                            .toString()
             );
         }
 

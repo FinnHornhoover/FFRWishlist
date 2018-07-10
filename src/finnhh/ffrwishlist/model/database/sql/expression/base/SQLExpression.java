@@ -29,47 +29,21 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.parser.container;
+package finnhh.ffrwishlist.model.database.sql.expression.base;
 
-import finnhh.ffrwishlist.model.constants.database.QueryComparison;
-import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
-import finnhh.ffrwishlist.model.database.sql.expression.ConditionExpression;
-import finnhh.ffrwishlist.model.parser.container.base.QueryContainer;
-import finnhh.ffrwishlist.model.parser.container.base.QueryEntry;
+public abstract class SQLExpression {
+    private String expressionString;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+    protected SQLExpression(String expressionString) {
+        this.expressionString = expressionString;
+    }
 
-public class NumericQueryContainer extends QueryContainer<Integer> {
-    protected List<QueryEntry<Integer>> entryList;
-
-    public NumericQueryContainer(QueryableColumn referencedColumn) {
-        super(referencedColumn);
-
-        entryList = new ArrayList<>();
+    public void append(String appendString) {
+        expressionString += appendString;
     }
 
     @Override
-    public void addToEntries(QueryComparison comparison, Integer value) {
-        entryList.add(new QueryEntry<>(comparison, value));
-    }
-
-    @Override
-    public String getJoinedString() {
-        return entryList.stream()
-                .map(e ->
-                        ConditionExpression
-                                .forColumnExpression(referencedColumn)
-                                .check(e.getQueryComparison())
-                                .value(e.getValue())
-                                .toString()
-                )
-                .collect(Collectors.joining(" AND "));
-    }
-
-    @Override
-    public void clear() {
-        entryList.clear();
+    public String toString() {
+        return expressionString;
     }
 }

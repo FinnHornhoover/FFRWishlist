@@ -29,47 +29,30 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.parser.container;
+package finnhh.ffrwishlist.model.database.sql;
 
-import finnhh.ffrwishlist.model.constants.database.QueryComparison;
-import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
-import finnhh.ffrwishlist.model.database.sql.expression.ConditionExpression;
-import finnhh.ffrwishlist.model.parser.container.base.QueryContainer;
-import finnhh.ffrwishlist.model.parser.container.base.QueryEntry;
+import finnhh.ffrwishlist.model.database.sql.statement.DeleteSQLStatement;
+import finnhh.ffrwishlist.model.database.sql.statement.InsertSQLStatement;
+import finnhh.ffrwishlist.model.database.sql.statement.SelectSQLStatement;
+import finnhh.ffrwishlist.model.database.sql.statement.UpdateSQLStatement;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+public final class SQLBuilders {
 
-public class NumericQueryContainer extends QueryContainer<Integer> {
-    protected List<QueryEntry<Integer>> entryList;
+    private SQLBuilders() { }
 
-    public NumericQueryContainer(QueryableColumn referencedColumn) {
-        super(referencedColumn);
-
-        entryList = new ArrayList<>();
+    public static SelectSQLStatement selectBuilder() {
+        return SelectSQLStatement.builder();
     }
 
-    @Override
-    public void addToEntries(QueryComparison comparison, Integer value) {
-        entryList.add(new QueryEntry<>(comparison, value));
+    public static InsertSQLStatement insertBuilder() {
+        return InsertSQLStatement.builder();
     }
 
-    @Override
-    public String getJoinedString() {
-        return entryList.stream()
-                .map(e ->
-                        ConditionExpression
-                                .forColumnExpression(referencedColumn)
-                                .check(e.getQueryComparison())
-                                .value(e.getValue())
-                                .toString()
-                )
-                .collect(Collectors.joining(" AND "));
+    public static UpdateSQLStatement updateBuilder() {
+        return UpdateSQLStatement.builder();
     }
 
-    @Override
-    public void clear() {
-        entryList.clear();
+    public static DeleteSQLStatement deleteBuilder() {
+        return DeleteSQLStatement.builder();
     }
 }

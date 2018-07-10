@@ -29,22 +29,30 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.constants.database.schema;
+package finnhh.ffrwishlist.model.database.sql.statement.base;
 
-import finnhh.ffrwishlist.model.constants.base.SchemaColumn;
+public abstract class SQLStatement {
 
-public enum VersionSchemaColumn implements SchemaColumn {
-    DBID(1),
-    VERSION(2);
+    protected SQLStatement() { }
 
-    private final int value;
+    public static class CompleteStatement {
+        private String builtString;
 
-    VersionSchemaColumn(int value) {
-        this.value = value;
-    }
+        protected CompleteStatement(String builtString) {
+            this.builtString = builtString;
+        }
 
-    @Override
-    public int intValue() {
-        return value;
+        public void append(String appendString) {
+            builtString += appendString;
+        }
+
+        public String getBuiltString() {
+            return builtString;
+        }
+
+        @Override
+        public String toString() {
+            return builtString + ";";
+        }
     }
 }

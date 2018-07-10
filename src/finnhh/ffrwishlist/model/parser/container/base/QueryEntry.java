@@ -53,13 +53,6 @@ public class QueryEntry<T> {
         return value;
     }
 
-    public String getValueAsString() {
-        if (value instanceof IntegerValued)
-            return String.valueOf(((IntegerValued) value).intValue());
-        else
-            return value.toString();
-    }
-
     @Override
     public boolean equals(Object obj) {
         return obj instanceof QueryEntry
@@ -74,6 +67,9 @@ public class QueryEntry<T> {
 
     @Override
     public String toString() {
-        return queryComparison + " " + getValueAsString();
+        if (value instanceof IntegerValued)
+            return queryComparison + " " + ((IntegerValued) value).intValue();
+        else
+            return queryComparison + " " + value;
     }
 }

@@ -33,6 +33,7 @@ package finnhh.ffrwishlist.model.parser.container;
 
 import finnhh.ffrwishlist.model.constants.database.QueryComparison;
 import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
+import finnhh.ffrwishlist.model.database.sql.expression.ConditionExpression;
 import finnhh.ffrwishlist.model.parser.container.base.QueryContainer;
 import finnhh.ffrwishlist.model.parser.container.base.QueryEntry;
 
@@ -42,8 +43,8 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 public class IncludeExcludeQueryContainer<T> extends QueryContainer<T> {
-    protected List<QueryEntry<T>> includeEntryList;
-    protected List<QueryEntry<T>> excludeEntryList;
+    protected List<T> includeEntryList;
+    protected List<T> excludeEntryList;
 
     public IncludeExcludeQueryContainer(QueryableColumn referencedColumn) {
         super(referencedColumn);
@@ -55,9 +56,9 @@ public class IncludeExcludeQueryContainer<T> extends QueryContainer<T> {
     @Override
     public void addToEntries(QueryComparison comparison, T value) {
         if (comparison == QueryComparison.EQUAL_TO)
-            includeEntryList.add(new QueryEntry<>(comparison, value));
+            includeEntryList.add(value);
         else if (comparison == QueryComparison.NOT_EQUAL_TO)
-            excludeEntryList.add(new QueryEntry<>(comparison, value));
+            excludeEntryList.add(value);
     }
 
     @Override
@@ -66,21 +67,21 @@ public class IncludeExcludeQueryContainer<T> extends QueryContainer<T> {
 
         if (!includeEntryList.isEmpty()) {
             includeExcludeJoiner.add(
-                    referencedColumn + " IN (" +
-                    includeEntryList.stream()
-                            .map(QueryEntry::getValueAsString)
-                            .collect(Collectors.joining(", ")) +
-                    ")"
+                    ConditionExpression
+                            .forColumnExpression(referencedColumn)
+                            .in()
+                            .values(includeEntryList.toArray())
+                            .toString()
             );
         }
 
         if (!excludeEntryList.isEmpty()) {
             includeExcludeJoiner.add(
-                    referencedColumn + " NOT IN (" +
-                    excludeEntryList.stream()
-                            .map(QueryEntry::getValueAsString)
-                            .collect(Collectors.joining(", ")) +
-                    ")"
+                    ConditionExpression
+                            .forColumnExpression(referencedColumn)
+                            .notIn()
+                            .values(excludeEntryList.toArray())
+                            .toString()
             );
         }
 

@@ -29,17 +29,17 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.constants.database.schema;
+package finnhh.ffrwishlist.model.constants.database.schema.column;
 
 import finnhh.ffrwishlist.model.constants.base.SchemaColumn;
 
-public enum SetSchemaColumn implements SchemaColumn {
-    SETID(1),
-    SETNAME(2);
+public enum VersionSchemaColumn implements SchemaColumn {
+    DBID(1),
+    VERSION(2);
 
     private final int value;
 
-    SetSchemaColumn(int value) {
+    VersionSchemaColumn(int value) {
         this.value = value;
     }
 

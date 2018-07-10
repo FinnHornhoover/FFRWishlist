@@ -34,13 +34,17 @@ package finnhh.ffrwishlist.model.database.dao;
 import finnhh.ffrwishlist.model.Item;
 import finnhh.ffrwishlist.model.Set;
 import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
-import finnhh.ffrwishlist.model.constants.database.schema.ItemSetSchemaColumn;
-import finnhh.ffrwishlist.model.constants.database.schema.SetSchemaColumn;
-import finnhh.ffrwishlist.model.database.DatabaseManager;
+import finnhh.ffrwishlist.model.constants.database.schema.column.ItemSetSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.column.SetSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.table.SchemaTable;
 import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
+import finnhh.ffrwishlist.model.database.sql.SQLBuilders;
+import finnhh.ffrwishlist.model.database.sql.expression.ConditionExpression;
+import finnhh.ffrwishlist.model.database.sql.expression.OrderExpression;
+import finnhh.ffrwishlist.model.database.sql.expression.column.FunctionExpression;
 import finnhh.ffrwishlist.model.parser.QueryParser;
 
-import java.sql.*;
+import java.sql.ResultSet;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,15 +55,16 @@ public class SetDAO extends DataAccessObject {
     public List<Set> querySets(final Map<Integer, Set> setMap, final String name) {
         final List<Set> matchedSets = new ArrayList<>();
 
-        String query =
-                "SELECT " +
-                        SetSchemaColumn.SETID + " " +
-                "FROM " +
-                        DatabaseManager.Table.SETS + " " +
-                "WHERE " +
-                        QueryableColumn.SETNAME + " LIKE ? " +
-                "ORDER BY " +
-                        SetSchemaColumn.SETNAME + ";";
+        String query = SQLBuilders.selectBuilder()
+                .select(SetSchemaColumn.SETID)
+                .from(SchemaTable.SETS)
+                .where(ConditionExpression
+                        .forColumnExpression(QueryableColumn.SETNAME)
+                        .like()
+                        .placeholderValue()
+                )
+                .orderBy(OrderExpression.ascending(SetSchemaColumn.SETNAME))
+                .toString();
 
         runOnPreparedStatementNoThrow(query, preparedStatement -> {
             preparedStatement.setString(1, QueryParser.likeQueryArgument(name));
@@ -73,7 +78,7 @@ public class SetDAO extends DataAccessObject {
         return matchedSets;
     }
 
-    public List<Set> defaultQuerySets(Map<Integer, Set> setMap) {
+    public List<Set> defaultQuerySets(final Map<Integer, Set> setMap) {
         return querySets(setMap, "");
     }
 
@@ -82,10 +87,13 @@ public class SetDAO extends DataAccessObject {
 
         runOnStatementNoThrow(statement -> {
             ResultSet resultSet = statement.executeQuery(
-                    "SELECT " +
-                            SetSchemaColumn.SETID    + ", " +
-                            SetSchemaColumn.SETNAME  + " " +
-                    "FROM " + DatabaseManager.Table.SETS + ";"
+                    SQLBuilders.selectBuilder()
+                            .select(
+                                    SetSchemaColumn.SETID,
+                                    SetSchemaColumn.SETNAME
+                            )
+                            .from(SchemaTable.SETS)
+                            .toString()
             );
 
             while (resultSet.next()) {
@@ -101,11 +109,15 @@ public class SetDAO extends DataAccessObject {
     public void makeSetItemAssociations(final Map<Integer, Set> setMap, final Map<Integer, Item> itemMap) {
         runOnStatementNoThrow(statement -> {
             ResultSet resultSet = statement.executeQuery(
-                    "SELECT " +
-                            ItemSetSchemaColumn.SETID + ", " +
-                            "GROUP_CONCAT(" + ItemSetSchemaColumn.ITEMID + ", \'" + GROUP_SEPARATOR + "\') " +
-                    "FROM " + DatabaseManager.Table.ITEMS_SETS + " " +
-                    "GROUP BY " + ItemSetSchemaColumn.SETID + ";"
+                    SQLBuilders.selectBuilder()
+                            .select(
+                                    ItemSetSchemaColumn.SETID,
+                                    FunctionExpression.groupConcat(ItemSetSchemaColumn.ITEMID, GROUP_SEPARATOR)
+                            )
+                            .from(SchemaTable.ITEMS_SETS)
+                            .groupBy(ItemSetSchemaColumn.SETID)
+                            .withoutHavingClause()
+                            .toString()
             );
 
             while (resultSet.next()) {

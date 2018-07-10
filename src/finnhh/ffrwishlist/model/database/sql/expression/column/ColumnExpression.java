@@ -29,23 +29,23 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.constants.database.schema;
+package finnhh.ffrwishlist.model.database.sql.expression.column;
 
 import finnhh.ffrwishlist.model.constants.base.SchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.table.SchemaTable;
+import finnhh.ffrwishlist.model.database.sql.expression.base.SQLExpression;
 
-public enum ItemProfileSchemaColumn implements SchemaColumn {
-    ITEMID(1),
-    PROFILEID(2),
-    AMOUNT(3);
+public class ColumnExpression extends SQLExpression {
 
-    private final int value;
-
-    ItemProfileSchemaColumn(int value) {
-        this.value = value;
+    protected ColumnExpression(String expressionString) {
+        super(expressionString);
     }
 
-    @Override
-    public int intValue() {
-        return value;
+    public static ColumnExpression fromColumn(SchemaColumn schemaColumn) {
+        return new ColumnExpression(schemaColumn.toString());
+    }
+
+    public static ColumnExpression fromTableColumn(SchemaTable schemaTable, SchemaColumn schemaColumn) {
+        return new ColumnExpression(schemaTable + "." + schemaColumn);
     }
 }

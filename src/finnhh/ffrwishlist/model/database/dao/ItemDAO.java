@@ -33,12 +33,15 @@ package finnhh.ffrwishlist.model.database.dao;
 
 import finnhh.ffrwishlist.model.Item;
 import finnhh.ffrwishlist.model.Set;
-import finnhh.ffrwishlist.model.constants.database.schema.ItemSchemaColumn;
-import finnhh.ffrwishlist.model.constants.database.schema.ItemSetSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.column.ItemSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.column.ItemSetSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.table.SchemaTable;
 import finnhh.ffrwishlist.model.constants.item.Rarity;
 import finnhh.ffrwishlist.model.constants.item.Type;
-import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
+import finnhh.ffrwishlist.model.database.sql.SQLBuilders;
+import finnhh.ffrwishlist.model.database.sql.statement.SelectSQLStatement;
+import finnhh.ffrwishlist.model.database.sql.expression.column.FunctionExpression;
 
 import java.sql.ResultSet;
 import java.util.Arrays;
@@ -55,14 +58,17 @@ public class ItemDAO extends DataAccessObject {
 
         runOnStatementNoThrow(statement -> {
             ResultSet resultSet = statement.executeQuery(
-                    "SELECT " +
-                            ItemSchemaColumn.ITEMID + ", " +
-                            ItemSchemaColumn.ICON + ", " +
-                            ItemSchemaColumn.NAME + ", " +
-                            ItemSchemaColumn.LEVEL + ", " +
-                            ItemSchemaColumn.TYPE + ", " +
-                            ItemSchemaColumn.RARITY + " " +
-                    "FROM " + DatabaseManager.Table.ITEMS + ";"
+                    SQLBuilders.selectBuilder()
+                            .select(
+                                    ItemSchemaColumn.ITEMID,
+                                    ItemSchemaColumn.ICON,
+                                    ItemSchemaColumn.NAME,
+                                    ItemSchemaColumn.LEVEL,
+                                    ItemSchemaColumn.TYPE,
+                                    ItemSchemaColumn.RARITY
+                            )
+                            .from(SchemaTable.ITEMS)
+                            .toString()
             );
 
             while (resultSet.next()) {
@@ -85,11 +91,15 @@ public class ItemDAO extends DataAccessObject {
     public void makeItemSetAssociations(final Map<Integer, Item> itemMap, final Map<Integer, Set> setMap) {
         runOnStatementNoThrow(statement -> {
             ResultSet resultSet = statement.executeQuery(
-                    "SELECT " +
-                            ItemSetSchemaColumn.ITEMID + ", " +
-                            "GROUP_CONCAT(" + ItemSetSchemaColumn.SETID + ", \'" + GROUP_SEPARATOR + "\') " +
-                    "FROM " + DatabaseManager.Table.ITEMS_SETS + " " +
-                    "GROUP BY " + ItemSetSchemaColumn.ITEMID + ";"
+                    SQLBuilders.selectBuilder()
+                            .select(
+                                    ItemSetSchemaColumn.ITEMID,
+                                    FunctionExpression.groupConcat(ItemSetSchemaColumn.SETID, GROUP_SEPARATOR)
+                            )
+                            .from(SchemaTable.ITEMS_SETS)
+                            .groupBy(ItemSetSchemaColumn.ITEMID)
+                            .withoutHavingClause()
+                            .toString()
             );
 
             while (resultSet.next()) {

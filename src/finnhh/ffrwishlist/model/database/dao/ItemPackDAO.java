@@ -35,13 +35,19 @@ import finnhh.ffrwishlist.model.Item;
 import finnhh.ffrwishlist.model.ItemPack;
 import finnhh.ffrwishlist.model.Profile;
 import finnhh.ffrwishlist.model.Set;
+import finnhh.ffrwishlist.model.constants.database.QueryComparison;
 import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
-import finnhh.ffrwishlist.model.constants.database.schema.ItemProfileSchemaColumn;
-import finnhh.ffrwishlist.model.constants.database.schema.ItemSchemaColumn;
-import finnhh.ffrwishlist.model.constants.database.schema.ItemSetSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.column.ItemProfileSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.column.ItemSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.column.ItemSetSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.table.SchemaTable;
 import finnhh.ffrwishlist.model.constants.item.Amount;
-import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
+import finnhh.ffrwishlist.model.database.sql.SQLBuilders;
+import finnhh.ffrwishlist.model.database.sql.expression.ConditionExpression;
+import finnhh.ffrwishlist.model.database.sql.expression.OrderExpression;
+import finnhh.ffrwishlist.model.database.sql.expression.InstructionExpression;
+import finnhh.ffrwishlist.model.database.sql.expression.TableExpression;
 import finnhh.ffrwishlist.model.parser.ParsedQueryInformation;
 
 import java.sql.ResultSet;
@@ -54,33 +60,41 @@ public class ItemPackDAO extends DataAccessObject {
 
     public ItemPackDAO() { }
 
-    public List<ItemPack> queryItemPacks(Profile activeProfile, final Map<Integer, Item> itemMap,
+    public List<ItemPack> queryItemPacks(final Profile activeProfile, final Map<Integer, Item> itemMap,
                                          final ParsedQueryInformation parsedQueryInformation) {
         final List<ItemPack> matchedItemPacks = new ArrayList<>();
 
-        String query =
-                "SELECT " +
-                        ItemSchemaColumn.ITEMID + ", " +
-                        ItemProfileSchemaColumn.AMOUNT + " " +
-                "FROM " +
-                        DatabaseManager.Table.ITEMS + " " +
-                        "LEFT JOIN (" +
-                                "SELECT " +
-                                        ItemProfileSchemaColumn.ITEMID + ", " +
-                                        ItemProfileSchemaColumn.AMOUNT + " " +
-                                "FROM " +
-                                        DatabaseManager.Table.ITEMS_PROFILES + " " +
-                                "WHERE " +
-                                        ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() +
-                        ") " +
-                        "USING (" + ItemProfileSchemaColumn.ITEMID + ") " +
-                "WHERE " +
-                        parsedQueryInformation.getWhereStatementChecks() + " " +
-                "ORDER BY " +
-                        ItemSchemaColumn.RARITY + " DESC, " +
-                        ItemSchemaColumn.LEVEL  + " DESC, " +
-                        ItemSchemaColumn.TYPE   + " ASC, " +
-                        ItemSchemaColumn.NAME   + " ASC;";
+        String query = SQLBuilders.selectBuilder()
+                .select(
+                        ItemSchemaColumn.ITEMID,
+                        ItemProfileSchemaColumn.AMOUNT
+                )
+                .from(TableExpression
+                        .fromTable(SchemaTable.ITEMS)
+                        .leftJoin(TableExpression
+                                .fromSubQuery(SQLBuilders.selectBuilder()
+                                        .select(
+                                                ItemProfileSchemaColumn.ITEMID,
+                                                ItemProfileSchemaColumn.AMOUNT
+                                        )
+                                        .from(SchemaTable.ITEMS_PROFILES)
+                                        .where(ConditionExpression
+                                                .forColumnExpression(ItemProfileSchemaColumn.PROFILEID)
+                                                .check(QueryComparison.EQUAL_TO)
+                                                .value(activeProfile.getProfileID())
+                                        )
+                                )
+                        )
+                        .using(ItemProfileSchemaColumn.ITEMID)
+                )
+                .where(parsedQueryInformation.getWhereStatementChecks())
+                .orderBy(
+                        OrderExpression.descending(ItemSchemaColumn.RARITY),
+                        OrderExpression.descending(ItemSchemaColumn.LEVEL),
+                        OrderExpression.ascending(ItemSchemaColumn.TYPE),
+                        OrderExpression.ascending(ItemSchemaColumn.NAME)
+                )
+                .toString();
 
         runOnPreparedStatementNoThrow(query, preparedStatement -> {
             Queue<String> valuesToInsertToQuery = parsedQueryInformation.getValuesToInsertToQuery();
@@ -102,37 +116,48 @@ public class ItemPackDAO extends DataAccessObject {
         return matchedItemPacks;
     }
 
-    public List<ItemPack> queryItemPacksBySet(Profile activeProfile, final Map<Integer, Item> itemMap, Set set) {
+    public List<ItemPack> queryItemPacksBySet(final Profile activeProfile, final Map<Integer, Item> itemMap, final Set set) {
         final List<ItemPack> matchedItemPacks = new ArrayList<>();
 
-        String query =
-                "SELECT " +
-                        ItemSchemaColumn.ITEMID + ", " +
-                        ItemProfileSchemaColumn.AMOUNT + " " +
-                "FROM " +
-                        DatabaseManager.Table.ITEMS + " " +
-                        "LEFT JOIN (" +
-                                "SELECT " +
-                                        ItemProfileSchemaColumn.ITEMID + ", " +
-                                        ItemProfileSchemaColumn.AMOUNT + " " +
-                                "FROM " +
-                                        DatabaseManager.Table.ITEMS_PROFILES + " " +
-                                "WHERE " +
-                                        ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() +
-                        ") " +
-                        "USING (" + ItemProfileSchemaColumn.ITEMID + ") " +
-                        "JOIN " +
-                        DatabaseManager.Table.ITEMS_SETS + " " +
-                        "USING (" + ItemSetSchemaColumn.ITEMID + ") " +
-                "WHERE " +
-                        QueryableColumn.SETID + " = " + set.getSetID() + " " +
-                "ORDER BY " +
-                        ItemSchemaColumn.TYPE   + " ASC, " +
-                        ItemSchemaColumn.LEVEL  + " ASC, " +
-                        ItemSchemaColumn.NAME   + " ASC;";
-
         runOnStatementNoThrow(statement -> {
-            ResultSet resultSet = statement.executeQuery(query);
+            ResultSet resultSet = statement.executeQuery(
+                    SQLBuilders.selectBuilder()
+                            .select(
+                                    ItemSchemaColumn.ITEMID,
+                                    ItemProfileSchemaColumn.AMOUNT
+                            )
+                            .from(TableExpression
+                                    .fromTable(SchemaTable.ITEMS)
+                                    .leftJoin(TableExpression
+                                            .fromSubQuery(SQLBuilders.selectBuilder()
+                                                    .select(
+                                                            ItemProfileSchemaColumn.ITEMID,
+                                                            ItemProfileSchemaColumn.AMOUNT
+                                                    )
+                                                    .from(SchemaTable.ITEMS_PROFILES)
+                                                    .where(ConditionExpression
+                                                            .forColumnExpression(ItemProfileSchemaColumn.PROFILEID)
+                                                            .check(QueryComparison.EQUAL_TO)
+                                                            .value(activeProfile.getProfileID())
+                                                    )
+                                            )
+                                    )
+                                    .using(ItemProfileSchemaColumn.ITEMID)
+                                    .join(SchemaTable.ITEMS_SETS)
+                                    .using(ItemSetSchemaColumn.ITEMID)
+                            )
+                            .where(ConditionExpression
+                                    .forColumnExpression(QueryableColumn.SETID)
+                                    .check(QueryComparison.EQUAL_TO)
+                                    .value(set.getSetID())
+                            )
+                            .orderBy(
+                                    OrderExpression.ascending(ItemSchemaColumn.TYPE),
+                                    OrderExpression.ascending(ItemSchemaColumn.LEVEL),
+                                    OrderExpression.ascending(ItemSchemaColumn.NAME)
+                            )
+                            .toString()
+            );
 
             while (resultSet.next()) {
                 matchedItemPacks.add(new ItemPack(
@@ -147,16 +172,19 @@ public class ItemPackDAO extends DataAccessObject {
 
     public void insertAmount(final Profile activeProfile, final ItemPack itemPack) {
         runOnStatementNoThrow(statement -> statement.executeUpdate(
-                "INSERT INTO " + DatabaseManager.Table.ITEMS_PROFILES + " (" +
-                        ItemProfileSchemaColumn.ITEMID + ", " +
-                        ItemProfileSchemaColumn.PROFILEID + ", " +
-                        ItemProfileSchemaColumn.AMOUNT + " " +
-                ") " +
-                "VALUES (" +
-                        itemPack.getItem().getItemID() + ", " +
-                        activeProfile.getProfileID() + ", " +
-                        Amount.MINIMUM.intValue() +
-                ");"
+                SQLBuilders.insertBuilder()
+                        .insertInto(SchemaTable.ITEMS_PROFILES)
+                        .withColumnsSpecified(
+                                ItemProfileSchemaColumn.ITEMID,
+                                ItemProfileSchemaColumn.PROFILEID,
+                                ItemProfileSchemaColumn.AMOUNT
+                        )
+                        .values(
+                                itemPack.getItem().getItemID(),
+                                activeProfile.getProfileID(),
+                                Amount.MINIMUM
+                        )
+                        .toString()
         ));
     }
 
@@ -166,16 +194,19 @@ public class ItemPackDAO extends DataAccessObject {
 
             for (ItemPack itemPack : insertItemPackList) {
                 statement.addBatch(
-                        "INSERT INTO " + DatabaseManager.Table.ITEMS_PROFILES + " (" +
-                                ItemProfileSchemaColumn.ITEMID + ", " +
-                                ItemProfileSchemaColumn.PROFILEID + ", " +
-                                ItemProfileSchemaColumn.AMOUNT + " " +
-                        ") " +
-                        "VALUES (" +
-                                itemPack.getItem().getItemID() + ", " +
-                                activeProfile.getProfileID() + ", " +
-                                itemPack.getAmount() +
-                        ");"
+                        SQLBuilders.insertBuilder()
+                                .insertInto(SchemaTable.ITEMS_PROFILES)
+                                .withColumnsSpecified(
+                                        ItemProfileSchemaColumn.ITEMID,
+                                        ItemProfileSchemaColumn.PROFILEID,
+                                        ItemProfileSchemaColumn.AMOUNT
+                                )
+                                .values(
+                                        itemPack.getItem().getItemID(),
+                                        activeProfile.getProfileID(),
+                                        Amount.MINIMUM
+                                )
+                                .toString()
                 );
             }
 
@@ -187,12 +218,22 @@ public class ItemPackDAO extends DataAccessObject {
 
     public void updateAmount(final Profile activeProfile, final ItemPack itemPack, int newAmount) {
         runOnStatementNoThrow(statement -> statement.executeUpdate(
-                "UPDATE " + DatabaseManager.Table.ITEMS_PROFILES + " " +
-                "SET " + ItemProfileSchemaColumn.AMOUNT + " = " + newAmount + " " +
-                "WHERE " +
-                        ItemProfileSchemaColumn.ITEMID + " = " + itemPack.getItem().getItemID() + " " +
-                        "AND " +
-                        ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() + ";"
+                SQLBuilders.updateBuilder()
+                        .update(SchemaTable.ITEMS_PROFILES)
+                        .set(InstructionExpression
+                                .forColumn(ItemProfileSchemaColumn.AMOUNT)
+                                .setValue(newAmount)
+                        )
+                        .where(ConditionExpression
+                                .forColumnExpression(ItemProfileSchemaColumn.ITEMID)
+                                .check(QueryComparison.EQUAL_TO)
+                                .value(itemPack.getItem().getItemID())
+                                .and()
+                                .columnExpression(ItemProfileSchemaColumn.PROFILEID)
+                                .check(QueryComparison.EQUAL_TO)
+                                .value(activeProfile.getProfileID())
+                        )
+                        .toString()
         ));
     }
 
@@ -202,12 +243,22 @@ public class ItemPackDAO extends DataAccessObject {
 
             for (ItemPack itemPack : updateItemPackList) {
                 statement.addBatch(
-                        "UPDATE " + DatabaseManager.Table.ITEMS_PROFILES + " " +
-                        "SET " + ItemProfileSchemaColumn.AMOUNT + " = " + itemPack.getAmount() + " " +
-                        "WHERE " +
-                                ItemProfileSchemaColumn.ITEMID + " = " + itemPack.getItem().getItemID() + " " +
-                                "AND " +
-                                ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() + ";"
+                        SQLBuilders.updateBuilder()
+                                .update(SchemaTable.ITEMS_PROFILES)
+                                .set(InstructionExpression
+                                        .forColumn(ItemProfileSchemaColumn.AMOUNT)
+                                        .setValue(itemPack.getAmount())
+                                )
+                                .where(ConditionExpression
+                                        .forColumnExpression(ItemProfileSchemaColumn.ITEMID)
+                                        .check(QueryComparison.EQUAL_TO)
+                                        .value(itemPack.getItem().getItemID())
+                                        .and()
+                                        .columnExpression(ItemProfileSchemaColumn.PROFILEID)
+                                        .check(QueryComparison.EQUAL_TO)
+                                        .value(activeProfile.getProfileID())
+                                )
+                                .toString()
                 );
             }
 
@@ -217,13 +268,20 @@ public class ItemPackDAO extends DataAccessObject {
         });
     }
 
-    public void deleteAmount(Profile activeProfile, ItemPack itemPack) {
+    public void deleteAmount(final Profile activeProfile, final ItemPack itemPack) {
         runOnStatementNoThrow(statement -> statement.executeUpdate(
-                "DELETE FROM " + DatabaseManager.Table.ITEMS_PROFILES + " " +
-                "WHERE " +
-                        ItemProfileSchemaColumn.ITEMID + " = " + itemPack.getItem().getItemID() + " " +
-                        "AND " +
-                        ItemProfileSchemaColumn.PROFILEID + " = " + activeProfile.getProfileID() + ";"
+                SQLBuilders.deleteBuilder()
+                        .deleteFrom(SchemaTable.ITEMS_PROFILES)
+                        .where(ConditionExpression
+                                .forColumnExpression(ItemProfileSchemaColumn.ITEMID)
+                                .check(QueryComparison.EQUAL_TO)
+                                .value(itemPack.getItem().getItemID())
+                                .and()
+                                .columnExpression(ItemProfileSchemaColumn.PROFILEID)
+                                .check(QueryComparison.EQUAL_TO)
+                                .value(activeProfile.getProfileID())
+                        )
+                        .toString()
         ));
     }
 }

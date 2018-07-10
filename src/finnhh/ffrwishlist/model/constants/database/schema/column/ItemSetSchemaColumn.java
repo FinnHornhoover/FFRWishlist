@@ -29,47 +29,22 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.parser.container;
+package finnhh.ffrwishlist.model.constants.database.schema.column;
 
-import finnhh.ffrwishlist.model.constants.database.QueryComparison;
-import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
-import finnhh.ffrwishlist.model.database.sql.expression.ConditionExpression;
-import finnhh.ffrwishlist.model.parser.container.base.QueryContainer;
-import finnhh.ffrwishlist.model.parser.container.base.QueryEntry;
+import finnhh.ffrwishlist.model.constants.base.SchemaColumn;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+public enum ItemSetSchemaColumn implements SchemaColumn {
+    ITEMID(1),
+    SETID(2);
 
-public class NumericQueryContainer extends QueryContainer<Integer> {
-    protected List<QueryEntry<Integer>> entryList;
+    private final int value;
 
-    public NumericQueryContainer(QueryableColumn referencedColumn) {
-        super(referencedColumn);
-
-        entryList = new ArrayList<>();
+    ItemSetSchemaColumn(int value) {
+        this.value = value;
     }
 
     @Override
-    public void addToEntries(QueryComparison comparison, Integer value) {
-        entryList.add(new QueryEntry<>(comparison, value));
-    }
-
-    @Override
-    public String getJoinedString() {
-        return entryList.stream()
-                .map(e ->
-                        ConditionExpression
-                                .forColumnExpression(referencedColumn)
-                                .check(e.getQueryComparison())
-                                .value(e.getValue())
-                                .toString()
-                )
-                .collect(Collectors.joining(" AND "));
-    }
-
-    @Override
-    public void clear() {
-        entryList.clear();
+    public int intValue() {
+        return value;
     }
 }

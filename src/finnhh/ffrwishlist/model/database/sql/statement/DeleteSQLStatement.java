@@ -29,22 +29,56 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.constants.database.schema;
+package finnhh.ffrwishlist.model.database.sql.statement;
 
-import finnhh.ffrwishlist.model.constants.base.SchemaColumn;
+import finnhh.ffrwishlist.model.database.sql.statement.base.SQLStatement;
 
-public enum ItemSetSchemaColumn implements SchemaColumn {
-    ITEMID(1),
-    SETID(2);
+import java.util.Objects;
 
-    private final int value;
+public final class DeleteSQLStatement extends SQLStatement {
 
-    ItemSetSchemaColumn(int value) {
-        this.value = value;
+    private DeleteSQLStatement() { }
+
+    public WhereDeletePart deleteFrom(Object schemaTableObject) {
+        return new DeletePart().deleteFrom(schemaTableObject);
     }
 
-    @Override
-    public int intValue() {
-        return value;
+    public static DeleteSQLStatement builder() {
+        return new DeleteSQLStatement();
+    }
+
+    public static class CompleteDeleteStatement extends CompleteStatement {
+
+        CompleteDeleteStatement(String builtString) {
+            super(builtString);
+        }
+    }
+
+    public static class WhereDeletePart extends CompleteDeleteStatement {
+
+        WhereDeletePart(String builtString) {
+            super(builtString);
+        }
+
+        public CompleteDeleteStatement where(Object conditionObject) {
+            Objects.requireNonNull(conditionObject, "WHERE condition cannot be null");
+
+            append(" WHERE " + conditionObject);
+            return this;
+        }
+    }
+
+    static class DeletePart extends WhereDeletePart {
+
+        DeletePart() {
+            super("DELETE ");
+        }
+
+        WhereDeletePart deleteFrom(Object schemaTableObject) {
+            Objects.requireNonNull(schemaTableObject, "Table to use with DELETE cannot be null");
+
+            append("FROM " + schemaTableObject);
+            return this;
+        }
     }
 }

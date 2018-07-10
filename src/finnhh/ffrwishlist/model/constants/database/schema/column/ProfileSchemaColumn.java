@@ -29,21 +29,18 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.constants.database.schema;
+package finnhh.ffrwishlist.model.constants.database.schema.column;
 
 import finnhh.ffrwishlist.model.constants.base.SchemaColumn;
 
-public enum ItemSchemaColumn implements SchemaColumn {
-    ITEMID(1),
-    ICON(2),
-    NAME(3),
-    LEVEL(4),
-    TYPE(5),
-    RARITY(6);
+public enum ProfileSchemaColumn implements SchemaColumn {
+    PROFILEID(1),
+    PROFILENAME(2),
+    ACTIVE(3);
 
     private final int value;
 
-    ItemSchemaColumn(int value) {
+    ProfileSchemaColumn(int value) {
         this.value = value;
     }
 

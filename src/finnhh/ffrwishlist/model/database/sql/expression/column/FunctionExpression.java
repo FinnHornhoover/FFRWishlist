@@ -29,47 +29,49 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.parser.container;
+package finnhh.ffrwishlist.model.database.sql.expression.column;
 
-import finnhh.ffrwishlist.model.constants.database.QueryComparison;
-import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
-import finnhh.ffrwishlist.model.database.sql.expression.ConditionExpression;
-import finnhh.ffrwishlist.model.parser.container.base.QueryContainer;
-import finnhh.ffrwishlist.model.parser.container.base.QueryEntry;
+import finnhh.ffrwishlist.model.constants.base.SchemaColumn;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+public class FunctionExpression extends ColumnExpression {
 
-public class NumericQueryContainer extends QueryContainer<Integer> {
-    protected List<QueryEntry<Integer>> entryList;
-
-    public NumericQueryContainer(QueryableColumn referencedColumn) {
-        super(referencedColumn);
-
-        entryList = new ArrayList<>();
+    protected FunctionExpression(String functionString) {
+        super(functionString);
     }
 
-    @Override
-    public void addToEntries(QueryComparison comparison, Integer value) {
-        entryList.add(new QueryEntry<>(comparison, value));
+    public static FunctionExpression avg(SchemaColumn schemaColumn) {
+        return new FunctionExpression("AVG(" + schemaColumn + ")");
     }
 
-    @Override
-    public String getJoinedString() {
-        return entryList.stream()
-                .map(e ->
-                        ConditionExpression
-                                .forColumnExpression(referencedColumn)
-                                .check(e.getQueryComparison())
-                                .value(e.getValue())
-                                .toString()
-                )
-                .collect(Collectors.joining(" AND "));
+    public static FunctionExpression count(SchemaColumn schemaColumn) {
+        return new FunctionExpression("COUNT(" + schemaColumn + ")");
     }
 
-    @Override
-    public void clear() {
-        entryList.clear();
+    public static FunctionExpression countAll() {
+        return new FunctionExpression("COUNT(*)");
+    }
+
+    public static FunctionExpression groupConcat(SchemaColumn schemaColumn) {
+        return new FunctionExpression("GROUP_CONCAT(" + schemaColumn + ")");
+    }
+
+    public static FunctionExpression groupConcat(SchemaColumn schemaColumn, String separator) {
+        return new FunctionExpression("GROUP_CONCAT(" + schemaColumn + ", \'" + separator + "\')");
+    }
+
+    public static FunctionExpression max(SchemaColumn schemaColumn) {
+        return new FunctionExpression("MAX(" + schemaColumn + ")");
+    }
+
+    public static FunctionExpression min(SchemaColumn schemaColumn) {
+        return new FunctionExpression("MIN(" + schemaColumn + ")");
+    }
+
+    public static FunctionExpression sum(SchemaColumn schemaColumn) {
+        return new FunctionExpression("SUM(" + schemaColumn + ")");
+    }
+
+    public static FunctionExpression total(SchemaColumn schemaColumn) {
+        return new FunctionExpression("TOTAL(" + schemaColumn + ")");
     }
 }

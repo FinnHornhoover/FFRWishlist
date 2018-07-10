@@ -31,6 +31,7 @@
 
 package finnhh.ffrwishlist.model.database;
 
+import finnhh.ffrwishlist.model.constants.database.schema.table.SchemaTable;
 import finnhh.ffrwishlist.model.database.dao.*;
 import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
 
@@ -38,20 +39,16 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Queue;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class DatabaseManager {
     public static final String          DRIVER_NAME             = "org.sqlite.JDBC";
     public static final String          DATABASE_FILE_DIR       = System.getProperty("user.home") + "/FFRWishlistData/db";
     public static final String          DATABASE_URL            = "jdbc:sqlite:" + DATABASE_FILE_DIR + "/ffrw.db";
 
-    private static final Set<String>    EXPECTED_TABLE_NAMES    = Arrays.stream(Table.values())
-                                                                        .map(Table::name)
-                                                                        .collect(Collectors.toSet());
+    private static final Set<String>    EXPECTED_TABLE_NAMES    = SchemaTable.allTableNames();
 
     private final VersionDAO versionDAO;
 
@@ -119,14 +116,5 @@ public class DatabaseManager {
 
     public ItemPackDAO getItemPackDAO() {
         return itemPackDAO;
-    }
-
-    public enum Table {
-        VERSIONS,
-        ITEMS,
-        PROFILES,
-        SETS,
-        ITEMS_SETS,
-        ITEMS_PROFILES
     }
 }

@@ -34,6 +34,7 @@ package finnhh.ffrwishlist.model.parser;
 import finnhh.ffrwishlist.model.constants.database.QueryComparison;
 import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
 import finnhh.ffrwishlist.model.constants.item.*;
+import finnhh.ffrwishlist.model.database.sql.expression.ConditionExpression;
 import finnhh.ffrwishlist.model.parser.container.IncludeExcludeQueryContainer;
 import finnhh.ffrwishlist.model.parser.container.NumericQueryContainer;
 import finnhh.ffrwishlist.model.parser.container.SetQueryContainer;
@@ -127,14 +128,27 @@ public class QueryParser {
             params[i] = allParams[i + 1].trim();
 
         //add name query as a raw string query, add the name value to the queue
-        rawStringQueries.add(QueryableColumn.NAME + " LIKE ?");
+        rawStringQueries.add(
+                ConditionExpression
+                        .forColumnExpression(QueryableColumn.NAME)
+                        .like()
+                        .placeholderValue()
+                        .toString()
+        );
         valuesToInsertToQuery.add(likeQueryArgument(searchString));
 
         //decide wishlist mode action
-        if (wishlistModeInformationExists && wishlistMode)
+        if (wishlistModeInformationExists && wishlistMode) {
             amountQueries.addToEntries(QueryComparison.GREATER_THAN, Amount.NONE.intValue());
-        else if (wishlistModeInformationExists)
-            rawStringQueries.add(QueryableColumn.AMOUNT + " IS NULL");
+        } else if (wishlistModeInformationExists) {
+            rawStringQueries.add(
+                    ConditionExpression
+                            .forColumnExpression(QueryableColumn.AMOUNT)
+                            .is()
+                            .nullValue()
+                            .toString()
+            );
+        }
 
         for (String param : params) {
             //flag to determine the validity of the parameter

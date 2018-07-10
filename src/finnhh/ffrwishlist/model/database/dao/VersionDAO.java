@@ -31,13 +31,18 @@
 
 package finnhh.ffrwishlist.model.database.dao;
 
-import finnhh.ffrwishlist.model.constants.database.schema.VersionSchemaColumn;
-import finnhh.ffrwishlist.model.database.DatabaseManager;
+import finnhh.ffrwishlist.model.constants.database.QueryComparison;
+import finnhh.ffrwishlist.model.constants.database.schema.column.VersionSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.table.SchemaTable;
 import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
+import finnhh.ffrwishlist.model.database.sql.SQLBuilders;
+import finnhh.ffrwishlist.model.database.sql.expression.ConditionExpression;
+import finnhh.ffrwishlist.model.database.sql.expression.InstructionExpression;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class VersionDAO extends DataAccessObject {
     private static final int DB_ID = 387466;
@@ -49,9 +54,15 @@ public class VersionDAO extends DataAccessObject {
 
         runOnStatement(statement -> {
             ResultSet resultSet = statement.executeQuery(
-                    "SELECT " + VersionSchemaColumn.VERSION + " " +
-                    "FROM " + DatabaseManager.Table.VERSIONS + " " +
-                    "WHERE " + VersionSchemaColumn.DBID + " = " + DB_ID + ";"
+                    SQLBuilders.selectBuilder()
+                            .select(VersionSchemaColumn.VERSION)
+                            .from(SchemaTable.VERSIONS)
+                            .where(ConditionExpression
+                                    .forColumnExpression(VersionSchemaColumn.DBID)
+                                    .check(QueryComparison.EQUAL_TO)
+                                    .value(DB_ID)
+                            )
+                            .toString()
             );
 
             version.setValue(resultSet.getInt(VersionSchemaColumn.VERSION.name()));
@@ -62,9 +73,18 @@ public class VersionDAO extends DataAccessObject {
 
     public void updateVersion(int newVersion) {
         runOnStatementNoThrow(statement -> statement.executeUpdate(
-                "UPDATE " + DatabaseManager.Table.VERSIONS + " " +
-                "SET " + VersionSchemaColumn.VERSION + " = " + newVersion + " " +
-                "WHERE " + VersionSchemaColumn.DBID + " = " + DB_ID + ";"
+                SQLBuilders.updateBuilder()
+                        .update(SchemaTable.VERSIONS)
+                        .set(InstructionExpression
+                                .forColumn(VersionSchemaColumn.VERSION)
+                                .setValue(newVersion)
+                        )
+                        .where(ConditionExpression
+                                .forColumnExpression(VersionSchemaColumn.DBID)
+                                .check(QueryComparison.EQUAL_TO)
+                                .value(DB_ID)
+                        )
+                        .toString()
         ));
     }
 }

@@ -29,47 +29,30 @@
  * SOFTWARE.
  */
 
-package finnhh.ffrwishlist.model.parser.container;
+package finnhh.ffrwishlist.model.database.sql.expression;
 
-import finnhh.ffrwishlist.model.constants.database.QueryComparison;
-import finnhh.ffrwishlist.model.constants.database.QueryableColumn;
-import finnhh.ffrwishlist.model.database.sql.expression.ConditionExpression;
-import finnhh.ffrwishlist.model.parser.container.base.QueryContainer;
-import finnhh.ffrwishlist.model.parser.container.base.QueryEntry;
+import finnhh.ffrwishlist.model.constants.base.SchemaColumn;
+import finnhh.ffrwishlist.model.database.sql.expression.base.SQLExpression;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+public final class OrderExpression extends SQLExpression {
 
-public class NumericQueryContainer extends QueryContainer<Integer> {
-    protected List<QueryEntry<Integer>> entryList;
-
-    public NumericQueryContainer(QueryableColumn referencedColumn) {
-        super(referencedColumn);
-
-        entryList = new ArrayList<>();
+    private OrderExpression(String expressionString) {
+        super(expressionString);
     }
 
-    @Override
-    public void addToEntries(QueryComparison comparison, Integer value) {
-        entryList.add(new QueryEntry<>(comparison, value));
+    public static OrderExpression ascending(SchemaColumn schemaColumn) {
+        return new OrderExpression(schemaColumn + " ASC");
     }
 
-    @Override
-    public String getJoinedString() {
-        return entryList.stream()
-                .map(e ->
-                        ConditionExpression
-                                .forColumnExpression(referencedColumn)
-                                .check(e.getQueryComparison())
-                                .value(e.getValue())
-                                .toString()
-                )
-                .collect(Collectors.joining(" AND "));
+    public static OrderExpression ascending(int columnNo) {
+        return new OrderExpression(columnNo + " ASC");
     }
 
-    @Override
-    public void clear() {
-        entryList.clear();
+    public static OrderExpression descending(SchemaColumn schemaColumn) {
+        return new OrderExpression(schemaColumn + " DESC");
+    }
+
+    public static OrderExpression descending(int columnNo) {
+        return new OrderExpression(columnNo + " DESC");
     }
 }
