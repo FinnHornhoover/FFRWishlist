@@ -35,10 +35,10 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 
 public class ParsedQueryInformation {
-    private String searchString;
-    private String errorString;
-    private String whereStatementChecks;
-    private Queue<String> valuesToInsertToQuery;
+    private final String searchString;
+    private final String errorString;
+    private final String whereStatementChecks;
+    private final Queue<String> valuesToInsertToQuery;
 
     ParsedQueryInformation(String searchString, String errorString, String whereStatementChecks,
                                   Queue<String> valuesToInsertToQuery) {

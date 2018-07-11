@@ -44,12 +44,11 @@ import javafx.scene.control.TextField;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class AutoCompleteItemSearchBar extends TextField {
-    public static final String SEARCH_BAR_PROMPT_TEXT_DEFAULT = "Search for an item";
+    public static final String  SEARCH_BAR_PROMPT_TEXT_DEFAULT  = "Search for an item";
 
-    private static final int SUGGESTION_LIMIT = 6;
+    private static final int    SUGGESTION_LIMIT                = 6;
 
     private ContextMenu suggestionsMenu;
     private Set<String> suggestedStrings;

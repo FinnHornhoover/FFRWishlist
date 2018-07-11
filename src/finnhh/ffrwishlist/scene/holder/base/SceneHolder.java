@@ -44,11 +44,9 @@ public class SceneHolder {
         scene.getStylesheets().add(ResourceHolder.getStyleCSSResource(sceneCSS).toExternalForm());
     }
 
-    protected void atFirstStageAccess() {
-    }
+    protected void atFirstStageAccess() { }
 
-    protected void atAllStageAccesses() {
-    }
+    protected void atAllStageAccesses() { }
 
     public final Scene getScene() {
         if (!sceneAccessed) {

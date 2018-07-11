@@ -70,10 +70,10 @@ import java.util.Map;
 public class MainSceneController extends AppConnectedSceneController implements DatabaseConnected, ProfileOwner,
                                                                                 ItemMapOwner, SetMapOwner,
                                                                                 TableOwner {
-    public static final String  TOP_TEXT_WISHLIST_TRUE          = "List of items in your wishlist:";
-    public static final String  TOP_TEXT_WISHLIST_FALSE         = "List of items you can add to your wishlist:";
-    public static final String  TOP_BUTTON_TEXT_WISHLIST_TRUE   = "Add Items";
-    public static final String  TOP_BUTTON_TEXT_WISHLIST_FALSE  = "Done";
+    public static final String TOP_TEXT_WISHLIST_TRUE           = "List of items in your wishlist:";
+    public static final String TOP_TEXT_WISHLIST_FALSE          = "List of items you can add to your wishlist:";
+    public static final String TOP_BUTTON_TEXT_WISHLIST_TRUE    = "Add Items";
+    public static final String TOP_BUTTON_TEXT_WISHLIST_FALSE   = "Done";
 
     @FXML
     private Button infoIconButton;
