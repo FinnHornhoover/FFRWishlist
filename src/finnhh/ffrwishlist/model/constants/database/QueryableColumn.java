@@ -31,43 +31,62 @@
 
 package finnhh.ffrwishlist.model.constants.database;
 
-import finnhh.ffrwishlist.model.constants.base.StringMatcher;
+import finnhh.ffrwishlist.model.constants.base.EnumSubcategories;
+import finnhh.ffrwishlist.model.constants.base.InvalidEnumConstants;
+import finnhh.ffrwishlist.model.constants.base.MultipleRepresentations;
 
-public enum QueryableColumn implements StringMatcher {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.Locale;
+
+public enum QueryableColumn implements MultipleRepresentations, EnumSubcategories, InvalidEnumConstants {
+    @InvalidConstant
     INVALID_COLUMN(new String[0]),
 
     ITEMID(new String[0]),
     SETID(new String[0]),
     NAME(new String[0]),
 
-    @ParameterQueryable
+    @FilterColumn
+    @NumericFilterColumn
     LEVEL(new String[] {"l", "lv", "lvl"}),
-    @ParameterQueryable
+    @FilterColumn
     TYPE(new String[] {"t", "ty"}),
-    @ParameterQueryable
+    @FilterColumn
     RARITY(new String[] {"r", "rar"}),
-    @ParameterQueryable
+    @FilterColumn
+    @FlexibleFilterColumn
     SETNAME(new String[] {"s", "set"}),
-    @ParameterQueryable
+    @FilterColumn
+    @NumericFilterColumn
     AMOUNT(new String[] {"a", "ct", "count", "num", "number"});
 
-    private final String[] alternateRepresentations;
+    private final String[] allRepresentations;
 
     QueryableColumn(String[] alternateRepresentations) {
-        this.alternateRepresentations = alternateRepresentations;
+        this.allRepresentations = new String[alternateRepresentations.length + 1];
+
+        allRepresentations[0] = this.name().toLowerCase(Locale.ENGLISH);
+        System.arraycopy(alternateRepresentations, 0, allRepresentations, 1, alternateRepresentations.length);
+    }
+
+    public boolean isFilterColumn() {
+        return fitsSubcategory(FilterColumn.class);
+    }
+
+    public boolean isNumericFilterColumn() {
+        return fitsSubcategory(NumericFilterColumn.class);
+    }
+
+    public boolean isFlexibleFilterColumn() {
+        return fitsSubcategory(FlexibleFilterColumn.class);
     }
 
     @Override
-    public boolean matchesString(String v) {
-        if (this.name().equalsIgnoreCase(v))
-            return true;
-
-        for (String s : alternateRepresentations) {
-            if (s.equalsIgnoreCase(v))
-                return true;
-        }
-
-        return false;
+    public String[] getAllRepresentations() {
+        return allRepresentations;
     }
 
     public static QueryableColumn correspondingTo(String s) {
@@ -79,6 +98,18 @@ public enum QueryableColumn implements StringMatcher {
         return INVALID_COLUMN;
     }
 
-    public @interface ParameterQueryable {
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface FilterColumn {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface NumericFilterColumn {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface FlexibleFilterColumn {
     }
 }

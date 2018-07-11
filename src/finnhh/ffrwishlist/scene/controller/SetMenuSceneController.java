@@ -37,10 +37,16 @@ import finnhh.ffrwishlist.model.Profile;
 import finnhh.ffrwishlist.model.Set;
 import finnhh.ffrwishlist.model.constants.item.Amount;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
+import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
 import finnhh.ffrwishlist.model.database.dao.SetDAO;
-import finnhh.ffrwishlist.model.database.dao.itempack.ItemPackDAO;
-import finnhh.ffrwishlist.scene.controller.base.DatabaseConnected;
-import finnhh.ffrwishlist.scene.controller.table.ItemPackTableSceneController;
+import finnhh.ffrwishlist.model.event.ModelEvent;
+import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable;
+import finnhh.ffrwishlist.scene.controller.base.SceneController;
+import finnhh.ffrwishlist.scene.controller.base.connections.DatabaseConnected;
+import finnhh.ffrwishlist.scene.controller.base.ownership.ItemMapOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.ProfileOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.SetMapOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.TableOwner;
 import finnhh.ffrwishlist.scene.holder.SetMenuSceneHolder;
 import finnhh.ffrwishlist.scene.holder.base.ControlledSceneHolder;
 import javafx.application.Platform;
@@ -55,21 +61,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class SetMenuSceneController extends ItemPackTableSceneController implements DatabaseConnected {
+public class SetMenuSceneController extends SceneController implements DatabaseConnected, ProfileOwner, ItemMapOwner,
+                                                                        SetMapOwner, TableOwner {
     @FXML
     private TextField setSearchBar;
     @FXML
     private ComboBox<Set> setSelectComboBox;
     @FXML
     private Label profileLabel;
+    @FXML
+    private ItemPackTable itemPackTable;
 
     private ItemPackDAO itemPackDAO;
-    private SetDAO      setDAO;
+    private SetDAO setDAO;
+
+    private Profile activeProfile;
+
+    private Map<Integer, Item> itemMap;
+    private Map<Integer, Set> setMap;
 
     private Map<Item, Integer> alteredItemAmountsMap;
 
     public SetMenuSceneController() {
-        this.alteredItemAmountsMap = new HashMap<>();
+        alteredItemAmountsMap = new HashMap<>();
     }
 
     private void manageAlteredItemAmounts(ItemPack itemPack, int nextValue) {
@@ -104,6 +118,63 @@ public class SetMenuSceneController extends ItemPackTableSceneController impleme
                 itemPackTable.getItems().addAll(itemPackDAO.queryItemPacksBySet(activeProfile, itemMap, set)));
 
         lateRefreshTable();
+    }
+
+    @FXML
+    private void onItemPackAdd(ModelEvent<ItemPack> itemPackEvent) {
+        ItemPack itemPack = itemPackEvent.getModel();
+
+        manageAlteredItemAmounts(itemPack, Amount.MINIMUM.intValue());
+
+        itemPack.setAmount(Amount.MINIMUM.intValue());
+
+        itemPackDAO.insertAmount(activeProfile, itemPack);
+
+        itemPackTable.refresh();
+    }
+
+    @FXML
+    private void onItemPackIncreaseAmount(ModelEvent<ItemPack> itemPackEvent) {
+        ItemPack itemPack = itemPackEvent.getModel();
+        int currentAmount = itemPack.getAmount();
+
+        if (currentAmount < Amount.MAXIMUM.intValue()) {
+            int nextValue = currentAmount + 1;
+
+            manageAlteredItemAmounts(itemPack, nextValue);
+
+            itemPack.setAmount(nextValue);
+
+            itemPackDAO.updateAmount(activeProfile, itemPack, nextValue);
+
+            itemPackTable.refresh();
+        }
+    }
+
+    @FXML
+    private void onItemPackDecreaseAmount(ModelEvent<ItemPack> itemPackEvent) {
+        ItemPack itemPack = itemPackEvent.getModel();
+        int currentAmount = itemPack.getAmount();
+
+        if (currentAmount > Amount.MINIMUM.intValue()) {
+            int nextValue = currentAmount - 1;
+
+            manageAlteredItemAmounts(itemPack, nextValue);
+
+            itemPack.setAmount(nextValue);
+
+            itemPackDAO.updateAmount(activeProfile, itemPack, nextValue);
+
+            itemPackTable.refresh();
+        } else if (currentAmount == Amount.MINIMUM.intValue()) {
+            manageAlteredItemAmounts(itemPack, Amount.NONE.intValue());
+
+            itemPack.setAmount(Amount.NONE.intValue());
+
+            itemPackDAO.deleteAmount(activeProfile, itemPack);
+
+            itemPackTable.refresh();
+        }
     }
 
     @FXML
@@ -176,59 +247,6 @@ public class SetMenuSceneController extends ItemPackTableSceneController impleme
         new Thread(batchInsertUpdateTask).start();
     }
 
-    @Override
-    protected void onAmountInsertPlusButtonClicked(ItemPack itemPack) {
-        manageAlteredItemAmounts(itemPack, Amount.MINIMUM.intValue());
-
-        itemPack.setAmount(Amount.MINIMUM.intValue());
-
-        itemPackDAO.insertAmount(activeProfile, itemPack);
-
-        itemPackTable.refresh();
-    }
-
-    @Override
-    protected void onAmountUpdatePlusButtonClicked(ItemPack itemPack) {
-        int currentAmount = itemPack.getAmount();
-
-        if (currentAmount < Amount.MAXIMUM.intValue()) {
-            int nextValue = currentAmount + 1;
-
-            manageAlteredItemAmounts(itemPack, nextValue);
-
-            itemPack.setAmount(nextValue);
-
-            itemPackDAO.updateAmount(activeProfile, itemPack, nextValue);
-
-            itemPackTable.refresh();
-        }
-    }
-
-    @Override
-    protected void onAmountUpdateMinusButtonClicked(ItemPack itemPack) {
-        int currentAmount = itemPack.getAmount();
-
-        if (currentAmount > Amount.MINIMUM.intValue()) {
-            int nextValue = currentAmount - 1;
-
-            manageAlteredItemAmounts(itemPack, nextValue);
-
-            itemPack.setAmount(nextValue);
-
-            itemPackDAO.updateAmount(activeProfile, itemPack, nextValue);
-
-            itemPackTable.refresh();
-        } else if (currentAmount == Amount.MINIMUM.intValue()) {
-            manageAlteredItemAmounts(itemPack, Amount.NONE.intValue());
-
-            itemPack.setAmount(Amount.NONE.intValue());
-
-            itemPackDAO.deleteAmount(activeProfile, itemPack);
-
-            itemPackTable.refresh();
-        }
-    }
-
     public void selectSet(boolean setSpecified, Set selectedSet) {
         if (setSpecified) {
             setSelectComboBox.getSelectionModel().select(selectedSet);
@@ -241,13 +259,6 @@ public class SetMenuSceneController extends ItemPackTableSceneController impleme
     }
 
     @Override
-    public void bindMapData(Map<Integer, Item> itemMap, Map<Integer, Set> setMap) {
-        super.bindMapData(itemMap, setMap);
-
-        setSelectComboBox.getItems().addAll(this.setMap.values());
-    }
-
-    @Override
     public void bindHolderData(ControlledSceneHolder sceneHolder) {
         itemPackTable.setItems(((SetMenuSceneHolder) sceneHolder).getItemPackList());
         setSelectComboBox.setItems(((SetMenuSceneHolder) sceneHolder).getSetList());
@@ -257,12 +268,44 @@ public class SetMenuSceneController extends ItemPackTableSceneController impleme
     public void setDatabaseConnections(DatabaseManager databaseManager) {
         itemPackDAO = databaseManager.getItemPackDAO();
         setDAO = databaseManager.getSetDAO();
+
+        setSelectComboBox.getItems().addAll(setDAO.defaultQuerySets(setMap));
+    }
+
+    @Override
+    public Profile getActiveProfile() {
+        return activeProfile;
     }
 
     @Override
     public void setAsActiveProfile(Profile activeProfile) {
-        super.setAsActiveProfile(activeProfile);
+        this.activeProfile = activeProfile;
 
         profileLabel.setText(activeProfile.toString());
+    }
+
+    @Override
+    public Map<Integer, Item> getItemMap() {
+        return itemMap;
+    }
+
+    @Override
+    public void setItemMap(Map<Integer, Item> itemMap) {
+        this.itemMap = itemMap;
+    }
+
+    @Override
+    public Map<Integer, Set> getSetMap() {
+        return setMap;
+    }
+
+    @Override
+    public void setSetMap(Map<Integer, Set> setMap) {
+        this.setMap = setMap;
+    }
+
+    @Override
+    public void lateRefreshTable() {
+        Platform.runLater(itemPackTable::refresh);
     }
 }

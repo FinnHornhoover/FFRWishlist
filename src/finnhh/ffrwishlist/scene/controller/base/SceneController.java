@@ -37,5 +37,5 @@ public abstract class SceneController {
 
     protected SceneController() { }
 
-    public abstract void bindHolderData(ControlledSceneHolder sceneHolder);
+    public void bindHolderData(ControlledSceneHolder sceneHolder) { }
 }

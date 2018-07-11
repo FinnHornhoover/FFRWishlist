@@ -32,12 +32,16 @@
 package finnhh.ffrwishlist.model.database.dao;
 
 import finnhh.ffrwishlist.model.Profile;
-import finnhh.ffrwishlist.model.constants.database.tables.ProfileSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.QueryComparison;
+import finnhh.ffrwishlist.model.constants.database.schema.column.ProfileSchemaColumn;
+import finnhh.ffrwishlist.model.constants.database.schema.table.SchemaTable;
 import finnhh.ffrwishlist.model.constants.profile.ProfileState;
-import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
+import finnhh.ffrwishlist.model.database.sql.SQLBuilders;
+import finnhh.ffrwishlist.model.database.sql.expression.ConditionExpression;
+import finnhh.ffrwishlist.model.database.sql.expression.InstructionExpression;
 
-import java.sql.*;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,103 +50,75 @@ public class ProfileDAO extends DataAccessObject {
     public ProfileDAO() { }
 
     public List<Profile> getAllProfiles() {
-        List<Profile> listOfProfiles = new ArrayList<>();
+        final List<Profile> listOfProfiles = new ArrayList<>();
 
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
+        runOnStatementNoThrow(statement -> {
+            ResultSet resultSet = statement.executeQuery(
+                    SQLBuilders.selectBuilder()
+                            .select(
+                                    ProfileSchemaColumn.PROFILEID,
+                                    ProfileSchemaColumn.PROFILENAME,
+                                    ProfileSchemaColumn.ACTIVE
+                            )
+                            .from(SchemaTable.PROFILES)
+                            .toString()
+            );
 
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
-
-                ResultSet resultSet = statement.executeQuery(
-                        "SELECT " +
-                                ProfileSchemaColumn.PROFILEID    + ", " +
-                                ProfileSchemaColumn.PROFILENAME  + ", " +
-                                ProfileSchemaColumn.ACTIVE       + " " +
-                        "FROM " + DatabaseManager.Table.PROFILES + ";"
-                );
-
-                while (resultSet.next()) {
-                    listOfProfiles.add(new Profile(
-                            resultSet.getInt(ProfileSchemaColumn.PROFILEID.name()),
-                            resultSet.getString(ProfileSchemaColumn.PROFILENAME.name()),
-                            resultSet.getInt(ProfileSchemaColumn.ACTIVE.name()) == ProfileState.ACTIVE.intValue()
-                    ));
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
+            while (resultSet.next()) {
+                listOfProfiles.add(new Profile(
+                        resultSet.getInt(ProfileSchemaColumn.PROFILEID.name()),
+                        resultSet.getString(ProfileSchemaColumn.PROFILENAME.name()),
+                        resultSet.getInt(ProfileSchemaColumn.ACTIVE.name()) == ProfileState.ACTIVE.intValue()
+                ));
             }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        });
 
         return listOfProfiles;
     }
 
-    public void activateProfile(Profile profile) {
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
-
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
-
-                statement.executeUpdate(
-                        "UPDATE " + DatabaseManager.Table.PROFILES + " " +
-                        "SET " + ProfileSchemaColumn.ACTIVE + " = " + ProfileState.ACTIVE.intValue() + " " +
-                        "WHERE " + ProfileSchemaColumn.PROFILEID + " = " + profile.getProfileID() + ";"
-                );
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+    public void activateProfile(final Profile profile) {
+        runOnStatementNoThrow(statement -> statement.executeUpdate(
+                SQLBuilders.updateBuilder()
+                        .update(SchemaTable.PROFILES)
+                        .set(InstructionExpression
+                                .forColumn(ProfileSchemaColumn.ACTIVE)
+                                .setValue(ProfileState.ACTIVE)
+                        )
+                        .where(ConditionExpression
+                                .forColumnExpression(ProfileSchemaColumn.PROFILEID)
+                                .check(QueryComparison.EQUAL_TO)
+                                .value(profile.getProfileID())
+                        )
+                        .toString()
+        ));
     }
 
-    public void deactivateProfile(Profile profile) {
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
-
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
-
-                statement.executeUpdate(
-                        "UPDATE " + DatabaseManager.Table.PROFILES + " " +
-                        "SET " + ProfileSchemaColumn.ACTIVE + " = " + ProfileState.INACTIVE.intValue() + " " +
-                        "WHERE " + ProfileSchemaColumn.PROFILEID + " = " + profile.getProfileID() + ";"
-                );
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+    public void deactivateProfile(final Profile profile) {
+        runOnStatementNoThrow(statement -> statement.executeUpdate(
+                SQLBuilders.updateBuilder()
+                        .update(SchemaTable.PROFILES)
+                        .set(InstructionExpression
+                                .forColumn(ProfileSchemaColumn.ACTIVE)
+                                .setValue(ProfileState.INACTIVE)
+                        )
+                        .where(ConditionExpression
+                                .forColumnExpression(ProfileSchemaColumn.PROFILEID)
+                                .check(QueryComparison.EQUAL_TO)
+                                .value(profile.getProfileID())
+                        )
+                        .toString()
+        ));
     }
 
     public void clearAllActiveProfileStates() {
-        try {
-            Class.forName(DatabaseManager.DRIVER_NAME);
-
-            try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
-
-                statement.executeUpdate(
-                        "UPDATE " + DatabaseManager.Table.PROFILES + " " +
-                        "SET " + ProfileSchemaColumn.ACTIVE + " = " + ProfileState.INACTIVE.intValue() + ";"
-                );
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        runOnStatementNoThrow(statement -> statement.executeUpdate(
+                SQLBuilders.updateBuilder()
+                        .update(SchemaTable.PROFILES)
+                        .set(InstructionExpression
+                                .forColumn(ProfileSchemaColumn.ACTIVE)
+                                .setValue(ProfileState.INACTIVE)
+                        )
+                        .toString()
+        ));
     }
 }

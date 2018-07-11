@@ -36,9 +36,13 @@ import finnhh.ffrwishlist.model.ItemPack;
 import finnhh.ffrwishlist.model.Profile;
 import finnhh.ffrwishlist.model.constants.item.Amount;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
-import finnhh.ffrwishlist.model.database.dao.itempack.ItemPackDAO;
-import finnhh.ffrwishlist.scene.controller.base.DatabaseConnected;
-import finnhh.ffrwishlist.scene.controller.profile.ProfileSceneController;
+import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
+import finnhh.ffrwishlist.model.parser.ParsedQueryInformation;
+import finnhh.ffrwishlist.model.parser.QueryParser;
+import finnhh.ffrwishlist.scene.controller.base.SceneController;
+import finnhh.ffrwishlist.scene.controller.base.connections.DatabaseConnected;
+import finnhh.ffrwishlist.scene.controller.base.ownership.ItemMapOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.ProfileOwner;
 import finnhh.ffrwishlist.scene.holder.ImportExportSceneHolder;
 import finnhh.ffrwishlist.scene.holder.base.ControlledSceneHolder;
 import javafx.application.Platform;
@@ -51,7 +55,8 @@ import javafx.scene.control.TextArea;
 
 import java.util.*;
 
-public class ImportExportSceneController extends ProfileSceneController implements DatabaseConnected {
+public class ImportExportSceneController extends SceneController implements DatabaseConnected, ProfileOwner,
+                                                                            ItemMapOwner {
     public static final String PARSE_FAIL_MESSAGE       = "There have been errors, please check the import code.";
     public static final String AMOUNT_EXCEEDED_MESSAGE  = "One or more of the specified amounts are invalid.";
     public static final String IMPORT_SUCCESS_MESSAGE   = "Successfully added the items in the list!";
@@ -73,6 +78,8 @@ public class ImportExportSceneController extends ProfileSceneController implemen
 
     private ItemPackDAO itemPackDAO;
 
+    private Profile activeProfile;
+
     private Map<Integer, Item> itemMap;
 
     private Map<Item, Integer> wishlistItemsMap;
@@ -80,11 +87,13 @@ public class ImportExportSceneController extends ProfileSceneController implemen
     private boolean wishlistAltered = false;
 
     public ImportExportSceneController() {
-        this.wishlistItemsMap = new HashMap<>();
+        wishlistItemsMap = new HashMap<>();
     }
 
     private void setWishlistItems() {
-        List<ItemPack> wishlistItemPacks = itemPackDAO.defaultQueryItemPacks(activeProfile, itemMap, true);
+        ParsedQueryInformation queryInformation = new QueryParser().parse("", true);
+
+        List<ItemPack> wishlistItemPacks = itemPackDAO.queryItemPacks(activeProfile, itemMap, queryInformation);
 
         wishlistItemsMap.clear();
         wishlistItemPacks.forEach(wip -> wishlistItemsMap.put(wip.getItem(), wip.getAmount()));
@@ -219,18 +228,26 @@ public class ImportExportSceneController extends ProfileSceneController implemen
         return wishlistAltered;
     }
 
-    public void bindMapData(Map<Integer, Item> itemMap) {
-        this.itemMap = itemMap;
-    }
-
     @Override
     public void bindHolderData(ControlledSceneHolder sceneHolder) {
         importConfirmationListView.setItems(((ImportExportSceneHolder) sceneHolder).getImportItemPackList());
     }
 
     @Override
+    public void setDatabaseConnections(DatabaseManager databaseManager) {
+        itemPackDAO = databaseManager.getItemPackDAO();
+
+        setWishlistItems();
+    }
+
+    @Override
+    public Profile getActiveProfile() {
+        return activeProfile;
+    }
+
+    @Override
     public void setAsActiveProfile(Profile activeProfile) {
-        super.setAsActiveProfile(activeProfile);
+        this.activeProfile = activeProfile;
 
         String activeProfileString = activeProfile.toString();
 
@@ -239,9 +256,12 @@ public class ImportExportSceneController extends ProfileSceneController implemen
     }
 
     @Override
-    public void setDatabaseConnections(DatabaseManager databaseManager) {
-        itemPackDAO = databaseManager.getItemPackDAO();
+    public Map<Integer, Item> getItemMap() {
+        return itemMap;
+    }
 
-        setWishlistItems();
+    @Override
+    public void setItemMap(Map<Integer, Item> itemMap) {
+        this.itemMap = itemMap;
     }
 }

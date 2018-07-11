@@ -35,9 +35,8 @@ import finnhh.ffrwishlist.MainApp;
 import finnhh.ffrwishlist.model.constants.stage.StageInfo;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.scene.controller.base.AppConnectedSceneController;
-import finnhh.ffrwishlist.scene.controller.base.DatabaseConnected;
-import finnhh.ffrwishlist.scene.controller.base.WebConnected;
-import finnhh.ffrwishlist.scene.holder.base.ControlledSceneHolder;
+import finnhh.ffrwishlist.scene.controller.base.connections.DatabaseConnected;
+import finnhh.ffrwishlist.scene.controller.base.connections.WebConnected;
 import finnhh.ffrwishlist.web.WebUpdater;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -53,15 +52,19 @@ public class UpdateSceneController extends AppConnectedSceneController implement
     @FXML
     private ProgressIndicator progressIndicator;
 
-    private WebUpdater webUpdater;
-
     private DatabaseManager databaseManager;
+
+    private WebUpdater webUpdater;
 
     public UpdateSceneController() { }
 
     private void returnToPrimaryStage() {
         StageInfo.StageState.UPDATE.setScreenLock(false);
+
         ((MainApp) application).appendToPrimaryStageTitle("." + databaseManager.getDatabaseVersion());
+
+        if (!webUpdater.programVersionExemptFromMessage())
+            ((MainApp) application).showInfoIconButton();
     }
 
     public void runPopup() {
@@ -78,7 +81,7 @@ public class UpdateSceneController extends AppConnectedSceneController implement
             protected void succeeded() {
                 super.succeeded();
 
-                int totalUpdates = webUpdater.getUpdatesRemaining();
+                int totalUpdates = webUpdater.getDatabaseUpdatesRemaining();
 
                 if (totalUpdates > 0) {
                     final double updateWorth =
@@ -101,14 +104,14 @@ public class UpdateSceneController extends AppConnectedSceneController implement
                             });
 
                             do {
-                                if (isCancelled())
+                                if (isCancelled() && databaseManager.allTablesExist())
                                     break;
 
-                                webUpdater.updateOnce(databaseManager);
+                                webUpdater.databaseUpdateOnce(databaseManager);
                                 Platform.runLater(() ->
                                         updateProgress(getWorkDone() + updateWorth, ALL_COMPLETION_PERCENTAGE));
 
-                            } while (webUpdater.getUpdatesRemaining() > 0);
+                            } while (webUpdater.getDatabaseUpdatesRemaining() > 0);
 
                             return null;
                         }
@@ -156,15 +159,12 @@ public class UpdateSceneController extends AppConnectedSceneController implement
     }
 
     @Override
-    public void bindHolderData(ControlledSceneHolder sceneHolder) { }
+    public void setDatabaseConnections(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
+    }
 
     @Override
     public void setWebConnections(WebUpdater webUpdater) {
         this.webUpdater = webUpdater;
-    }
-
-    @Override
-    public void setDatabaseConnections(DatabaseManager databaseManager) {
-        this.databaseManager = databaseManager;
     }
 }

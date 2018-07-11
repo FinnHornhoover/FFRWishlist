@@ -32,13 +32,12 @@
   -->
 
 <?import finnhh.ffrwishlist.model.constants.stage.StageInfo?>
-<?import finnhh.ffrwishlist.resources.ResourceLoader?>
+<?import finnhh.ffrwishlist.resources.ResourceHolder?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-
 <TabPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
     <prefWidth>
         <StageInfo fx:constant="HELP_STAGE_WIDTH" />
@@ -54,7 +53,7 @@
                     <Separator prefWidth="200.0" />
                     <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
                         <ImageView fitWidth="64.0" preserveRatio="true">
-                            <ResourceLoader fx:constant="PROGRAM_ICON" />
+                            <ResourceHolder fx:constant="PROGRAM_ICON" />
                         </ImageView>
                         <Label styleClass="helpTextLarge" text="Welcome to FFR Wishlist, the only program you will need to keep track of your wanted items!" textAlignment="CENTER" textFill="#018e3e" wrapText="true" />
                         <Label text="FFR Wishlist is the must-have program of the organized FusionFaller! The program allows you to easily make and maintain a list of items to get in FusionFall Retro." textAlignment="CENTER" textFill="white" wrapText="true" />
@@ -181,7 +180,8 @@
                             </Label>
                             <Label text="would fetch items that are Ultra Rare or Common." textAlignment="CENTER" textFill="white" wrapText="true" />
                             <Label text="Set filters work pretty much the same way as the other filters, but the values don't need to be exact, similar to how name searches are done. Note that numerical operators (&lt;,&gt;,&lt;=,&gt;=) will only work for Level and Amount columns, as those don't make sense for other columns." textAlignment="CENTER" textFill="white" wrapText="true" />
-                            <Label text="There are alternative ways of referencing values and columns to make the filters a bit more comfortable to use. You can use these instead of writing the whole name of the column or the actual value:" textAlignment="CENTER" textFill="white" wrapText="true" />
+                            <Label text="For your convenience, the search bar also keeps suggesting column names and values as you type them. If you select one of the suggested values, the search bar will autocomplete what you were writing for you!" textAlignment="CENTER" textFill="white" wrapText="true" />
+                            <Label text="There are alternative ways of referencing values and columns to make the filters a bit more comfortable to use:" textAlignment="CENTER" textFill="white" wrapText="true" />
                             <GridPane styleClass="filterGridPane" gridLinesVisible="true">
                                 <columnConstraints>
                                     <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
@@ -331,6 +331,26 @@
                         <Label text="The updater only appears when there's an update to be made, but your program will check if there's an update to make every time you open the program." textAlignment="CENTER" textFill="white" wrapText="true" />
                         <Label text="You can see your database version from the title of your program, the number after the version number is the database version. It might take a couple seconds for the updater to realize there are no updates to make, after that it should update the title of the program with the current database version." textAlignment="CENTER" textFill="white" wrapText="true" />
                         <Label text="FFR Wishlist was designed to run offline with no problems, you only need to connect to the internet when you want a recent database update to be applied." textAlignment="CENTER" textFill="white" wrapText="true" />
+                    </VBox>
+                </children>
+                <padding>
+                    <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+            </VBox>
+        </Tab>
+        <Tab closable="false" text="Information Popups">
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                <children>
+                    <Label styleClass="pageHeader" text="Updater" textFill="#01ae3e" />
+                    <Separator prefWidth="200.0" />
+                    <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
+                        <Label text="The program comes equipped with an information popup as well. Much like the database updater, the button for the popup only appears when there's a new information." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="If you see this button on the top right corner of the program, it means that there's something you should know:" textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <ImageView fitWidth="64.0" preserveRatio="true">
+                            <ResourceHolder fx:constant="INFO_ICON" />
+                        </ImageView>
+                        <Label text="Information popups exist mainly for public announcements for the program's users. Clicking on the button reveals the message." textAlignment="CENTER" textFill="white" wrapText="true" />
+                        <Label text="A great use case for information popups is a program update. So when there's a new version of FFR Wishlist publicly available, you'll know first!" textAlignment="CENTER" textFill="white" wrapText="true" />
                     </VBox>
                 </children>
                 <padding>

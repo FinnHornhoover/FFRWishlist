@@ -31,8 +31,147 @@
 
 package finnhh.ffrwishlist.model.database.dao.base;
 
+import finnhh.ffrwishlist.model.database.DatabaseManager;
+import finnhh.ffrwishlist.resources.ResourceHolder;
+
+import java.sql.*;
+import java.util.*;
+import java.util.regex.Pattern;
+
 public abstract class DataAccessObject {
+    protected static final String GROUP_SEPARATOR = ";";
 
     protected DataAccessObject() { }
 
+    protected static void runOnConnection(SQLConsumer<Connection> consumer) throws ClassNotFoundException, SQLException {
+        Objects.requireNonNull(consumer);
+
+        Class.forName(DatabaseManager.DRIVER_NAME);
+
+        try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL)) {
+
+            consumer.accept(connection);
+        }
+    }
+
+    protected static void runOnConnectionNoThrow(SQLConsumer<Connection> consumer) {
+        try {
+            runOnConnection(consumer);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected static void runOnStatement(SQLConsumer<Statement> consumer) throws ClassNotFoundException, SQLException {
+        Objects.requireNonNull(consumer);
+
+        Class.forName(DatabaseManager.DRIVER_NAME);
+
+        try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
+             Statement statement = connection.createStatement()) {
+
+            consumer.accept(statement);
+        }
+    }
+
+    protected static void runOnStatementNoThrow(SQLConsumer<Statement> consumer) {
+        try {
+            runOnStatement(consumer);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected static void runOnPreparedStatement(String sql, SQLConsumer<PreparedStatement> consumer)
+            throws ClassNotFoundException, SQLException {
+        Objects.requireNonNull(consumer);
+
+        Class.forName(DatabaseManager.DRIVER_NAME);
+
+        try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            consumer.accept(preparedStatement);
+        }
+    }
+
+    protected static void runOnPreparedStatementNoThrow(String sql, SQLConsumer<PreparedStatement> consumer) {
+        try {
+            runOnPreparedStatement(sql, consumer);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected static void runOnConnectionAndStatement(SQLBiConsumer<Connection, Statement> consumer)
+            throws ClassNotFoundException, SQLException {
+        Objects.requireNonNull(consumer);
+
+        Class.forName(DatabaseManager.DRIVER_NAME);
+
+        try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
+             Statement statement = connection.createStatement()) {
+
+            consumer.accept(connection, statement);
+        }
+    }
+
+    protected static void runOnConnectionAndStatementNoThrow(SQLBiConsumer<Connection, Statement> consumer) {
+        try {
+            runOnConnectionAndStatement(consumer);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected static void runOnConnectionAndPreparedStatement(String sql, SQLBiConsumer<Connection, PreparedStatement> consumer)
+            throws ClassNotFoundException, SQLException {
+        Objects.requireNonNull(consumer);
+
+        Class.forName(DatabaseManager.DRIVER_NAME);
+
+        try (Connection connection = DriverManager.getConnection(DatabaseManager.DATABASE_URL);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            consumer.accept(connection, preparedStatement);
+        }
+    }
+
+    protected static void runOnConnectionAndPreparedStatementNoThrow(String sql, SQLBiConsumer<Connection, PreparedStatement> consumer) {
+        try {
+            runOnConnectionAndPreparedStatement(sql, consumer);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Set<String> getExistingTableNames() {
+        final Set<String> receivedNames = new HashSet<>();
+
+        runOnConnectionNoThrow(connection -> {
+            ResultSet mdRes = connection.getMetaData().getTables(null, null, "%", null);
+
+            while (mdRes.next())
+                receivedNames.add(mdRes.getString(3));
+        });
+
+        return receivedNames;
+    }
+
+    public static void initializeDataSource() throws ClassNotFoundException, SQLException {
+        runOnStatement(statement -> {
+            Scanner scanner = new Scanner(ResourceHolder.getSQLFileResourceAsStream("ffrw.sql"));
+            scanner.useDelimiter(Pattern.compile(";"));
+
+            while (scanner.hasNext())
+                statement.executeUpdate(scanner.next() + ";");
+        });
+    }
+
+    public static void rawUpdate(final Queue<String> updateQueue) {
+        runOnStatementNoThrow(statement -> {
+            while (!updateQueue.isEmpty())
+                statement.executeUpdate(updateQueue.remove() + ";");
+        });
+    }
 }

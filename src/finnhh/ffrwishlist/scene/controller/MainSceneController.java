@@ -32,40 +32,53 @@
 package finnhh.ffrwishlist.scene.controller;
 
 import finnhh.ffrwishlist.MainApp;
+import finnhh.ffrwishlist.model.Item;
 import finnhh.ffrwishlist.model.ItemPack;
 import finnhh.ffrwishlist.model.Profile;
 import finnhh.ffrwishlist.model.Set;
 import finnhh.ffrwishlist.model.constants.item.Amount;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.ItemDAO;
+import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
 import finnhh.ffrwishlist.model.database.dao.ProfileDAO;
 import finnhh.ffrwishlist.model.database.dao.SetDAO;
-import finnhh.ffrwishlist.model.database.dao.itempack.ItemPackDAO;
-import finnhh.ffrwishlist.resources.ResourceLoader;
-import finnhh.ffrwishlist.scene.controller.base.DatabaseConnected;
-import finnhh.ffrwishlist.scene.controller.table.ItemPackTableSceneController;
+import finnhh.ffrwishlist.model.event.ModelEvent;
+import finnhh.ffrwishlist.model.parser.ParsedQueryInformation;
+import finnhh.ffrwishlist.model.parser.QueryParser;
+import finnhh.ffrwishlist.resources.ResourceHolder;
+import finnhh.ffrwishlist.scene.component.tablecolumn.AmountColumn;
+import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable;
+import finnhh.ffrwishlist.scene.component.textfield.AutoCompleteItemSearchBar;
+import finnhh.ffrwishlist.scene.controller.base.AppConnectedSceneController;
+import finnhh.ffrwishlist.scene.controller.base.connections.DatabaseConnected;
+import finnhh.ffrwishlist.scene.controller.base.ownership.ItemMapOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.ProfileOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.SetMapOwner;
+import finnhh.ffrwishlist.scene.controller.base.ownership.TableOwner;
 import finnhh.ffrwishlist.scene.holder.MainSceneHolder;
 import finnhh.ffrwishlist.scene.holder.base.ControlledSceneHolder;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
 
-public class MainSceneController extends ItemPackTableSceneController implements DatabaseConnected {
-    public static final int     SET_COL_MIN_WIDTH               = 132;
-    public static final int     TABLE_SETS_VBOX_SPACING         = 2;
-    public static final String  TABLE_SETS_LABELS_CSS_CLASS     = "setreference";
-    public static final String  TOP_TEXT_WISHLIST_TRUE          = "List of items in your wishlist:";
-    public static final String  TOP_TEXT_WISHLIST_FALSE         = "List of items you can add to your wishlist:";
-    public static final String  TOP_BUTTON_TEXT_WISHLIST_TRUE   = "Add Items";
-    public static final String  TOP_BUTTON_TEXT_WISHLIST_FALSE  = "Done";
+import java.util.Map;
 
-    private static final String PARAMETER_SPLITTER = "--";
+public class MainSceneController extends AppConnectedSceneController implements DatabaseConnected, ProfileOwner,
+                                                                                ItemMapOwner, SetMapOwner,
+                                                                                TableOwner {
+    public static final String TOP_TEXT_WISHLIST_TRUE           = "List of items in your wishlist:";
+    public static final String TOP_TEXT_WISHLIST_FALSE          = "List of items you can add to your wishlist:";
+    public static final String TOP_BUTTON_TEXT_WISHLIST_TRUE    = "Add Items";
+    public static final String TOP_BUTTON_TEXT_WISHLIST_FALSE   = "Done";
 
     @FXML
-    private TextField searchBar;
+    private Button infoIconButton;
+    @FXML
+    private AutoCompleteItemSearchBar searchBar;
     @FXML
     private ComboBox<Profile> profileComboBox;
     @FXML
@@ -75,7 +88,9 @@ public class MainSceneController extends ItemPackTableSceneController implements
     @FXML
     private ImageView topButtonImageView;
     @FXML
-    private TableColumn<ItemPack, ObservableList<Set>> setsColumn;
+    private ItemPackTable itemPackTable;
+    @FXML
+    private AmountColumn amountColumn;
     @FXML
     private Label messageBarSearchText;
     @FXML
@@ -83,34 +98,62 @@ public class MainSceneController extends ItemPackTableSceneController implements
     @FXML
     private Label messageBarErrorText;
 
-    private boolean wishlistMode = true;
-
-    private ProfileDAO  profileDAO;
+    private ProfileDAO profileDAO;
     private ItemPackDAO itemPackDAO;
 
-    public MainSceneController() { }
+    private Profile activeProfile;
+
+    private Map<Integer, Item> itemMap;
+    private Map<Integer, Set> setMap;
+
+    private QueryParser queryParser;
+
+    private boolean wishlistMode = true;
+
+    public MainSceneController() {
+        queryParser = new QueryParser();
+    }
+
+    private void setMessageBarSearchText(String nameSearched) {
+        messageBarSearchText.setText(nameSearched.isEmpty() ? "" : "Searching for \"" + nameSearched + "\"");
+    }
+
+    private void setMessageBarItemCountsText() {
+        ObservableList<ItemPack> itemPackList = itemPackTable.getItems();
+        int distinctItems = itemPackList.size();
+
+        if (wishlistMode) {
+            messageBarItemCountsText.setText(
+                    String.format("Showing %d distinct item%s (Total = %d)",
+                            distinctItems,
+                            (distinctItems == 1) ? "" : "s",
+                            itemPackList.stream().mapToInt(ItemPack::getAmount).sum())
+            );
+        } else {
+            messageBarItemCountsText.setText(
+                    String.format("Showing %d item%s",
+                            distinctItems,
+                            (distinctItems == 1) ? "" : "s")
+            );
+        }
+    }
+
+    private void setMessageBarErrorText(String errorText) {
+        messageBarErrorText.setText(errorText);
+    }
 
     @FXML
     private void onSearchBarQueryEntered() {
-        //[0]: always the name, the rest is interpreted as args
-        String[] allParams = searchBar.getText().split(PARAMETER_SPLITTER);
-
-        String namePart = allParams[0].trim();
-        String[] filterArgs = new String[allParams.length - 1];
-
-        for (int i = 0; i < filterArgs.length; i++)
-            filterArgs[i] = allParams[i + 1].trim();
+        ParsedQueryInformation queryInformation = queryParser.parse(searchBar.getText(), wishlistMode);
 
         itemPackTable.getSortOrder().clear();
 
         itemPackTable.getItems().clear();
-        itemPackTable.getItems().addAll(
-                itemPackDAO.queryItemPacks(activeProfile, itemMap, wishlistMode, namePart, filterArgs)
-        );
+        itemPackTable.getItems().addAll(itemPackDAO.queryItemPacks(activeProfile, itemMap, queryInformation));
         itemPackTable.refresh();
-        setMessageBarSearchText(namePart);
+        setMessageBarSearchText(queryInformation.getSearchString());
         setMessageBarItemCountsText();
-        setMessageBarErrorText();
+        setMessageBarErrorText(queryInformation.getErrorString());
     }
 
     @FXML
@@ -134,90 +177,8 @@ public class MainSceneController extends ItemPackTableSceneController implements
     }
 
     @FXML
-    private void onImportExportButtonClicked() {
-        ((MainApp) application).startImportExportStage(this);
-    }
-
-    @FXML
-    private void onHelpButtonClicked() {
-        ((MainApp) application).startHelpStage();
-    }
-
-    @FXML
-    private void onSetMenuButtonClicked() {
-        ((MainApp) application).startSetMenuStage(this);
-    }
-
-    private void setMessageBarSearchText(String nameSearched) {
-        messageBarSearchText.setText(nameSearched.equals("") ? "" : "Searching for \"" + nameSearched + "\"");
-    }
-
-    private void setMessageBarItemCountsText() {
-        ObservableList<ItemPack> itemPackList = itemPackTable.getItems();
-        int distinctItems = itemPackList.size();
-
-        if (wishlistMode) {
-            messageBarItemCountsText.setText(String.format("Showing %d distinct item%s (Total = %d)",
-                    distinctItems,
-                    (distinctItems == 1) ? "" : "s",
-                    itemPackList.stream().mapToInt(ItemPack::getAmount).sum()));
-        } else {
-            messageBarItemCountsText.setText(String.format("Showing %d item%s",
-                    distinctItems,
-                    (distinctItems == 1) ? "" : "s"));
-        }
-    }
-
-    private void setMessageBarErrorText() {
-        messageBarErrorText.setText(itemPackDAO.getQueryErrorString());
-    }
-
-    @Override
-    protected void setTableCellValueFactories() {
-        super.setTableCellValueFactories();
-
-        setsColumn.setCellValueFactory(cellData -> cellData.getValue().getItem().setsAssociatedProperty());
-    }
-
-    @Override
-    protected void setTableCellFactories() {
-        super.setTableCellFactories();
-
-        setsColumn.setCellFactory(cfData -> new TableCell<ItemPack, ObservableList<Set>>() {
-            private final VBox labelsBox;
-
-            {
-                labelsBox = new VBox(TABLE_SETS_VBOX_SPACING);
-                labelsBox.setAlignment(Pos.CENTER);
-            }
-
-            @Override
-            protected void updateItem(ObservableList<Set> item, boolean empty) {
-                super.updateItem(item, empty);
-
-                labelsBox.getChildren().clear();
-
-                if (!empty) {
-                    if (!item.isEmpty()) {
-                        item.forEach(s -> {
-                            final Label setLabel = new Label(s.getSetName());
-                            setLabel.getStyleClass().add(TABLE_SETS_LABELS_CSS_CLASS);
-                            setLabel.setOnMouseClicked(event ->
-                                    ((MainApp) application).startSetMenuStage(MainSceneController.this, true, s));
-                            labelsBox.getChildren().add(setLabel);
-                        });
-                    } else {
-                        labelsBox.getChildren().add(new Label("No Sets"));
-                    }
-
-                    setGraphic(labelsBox);
-                }
-            }
-        });
-    }
-
-    @Override
-    protected void onAmountInsertPlusButtonClicked(ItemPack itemPack) {
+    private void onItemPackAdd(ModelEvent<ItemPack> itemPackEvent) {
+        ItemPack itemPack = itemPackEvent.getModel();
         itemPack.setAmount(Amount.MINIMUM.intValue());
         itemPackDAO.insertAmount(activeProfile, itemPack);
         itemPackTable.getItems().remove(itemPack);
@@ -225,8 +186,9 @@ public class MainSceneController extends ItemPackTableSceneController implements
         setMessageBarItemCountsText();
     }
 
-    @Override
-    protected void onAmountUpdatePlusButtonClicked(ItemPack itemPack) {
+    @FXML
+    private void onItemPackIncreaseAmount(ModelEvent<ItemPack> itemPackEvent) {
+        ItemPack itemPack = itemPackEvent.getModel();
         int currentAmount = itemPack.getAmount();
 
         if (currentAmount < Amount.MAXIMUM.intValue()) {
@@ -237,8 +199,9 @@ public class MainSceneController extends ItemPackTableSceneController implements
         }
     }
 
-    @Override
-    protected void onAmountUpdateMinusButtonClicked(ItemPack itemPack) {
+    @FXML
+    private void onItemPackDecreaseAmount(ModelEvent<ItemPack> itemPackEvent) {
+        ItemPack itemPack = itemPackEvent.getModel();
         int currentAmount = itemPack.getAmount();
 
         if (currentAmount > Amount.MINIMUM.intValue()) {
@@ -252,6 +215,35 @@ public class MainSceneController extends ItemPackTableSceneController implements
             itemPackTable.refresh();
             setMessageBarItemCountsText();
         }
+    }
+
+    @FXML
+    private void onSetSelectedFromTable(ModelEvent<Set> setEvent) {
+        ((MainApp) application).startSetMenuStage(this, true, setEvent.getModel());
+    }
+
+    @FXML
+    private void onInformationButtonClicked() {
+        ((MainApp) application).startInformationStage();
+    }
+
+    @FXML
+    private void onSetMenuButtonClicked() {
+        ((MainApp) application).startSetMenuStage(this);
+    }
+
+    @FXML
+    private void onImportExportButtonClicked() {
+        ((MainApp) application).startImportExportStage(this);
+    }
+
+    @FXML
+    private void onHelpButtonClicked() {
+        ((MainApp) application).startHelpStage();
+    }
+
+    public void showInfoIconButton() {
+        infoIconButton.setVisible(true);
     }
 
     public void profileChoiceBoxSetup() {
@@ -275,40 +267,37 @@ public class MainSceneController extends ItemPackTableSceneController implements
     }
 
     public void switchToWishlistMode(boolean desiredMode) {
-        if (desiredMode) {
-            wishlistMode = true;
+        wishlistMode = desiredMode;
 
+        if (wishlistMode) {
             topInfoText.setText(TOP_TEXT_WISHLIST_TRUE);
 
             topAddButton.setText(TOP_BUTTON_TEXT_WISHLIST_TRUE);
-            topButtonImageView.setImage(ResourceLoader.PLUS_ICON);
+            topButtonImageView.setImage(ResourceHolder.PLUS_ICON);
         } else {
-            wishlistMode = false;
-
             topInfoText.setText(TOP_TEXT_WISHLIST_FALSE);
 
             topAddButton.setText(TOP_BUTTON_TEXT_WISHLIST_FALSE);
-            topButtonImageView.setImage(ResourceLoader.DONE_ICON);
+            topButtonImageView.setImage(ResourceHolder.DONE_ICON);
         }
 
         itemPackTable.getSortOrder().clear();
 
         amountColumn.setSortable(wishlistMode);
 
-        searchBar.setText("");
+        ParsedQueryInformation queryInformation = queryParser.parse("", wishlistMode);
 
         itemPackTable.getItems().clear();
-        itemPackTable.getItems().addAll(itemPackDAO.defaultQueryItemPacks(activeProfile, itemMap, wishlistMode));
+        itemPackTable.getItems().addAll(itemPackDAO.queryItemPacks(activeProfile, itemMap, queryInformation));
         lateRefreshTable();
 
-        setMessageBarSearchText("");
+        setMessageBarSearchText(queryInformation.getSearchString());
         setMessageBarItemCountsText();
-        setMessageBarErrorText();
+        setMessageBarErrorText(queryInformation.getErrorString());
     }
 
-    @Override
     public void populateInitialTable() {
-        itemPackTable.getItems().addAll(itemPackDAO.defaultQueryItemPacks(activeProfile, itemMap, wishlistMode));
+        itemPackTable.getItems().addAll(itemPackDAO.queryItemPacks(activeProfile, itemMap, queryParser.parse("", wishlistMode)));
         itemPackTable.refresh();
         setMessageBarItemCountsText();
     }
@@ -326,9 +315,45 @@ public class MainSceneController extends ItemPackTableSceneController implements
         profileDAO      = databaseManager.getProfileDAO();
         itemPackDAO     = databaseManager.getItemPackDAO();
 
-        bindMapData(itemDAO.getAllItemsMap(), setDAO.getAllSetsMap());
+        setItemMap(itemDAO.getAllItemsMap());
+        setSetMap(setDAO.getAllSetsMap());
 
         itemDAO.makeItemSetAssociations(itemMap, setMap);
         setDAO.makeSetItemAssociations(setMap, itemMap);
+    }
+
+    @Override
+    public Profile getActiveProfile() {
+        return activeProfile;
+    }
+
+    @Override
+    public void setAsActiveProfile(Profile activeProfile) {
+        this.activeProfile = activeProfile;
+    }
+
+    @Override
+    public Map<Integer, Item> getItemMap() {
+        return itemMap;
+    }
+
+    @Override
+    public void setItemMap(Map<Integer, Item> itemMap) {
+        this.itemMap = itemMap;
+    }
+
+    @Override
+    public Map<Integer, Set> getSetMap() {
+        return setMap;
+    }
+
+    @Override
+    public void setSetMap(Map<Integer, Set> setMap) {
+        this.setMap = setMap;
+    }
+
+    @Override
+    public void lateRefreshTable() {
+        Platform.runLater(itemPackTable::refresh);
     }
 }

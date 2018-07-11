@@ -31,7 +31,7 @@
 
 package finnhh.ffrwishlist.scene.holder.base;
 
-import finnhh.ffrwishlist.resources.ResourceLoader;
+import finnhh.ffrwishlist.resources.ResourceHolder;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 
@@ -41,14 +41,12 @@ public class SceneHolder {
 
     public SceneHolder(Parent root, int sceneWidth, int sceneHeight, String sceneCSS) {
         scene = new Scene(root, sceneWidth, sceneHeight);
-        scene.getStylesheets().add(ResourceLoader.getStyleCSSResource(sceneCSS).toExternalForm());
+        scene.getStylesheets().add(ResourceHolder.getStyleCSSResource(sceneCSS).toExternalForm());
     }
 
-    protected void atFirstStageAccess() {
-    }
+    protected void atFirstStageAccess() { }
 
-    protected void atAllStageAccesses() {
-    }
+    protected void atAllStageAccesses() { }
 
     public final Scene getScene() {
         if (!sceneAccessed) {

@@ -40,8 +40,8 @@ import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 
 public class SetMenuSceneHolder extends ControlledSceneHolder {
-    private ObservableList<ItemPack>    itemPackList;
-    private ObservableList<Set>         setList;
+    private ObservableList<ItemPack> itemPackList;
+    private ObservableList<Set> setList;
 
     public SetMenuSceneHolder(Parent root, int sceneWidth, int sceneHeight, String sceneCSS) {
         super(root, sceneWidth, sceneHeight, sceneCSS);
@@ -51,8 +51,8 @@ public class SetMenuSceneHolder extends ControlledSceneHolder {
         scene.heightProperty().addListener((observable, oldValue, newValue) ->
                 ((SetMenuSceneController) sceneController).lateRefreshTable());
 
-        this.itemPackList   = FXCollections.observableArrayList();
-        this.setList        = FXCollections.observableArrayList();
+        itemPackList = FXCollections.observableArrayList();
+        setList = FXCollections.observableArrayList();
     }
 
     public ObservableList<ItemPack> getItemPackList() {

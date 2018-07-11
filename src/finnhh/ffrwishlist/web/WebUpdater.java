@@ -34,6 +34,7 @@ package finnhh.ffrwishlist.web;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
+import finnhh.ffrwishlist.MainApp;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -41,18 +42,22 @@ import javax.xml.ws.http.HTTPException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayDeque;
-import java.util.Comparator;
-import java.util.Queue;
+import java.util.*;
 
 public class WebUpdater {
     private static final String JSON_URL = "https://dl.dropboxusercontent.com/s/4y8psrl66n9qvnh/ffrw.json?dl=1";
 
-    private int targetVersion;
+    private int targetDBVersion;
     private Queue<UpdateSegment> updateSegmentQueue;
 
+    private String messageTitle = "";
+    private String messageBody = "";
+    private boolean messageFaulty = true;
+    private List<String> exemptVersions;
+
     public WebUpdater() {
-        this.updateSegmentQueue = new ArrayDeque<>();
+        updateSegmentQueue = new ArrayDeque<>();
+        exemptVersions = new ArrayList<>();
     }
 
     public void connectAndFetchData(int currentDatabaseVersion) throws IOException, HTTPException {
@@ -64,21 +69,29 @@ public class WebUpdater {
         if (responseCode == HttpsURLConnection.HTTP_OK) {
             try (InputStreamReader inputStreamReader = new InputStreamReader(urlConnection.getInputStream())) {
                 JsonObject updateJsonObject = Json.parse(inputStreamReader).asObject();
+                JsonObject messageJsonObject = updateJsonObject.get("message").asObject();
 
-                targetVersion = updateJsonObject.get("version").asInt();
+                targetDBVersion = updateJsonObject.get("version").asInt();
 
                 updateJsonObject.get("update_segments").asArray().values().stream()
                         .map(s -> new UpdateSegment(s.asObject()))
-                        .filter(s -> s.getVersionTag() > currentDatabaseVersion && s.getVersionTag() <= targetVersion)
+                        .filter(s -> s.getVersionTag() > currentDatabaseVersion && s.getVersionTag() <= targetDBVersion)
                         .sorted(Comparator.comparingInt(UpdateSegment::getVersionTag))
                         .forEachOrdered(updateSegmentQueue::add);
+
+                messageTitle = messageJsonObject.get("title").asString();
+                messageBody = messageJsonObject.get("body").asString();
+
+                messageJsonObject.get("exempt_versions").asArray().forEach(jv -> exemptVersions.add(jv.asString()));
+
+                messageFaulty = false;
             }
         } else {
             throw new HTTPException(responseCode);
         }
     }
 
-    public void updateOnce(DatabaseManager databaseManager) {
+    public void databaseUpdateOnce(DatabaseManager databaseManager) {
         if (!updateSegmentQueue.isEmpty()) {
             UpdateSegment updateSegment = updateSegmentQueue.remove();
 
@@ -87,8 +100,20 @@ public class WebUpdater {
         }
     }
 
-    public int getUpdatesRemaining() {
+    public int getDatabaseUpdatesRemaining() {
         return updateSegmentQueue.size();
+    }
+
+    public String getMessageTitle() {
+        return messageTitle;
+    }
+
+    public String getMessageBody() {
+        return messageBody;
+    }
+
+    public boolean programVersionExemptFromMessage() {
+        return messageFaulty || exemptVersions.stream().anyMatch(MainApp.VERSION::equals);
     }
 
     private static class UpdateSegment {

@@ -31,48 +31,44 @@
 
 package finnhh.ffrwishlist.model.database;
 
-import finnhh.ffrwishlist.model.database.dao.ItemDAO;
-import finnhh.ffrwishlist.model.database.dao.ProfileDAO;
-import finnhh.ffrwishlist.model.database.dao.SetDAO;
-import finnhh.ffrwishlist.model.database.dao.VersionDAO;
-import finnhh.ffrwishlist.model.database.dao.itempack.ItemPackDAO;
-import finnhh.ffrwishlist.resources.ResourceLoader;
+import finnhh.ffrwishlist.model.constants.database.schema.table.SchemaTable;
+import finnhh.ffrwishlist.model.database.dao.*;
+import finnhh.ffrwishlist.model.database.dao.base.DataAccessObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.sql.*;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Queue;
+import java.util.Set;
 
 public class DatabaseManager {
-    public static final String DRIVER_NAME          = "org.sqlite.JDBC";
-    public static final String DATABASE_FILE_DIR    = System.getProperty("user.home") + "/FFRWishlistData/db";
-    public static final String DATABASE_URL         = "jdbc:sqlite:" + DATABASE_FILE_DIR + "/ffrw.db";
+    public static final String          DRIVER_NAME             = "org.sqlite.JDBC";
+    public static final String          DATABASE_FILE_DIR       = System.getProperty("user.home") + "/FFRWishlistData/db";
+    public static final String          DATABASE_URL            = "jdbc:sqlite:" + DATABASE_FILE_DIR + "/ffrw.db";
 
-    private final VersionDAO    versionDAO;
+    private static final Set<String>    EXPECTED_TABLE_NAMES    = SchemaTable.allTableNames();
 
-    private final ProfileDAO    profileDAO;
-    private final ItemDAO       itemDAO;
-    private final SetDAO        setDAO;
-    private final ItemPackDAO   itemPackDAO;
+    private final VersionDAO versionDAO;
+
+    private final ProfileDAO profileDAO;
+    private final ItemDAO itemDAO;
+    private final SetDAO setDAO;
+    private final ItemPackDAO itemPackDAO;
 
     private int databaseVersion;
 
     public DatabaseManager() throws IOException, SQLException, ClassNotFoundException {
         initializeDataSource();
 
-        this.versionDAO = new VersionDAO();
+        versionDAO = new VersionDAO();
         databaseVersion = versionDAO.getVersion();
 
-        this.profileDAO  = new ProfileDAO();
-
-        this.itemDAO     = new ItemDAO();
-
-        this.setDAO      = new SetDAO();
-
-        this.itemPackDAO = new ItemPackDAO();
+        profileDAO = new ProfileDAO();
+        itemDAO = new ItemDAO();
+        setDAO = new SetDAO();
+        itemPackDAO = new ItemPackDAO();
     }
 
     private void initializeDataSource() throws IOException, SQLException, ClassNotFoundException {
@@ -80,50 +76,12 @@ public class DatabaseManager {
         if (!dbDir.exists())
             Files.createDirectories(dbDir.toPath());
 
-        Class.forName(DRIVER_NAME);
-
-        try (Connection connection = DriverManager.getConnection(DATABASE_URL);
-             Statement statement = connection.createStatement()) {
-
-            Set<String> expectedNames = Arrays.stream(Table.values()).map(Table::name).collect(Collectors.toSet());
-            Set<String> receivedNames = new HashSet<>();
-
-            ResultSet mdRes = connection.getMetaData().getTables(null, null, "%", null);
-
-            while (mdRes.next())
-                receivedNames.add(mdRes.getString(3));
-
-            if (!receivedNames.containsAll(expectedNames)) {
-                for (String tableName : receivedNames)
-                    statement.executeUpdate("DROP TABLE IF EXISTS " + tableName + ";");
-
-                Scanner scanner = new Scanner(ResourceLoader.getSQLFileResourceAsStream("ffrw.sql"));
-                scanner.useDelimiter(Pattern.compile(";"));
-
-                while (scanner.hasNext())
-                    statement.executeUpdate(scanner.next() + ";");
-            }
-
-        }
+        if (noTablesExist())
+            DataAccessObject.initializeDataSource();
     }
 
-    public void rawUpdate(Queue<String> updateQueue) {
-        try {
-            Class.forName(DRIVER_NAME);
-
-            try (Connection connection = DriverManager.getConnection(DATABASE_URL);
-                 Statement statement = connection.createStatement()) {
-
-                while (!updateQueue.isEmpty())
-                    statement.executeUpdate(updateQueue.remove() + ";");
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+    public void rawUpdate(final Queue<String> updateQueue) {
+        DataAccessObject.rawUpdate(updateQueue);
     }
 
     public void setDatabaseVersion(int version) {
@@ -134,6 +92,14 @@ public class DatabaseManager {
 
     public int getDatabaseVersion() {
         return databaseVersion;
+    }
+
+    public boolean allTablesExist() {
+        return DataAccessObject.getExistingTableNames().containsAll(EXPECTED_TABLE_NAMES);
+    }
+
+    public boolean noTablesExist() {
+        return Collections.disjoint(DataAccessObject.getExistingTableNames(), EXPECTED_TABLE_NAMES);
     }
 
     public ProfileDAO getProfileDAO() {
@@ -150,14 +116,5 @@ public class DatabaseManager {
 
     public ItemPackDAO getItemPackDAO() {
         return itemPackDAO;
-    }
-
-    public enum Table {
-        VERSIONS,
-        ITEMS,
-        PROFILES,
-        SETS,
-        ITEMS_SETS,
-        ITEMS_PROFILES;
     }
 }

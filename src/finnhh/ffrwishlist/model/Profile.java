@@ -36,29 +36,14 @@ import javafx.beans.property.*;
 import java.util.Objects;
 
 public class Profile {
-    private final IntegerProperty   profileID;
-    private final StringProperty    profileName;
-    private final BooleanProperty   active;
+    private final IntegerProperty profileID;
+    private final StringProperty profileName;
+    private final BooleanProperty active;
 
     public Profile(int profileID, String profileName, boolean active) {
-        this.profileID      = new SimpleIntegerProperty(profileID);
-        this.profileName    = new SimpleStringProperty(profileName);
-        this.active         = new SimpleBooleanProperty(active);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Profile && this.profileID.get() == ((Profile) obj).profileID.get();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(profileID.get());
-    }
-
-    @Override
-    public String toString() {
-        return profileName.get();
+        this.profileID = new SimpleIntegerProperty(profileID);
+        this.profileName = new SimpleStringProperty(profileName);
+        this.active = new SimpleBooleanProperty(active);
     }
 
     public int getProfileID() {
@@ -91,5 +76,20 @@ public class Profile {
 
     public BooleanProperty activeProperty() {
         return active;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Profile && this.profileID.get() == ((Profile) obj).profileID.get();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(profileID.get());
+    }
+
+    @Override
+    public String toString() {
+        return profileName.get();
     }
 }
