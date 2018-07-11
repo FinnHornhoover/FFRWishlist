@@ -1,6 +1,6 @@
 # FFRWishlist
 <p align="center">
-  <img src="https://s6.postimg.cc/7zc63dxzl/FFRWishlist-1.1.png" />
+  <img src="https://s6.postimg.cc/m71urhksx/FFRWishlist-1.1.png" />
 </p>
 <p align="center">
   Java FX application for wishlist making in FusionFall Retro. Easy to use and filled with everything you need!
