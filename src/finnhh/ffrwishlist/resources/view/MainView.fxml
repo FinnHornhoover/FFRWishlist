@@ -53,12 +53,10 @@
         <Double fx:id="mainButtonSize" fx:value="131.0" />
     </fx:define>
     <children>
-        <BorderPane>
-            <center>
-                <Label id="mainStageHeader" text="FFR Wishlist" textAlignment="CENTER" textFill="#01ae3e" BorderPane.alignment="CENTER" />
-            </center>
-            <right>
-                <Button fx:id="infoIconButton" visible="false" styleClass="iconButton" mnemonicParsing="false" onAction="#onInformationButtonClicked" BorderPane.alignment="CENTER">
+        <StackPane>
+            <Label id="mainStageHeader" text="FFR Wishlist" textAlignment="CENTER" textFill="#01ae3e" BorderPane.alignment="CENTER" />
+            <HBox alignment="CENTER_RIGHT">
+                <Button fx:id="infoIconButton" visible="false" styleClass="iconButton" mnemonicParsing="false" onAction="#onInformationButtonClicked">
                     <graphic>
                         <ImageView preserveRatio="true">
                             <fitWidth>
@@ -68,8 +66,8 @@
                         </ImageView>
                     </graphic>
                 </Button>
-            </right>
-        </BorderPane>
+            </HBox>
+        </StackPane>
         <HBox alignment="CENTER_LEFT" spacing="10.0">
             <AutoCompleteItemSearchBar fx:id="searchBar" onAction="#onSearchBarQueryEntered" HBox.hgrow="ALWAYS" />
             <ComboBox fx:id="profileComboBox" onAction="#onProfileChanged" prefWidth="$mainButtonSize" />
