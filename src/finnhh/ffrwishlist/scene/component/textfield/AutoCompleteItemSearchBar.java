@@ -44,6 +44,7 @@ import javafx.scene.control.TextField;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AutoCompleteItemSearchBar extends TextField {
     public static final String SEARCH_BAR_PROMPT_TEXT_DEFAULT = "Search for an item";
@@ -58,7 +59,8 @@ public class AutoCompleteItemSearchBar extends TextField {
 
     public AutoCompleteItemSearchBar() {
         suggestionsMenu = new ContextMenu();
-        suggestedStrings = new TreeSet<>();
+        suggestedStrings = new TreeSet<>((s1, s2) ->
+                (s1.length() == s2.length()) ? s1.compareToIgnoreCase(s2) : Integer.compare(s2.length(), s1.length()));
 
         columnAutoCompleteStrings = new TreeSet<>();
         valueAutoCompleteStrings = new TreeSet<>(Comparator.comparing(AutoCompleteValue::getString));
@@ -117,22 +119,10 @@ public class AutoCompleteItemSearchBar extends TextField {
         if (!suggestedStrings.isEmpty() && !inputString.isEmpty()) {
             int suggestionCount = suggestedStrings.size();
             int shownSuggestionsCount = (suggestionCount > SUGGESTION_LIMIT) ? SUGGESTION_LIMIT : suggestionCount;
+            final String lowercaseInputString = inputString.toLowerCase(Locale.ENGLISH);
 
             suggestedStrings.stream()
-                    .sorted((s1, s2) -> {
-                        //prioritize strings starting with the input string by sorting
-                        //if both s1 and s2 are equivalent in terms of this, the longer string is more relevant
-                        //this is to avoid trying to autocomplete shorthands that don't really need autocompletion
-                        boolean s1StartsWithInput = s1.startsWith(inputString.toLowerCase(Locale.ENGLISH));
-                        boolean s2StartsWithInput = s2.startsWith(inputString.toLowerCase(Locale.ENGLISH));
-
-                        if ((s1StartsWithInput && s2StartsWithInput) || (!s1StartsWithInput && !s2StartsWithInput))
-                            return s2.length() - s1.length();
-                        else if (s1StartsWithInput)
-                            return -1;
-                        else
-                            return 1;
-                    })
+                    .sorted(Comparator.comparingInt(s -> s.indexOf(lowercaseInputString)))
                     .limit(shownSuggestionsCount)
                     .map(ss -> {
                         MenuItem menuItem = new MenuItem(ss);
@@ -140,7 +130,7 @@ public class AutoCompleteItemSearchBar extends TextField {
                         menuItem.setMnemonicParsing(false);
                         return menuItem;
                     })
-                    .forEach(mi -> suggestionsMenu.getItems().add(mi));
+                    .forEachOrdered(mi -> suggestionsMenu.getItems().add(mi));
 
             if (shownSuggestionsCount > 1
                     || !inputString.toLowerCase(Locale.ENGLISH).equals(suggestionsMenu.getItems().get(0).getText())) {
