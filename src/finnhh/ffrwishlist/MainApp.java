@@ -37,6 +37,7 @@ import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.resources.ResourceHolder;
 import finnhh.ffrwishlist.scene.controller.*;
 import finnhh.ffrwishlist.scene.controller.base.SceneController;
+import finnhh.ffrwishlist.scene.controller.base.connections.WishlistConnected;
 import finnhh.ffrwishlist.scene.holder.base.ControlledSceneHolder;
 import finnhh.ffrwishlist.scene.holder.base.SceneHolder;
 import finnhh.ffrwishlist.web.WebUpdater;
@@ -47,6 +48,9 @@ import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MainApp extends Application {
     public static final String VERSION = "1.1";
 
@@ -55,9 +59,13 @@ public class MainApp extends Application {
 
     private StageHolder primaryStageHolder;
 
+    private Map<StageInfo.StageState, WishlistConnected> wishlistAlteringStagesMap;
+
     private void setSingletons() throws Exception {
         appDatabaseManager = new DatabaseManager();
         appUpdater = new WebUpdater();
+
+        wishlistAlteringStagesMap = new HashMap<>();
     }
 
     private void startUpdateStage() {
@@ -103,6 +111,8 @@ public class MainApp extends Application {
             void controllerSetup() {
                 MainSceneController mainSceneController = (MainSceneController) getSceneController();
 
+                wishlistAlteringStagesMap.put(getStageState(), mainSceneController);
+
                 mainSceneController.setApp(MainApp.this);
                 mainSceneController.setDatabaseConnections(appDatabaseManager);
             }
@@ -110,6 +120,8 @@ public class MainApp extends Application {
             @Override
             void onStageExit(WindowEvent event) {
                 super.onStageExit(event);
+
+                wishlistAlteringStagesMap.remove(getStageState());
 
                 Platform.exit();
             }
@@ -131,6 +143,9 @@ public class MainApp extends Application {
             void controllerSetup() {
                 ImportExportSceneController importExportSceneController = (ImportExportSceneController) getSceneController();
 
+                wishlistAlteringStagesMap.put(getStageState(), importExportSceneController);
+
+                importExportSceneController.setApp(MainApp.this);
                 importExportSceneController.setItemMap(sourceSceneController.getItemMap());
                 importExportSceneController.setAsActiveProfile(sourceSceneController.getActiveProfile());
                 importExportSceneController.setDatabaseConnections(appDatabaseManager);
@@ -140,8 +155,7 @@ public class MainApp extends Application {
             void onStageExit(WindowEvent event) {
                 super.onStageExit(event);
 
-                if (((ImportExportSceneController) getSceneController()).alteredWishlist())
-                    sourceSceneController.switchToWishlistMode(true);
+                wishlistAlteringStagesMap.remove(getStageState());
             }
         };
 
@@ -167,12 +181,15 @@ public class MainApp extends Application {
     }
 
     public void startSetMenuStage(final MainSceneController sourceSceneController, boolean setSpecified,
-                                  Set selectedSet) {
+                                  final Set selectedSet) {
         StageHolder stageHolder = new StageHolder(new Stage(), StageInfo.StageState.SET_MENU) {
             @Override
             void controllerSetup() {
                 SetMenuSceneController setMenuSceneController = (SetMenuSceneController) getSceneController();
 
+                wishlistAlteringStagesMap.put(getStageState(), setMenuSceneController);
+
+                setMenuSceneController.setApp(MainApp.this);
                 setMenuSceneController.setItemMap(sourceSceneController.getItemMap());
                 setMenuSceneController.setSetMap(sourceSceneController.getSetMap());
                 setMenuSceneController.setDatabaseConnections(appDatabaseManager);
@@ -184,8 +201,7 @@ public class MainApp extends Application {
             void onStageExit(WindowEvent event) {
                 super.onStageExit(event);
 
-                if (((SetMenuSceneController) getSceneController()).alteredWishlist())
-                    sourceSceneController.switchToWishlistMode(true);
+                wishlistAlteringStagesMap.remove(getStageState());
             }
         };
 
@@ -219,6 +235,13 @@ public class MainApp extends Application {
 
     public void showInfoIconButton() {
         ((MainSceneController) primaryStageHolder.getSceneController()).showInfoIconButton();
+    }
+
+    public void wishlistInvalidatedBy(StageInfo.StageState sourceStageState) {
+        wishlistAlteringStagesMap.forEach((stageState, wishlistConnected) -> {
+            if (stageState != sourceStageState)
+                wishlistConnected.wishlistInvalidated();
+        });
     }
 
     private static class StageHolder {

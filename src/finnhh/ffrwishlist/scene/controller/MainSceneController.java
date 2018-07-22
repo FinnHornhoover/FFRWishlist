@@ -37,6 +37,7 @@ import finnhh.ffrwishlist.model.ItemPack;
 import finnhh.ffrwishlist.model.Profile;
 import finnhh.ffrwishlist.model.Set;
 import finnhh.ffrwishlist.model.constants.item.Amount;
+import finnhh.ffrwishlist.model.constants.stage.StageInfo;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.ItemDAO;
 import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
@@ -51,6 +52,7 @@ import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable;
 import finnhh.ffrwishlist.scene.component.textfield.AutoCompleteItemSearchBar;
 import finnhh.ffrwishlist.scene.controller.base.AppConnectedSceneController;
 import finnhh.ffrwishlist.scene.controller.base.connections.DatabaseConnected;
+import finnhh.ffrwishlist.scene.controller.base.connections.WishlistConnected;
 import finnhh.ffrwishlist.scene.controller.base.ownership.ItemMapOwner;
 import finnhh.ffrwishlist.scene.controller.base.ownership.ProfileOwner;
 import finnhh.ffrwishlist.scene.controller.base.ownership.SetMapOwner;
@@ -67,8 +69,8 @@ import javafx.scene.image.ImageView;
 
 import java.util.Map;
 
-public class MainSceneController extends AppConnectedSceneController implements DatabaseConnected, ProfileOwner,
-                                                                                ItemMapOwner, SetMapOwner,
+public class MainSceneController extends AppConnectedSceneController implements DatabaseConnected, WishlistConnected,
+                                                                                ProfileOwner, ItemMapOwner, SetMapOwner,
                                                                                 TableOwner {
     public static final String TOP_TEXT_WISHLIST_TRUE           = "List of items in your wishlist:";
     public static final String TOP_TEXT_WISHLIST_FALSE          = "List of items you can add to your wishlist:";
@@ -142,6 +144,36 @@ public class MainSceneController extends AppConnectedSceneController implements 
         messageBarErrorText.setText(errorText);
     }
 
+    private void switchToWishlistMode(boolean desiredMode) {
+        wishlistMode = desiredMode;
+
+        if (wishlistMode) {
+            topInfoText.setText(TOP_TEXT_WISHLIST_TRUE);
+
+            topAddButton.setText(TOP_BUTTON_TEXT_WISHLIST_TRUE);
+            topButtonImageView.setImage(ResourceHolder.PLUS_ICON);
+        } else {
+            topInfoText.setText(TOP_TEXT_WISHLIST_FALSE);
+
+            topAddButton.setText(TOP_BUTTON_TEXT_WISHLIST_FALSE);
+            topButtonImageView.setImage(ResourceHolder.DONE_ICON);
+        }
+
+        itemPackTable.getSortOrder().clear();
+
+        amountColumn.setSortable(wishlistMode);
+
+        ParsedQueryInformation queryInformation = queryParser.parse("", wishlistMode);
+
+        itemPackTable.getItems().clear();
+        itemPackTable.getItems().addAll(itemPackDAO.queryItemPacks(activeProfile, itemMap, queryInformation));
+        lateRefreshTable();
+
+        setMessageBarSearchText(queryInformation.getSearchString());
+        setMessageBarItemCountsText();
+        setMessageBarErrorText(queryInformation.getErrorString());
+    }
+
     @FXML
     private void onSearchBarQueryEntered() {
         ParsedQueryInformation queryInformation = queryParser.parse(searchBar.getText(), wishlistMode);
@@ -179,11 +211,16 @@ public class MainSceneController extends AppConnectedSceneController implements 
     @FXML
     private void onItemPackAdd(ModelEvent<ItemPack> itemPackEvent) {
         ItemPack itemPack = itemPackEvent.getModel();
+
         itemPack.setAmount(Amount.MINIMUM.intValue());
+
         itemPackDAO.insertAmount(activeProfile, itemPack);
+
         itemPackTable.getItems().remove(itemPack);
         itemPackTable.refresh();
         setMessageBarItemCountsText();
+
+        invalidateWishlist();
     }
 
     @FXML
@@ -193,9 +230,13 @@ public class MainSceneController extends AppConnectedSceneController implements 
 
         if (currentAmount < Amount.MAXIMUM.intValue()) {
             itemPack.setAmount(currentAmount + 1);
+
             itemPackDAO.updateAmount(activeProfile, itemPack, currentAmount + 1);
+
             itemPackTable.refresh();
             setMessageBarItemCountsText();
+
+            invalidateWishlist();
         }
     }
 
@@ -206,14 +247,21 @@ public class MainSceneController extends AppConnectedSceneController implements 
 
         if (currentAmount > Amount.MINIMUM.intValue()) {
             itemPack.setAmount(currentAmount - 1);
+
             itemPackDAO.updateAmount(activeProfile, itemPack, currentAmount - 1);
+
             itemPackTable.refresh();
             setMessageBarItemCountsText();
+
+            invalidateWishlist();
         } else if (currentAmount == Amount.MINIMUM.intValue()) {
             itemPackDAO.deleteAmount(activeProfile, itemPack);
+
             itemPackTable.getItems().remove(itemPack);
             itemPackTable.refresh();
             setMessageBarItemCountsText();
+
+            invalidateWishlist();
         }
     }
 
@@ -266,36 +314,6 @@ public class MainSceneController extends AppConnectedSceneController implements 
         setAsActiveProfile(selectedProfile);
     }
 
-    public void switchToWishlistMode(boolean desiredMode) {
-        wishlistMode = desiredMode;
-
-        if (wishlistMode) {
-            topInfoText.setText(TOP_TEXT_WISHLIST_TRUE);
-
-            topAddButton.setText(TOP_BUTTON_TEXT_WISHLIST_TRUE);
-            topButtonImageView.setImage(ResourceHolder.PLUS_ICON);
-        } else {
-            topInfoText.setText(TOP_TEXT_WISHLIST_FALSE);
-
-            topAddButton.setText(TOP_BUTTON_TEXT_WISHLIST_FALSE);
-            topButtonImageView.setImage(ResourceHolder.DONE_ICON);
-        }
-
-        itemPackTable.getSortOrder().clear();
-
-        amountColumn.setSortable(wishlistMode);
-
-        ParsedQueryInformation queryInformation = queryParser.parse("", wishlistMode);
-
-        itemPackTable.getItems().clear();
-        itemPackTable.getItems().addAll(itemPackDAO.queryItemPacks(activeProfile, itemMap, queryInformation));
-        lateRefreshTable();
-
-        setMessageBarSearchText(queryInformation.getSearchString());
-        setMessageBarItemCountsText();
-        setMessageBarErrorText(queryInformation.getErrorString());
-    }
-
     public void populateInitialTable() {
         itemPackTable.getItems().addAll(itemPackDAO.queryItemPacks(activeProfile, itemMap, queryParser.parse("", wishlistMode)));
         itemPackTable.refresh();
@@ -320,6 +338,16 @@ public class MainSceneController extends AppConnectedSceneController implements 
 
         itemDAO.makeItemSetAssociations(itemMap, setMap);
         setDAO.makeSetItemAssociations(setMap, itemMap);
+    }
+
+    @Override
+    public void invalidateWishlist() {
+        ((MainApp) application).wishlistInvalidatedBy(StageInfo.StageState.MAIN);
+    }
+
+    @Override
+    public void wishlistInvalidated() {
+        switchToWishlistMode(true);
     }
 
     @Override

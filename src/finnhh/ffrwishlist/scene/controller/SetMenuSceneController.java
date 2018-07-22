@@ -31,18 +31,21 @@
 
 package finnhh.ffrwishlist.scene.controller;
 
+import finnhh.ffrwishlist.MainApp;
 import finnhh.ffrwishlist.model.Item;
 import finnhh.ffrwishlist.model.ItemPack;
 import finnhh.ffrwishlist.model.Profile;
 import finnhh.ffrwishlist.model.Set;
 import finnhh.ffrwishlist.model.constants.item.Amount;
+import finnhh.ffrwishlist.model.constants.stage.StageInfo;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
 import finnhh.ffrwishlist.model.database.dao.SetDAO;
 import finnhh.ffrwishlist.model.event.ModelEvent;
 import finnhh.ffrwishlist.scene.component.tableview.ItemPackTable;
-import finnhh.ffrwishlist.scene.controller.base.SceneController;
+import finnhh.ffrwishlist.scene.controller.base.AppConnectedSceneController;
 import finnhh.ffrwishlist.scene.controller.base.connections.DatabaseConnected;
+import finnhh.ffrwishlist.scene.controller.base.connections.WishlistConnected;
 import finnhh.ffrwishlist.scene.controller.base.ownership.ItemMapOwner;
 import finnhh.ffrwishlist.scene.controller.base.ownership.ProfileOwner;
 import finnhh.ffrwishlist.scene.controller.base.ownership.SetMapOwner;
@@ -56,13 +59,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class SetMenuSceneController extends SceneController implements DatabaseConnected, ProfileOwner, ItemMapOwner,
-                                                                        SetMapOwner, TableOwner {
+public class SetMenuSceneController extends AppConnectedSceneController implements DatabaseConnected, WishlistConnected,
+                                                                                    ProfileOwner, ItemMapOwner,
+                                                                                    SetMapOwner, TableOwner {
     @FXML
     private TextField setSearchBar;
     @FXML
@@ -80,22 +83,7 @@ public class SetMenuSceneController extends SceneController implements DatabaseC
     private Map<Integer, Item> itemMap;
     private Map<Integer, Set> setMap;
 
-    private Map<Item, Integer> alteredItemAmountsMap;
-
-    public SetMenuSceneController() {
-        alteredItemAmountsMap = new HashMap<>();
-    }
-
-    private void manageAlteredItemAmounts(ItemPack itemPack, int nextValue) {
-        Item itemToCheck = itemPack.getItem();
-
-        if (alteredItemAmountsMap.containsKey(itemToCheck)) {
-            if (alteredItemAmountsMap.get(itemToCheck) == nextValue)
-                alteredItemAmountsMap.remove(itemToCheck);
-        } else {
-            alteredItemAmountsMap.put(itemToCheck, itemPack.getAmount());
-        }
-    }
+    public SetMenuSceneController() { }
 
     @FXML
     private void onSetSearchBarQueryEntered() {
@@ -124,13 +112,13 @@ public class SetMenuSceneController extends SceneController implements DatabaseC
     private void onItemPackAdd(ModelEvent<ItemPack> itemPackEvent) {
         ItemPack itemPack = itemPackEvent.getModel();
 
-        manageAlteredItemAmounts(itemPack, Amount.MINIMUM.intValue());
-
         itemPack.setAmount(Amount.MINIMUM.intValue());
 
         itemPackDAO.insertAmount(activeProfile, itemPack);
 
         itemPackTable.refresh();
+
+        invalidateWishlist();
     }
 
     @FXML
@@ -141,13 +129,13 @@ public class SetMenuSceneController extends SceneController implements DatabaseC
         if (currentAmount < Amount.MAXIMUM.intValue()) {
             int nextValue = currentAmount + 1;
 
-            manageAlteredItemAmounts(itemPack, nextValue);
-
             itemPack.setAmount(nextValue);
 
             itemPackDAO.updateAmount(activeProfile, itemPack, nextValue);
 
             itemPackTable.refresh();
+
+            invalidateWishlist();
         }
     }
 
@@ -159,21 +147,21 @@ public class SetMenuSceneController extends SceneController implements DatabaseC
         if (currentAmount > Amount.MINIMUM.intValue()) {
             int nextValue = currentAmount - 1;
 
-            manageAlteredItemAmounts(itemPack, nextValue);
-
             itemPack.setAmount(nextValue);
 
             itemPackDAO.updateAmount(activeProfile, itemPack, nextValue);
 
             itemPackTable.refresh();
-        } else if (currentAmount == Amount.MINIMUM.intValue()) {
-            manageAlteredItemAmounts(itemPack, Amount.NONE.intValue());
 
+            invalidateWishlist();
+        } else if (currentAmount == Amount.MINIMUM.intValue()) {
             itemPack.setAmount(Amount.NONE.intValue());
 
             itemPackDAO.deleteAmount(activeProfile, itemPack);
 
             itemPackTable.refresh();
+
+            invalidateWishlist();
         }
     }
 
@@ -182,11 +170,7 @@ public class SetMenuSceneController extends SceneController implements DatabaseC
         final List<ItemPack> noneItemPacks =
                 itemPackTable.getItems().filtered(ip -> ip.getAmount() == Amount.NONE.intValue());
 
-        noneItemPacks.forEach(nip -> {
-            manageAlteredItemAmounts(nip, Amount.MINIMUM.intValue());
-
-            nip.setAmount(Amount.MINIMUM.intValue());
-        });
+        noneItemPacks.forEach(nip -> nip.setAmount(Amount.MINIMUM.intValue()));
 
         Task<Void> batchInsertTask = new Task<Void>() {
             @Override
@@ -200,6 +184,7 @@ public class SetMenuSceneController extends SceneController implements DatabaseC
                 super.succeeded();
 
                 lateRefreshTable();
+                invalidateWishlist();
             }
         };
 
@@ -214,19 +199,8 @@ public class SetMenuSceneController extends SceneController implements DatabaseC
                 itemPackTable.getItems().filtered(ip -> ip.getAmount() >= Amount.MINIMUM.intValue()
                                 && ip.getAmount() < Amount.MAXIMUM.intValue());
 
-        insertItemPacks.forEach(iip -> {
-            manageAlteredItemAmounts(iip, Amount.MINIMUM.intValue());
-
-            iip.setAmount(Amount.MINIMUM.intValue());
-        });
-
-        updateItemPacks.forEach(uip -> {
-            int nextValue = uip.getAmount() + 1;
-
-            manageAlteredItemAmounts(uip, nextValue);
-
-            uip.setAmount(nextValue);
-        });
+        insertItemPacks.forEach(iip -> iip.setAmount(Amount.MINIMUM.intValue()));
+        updateItemPacks.forEach(uip -> uip.setAmount(uip.getAmount() + 1));
 
         Task<Void> batchInsertUpdateTask = new Task<Void>() {
             @Override
@@ -241,6 +215,7 @@ public class SetMenuSceneController extends SceneController implements DatabaseC
                 super.succeeded();
 
                 lateRefreshTable();
+                invalidateWishlist();
             }
         };
 
@@ -252,10 +227,6 @@ public class SetMenuSceneController extends SceneController implements DatabaseC
             setSelectComboBox.getSelectionModel().select(selectedSet);
             onSetSelected();
         }
-    }
-
-    public boolean alteredWishlist() {
-        return !alteredItemAmountsMap.isEmpty();
     }
 
     @Override
@@ -270,6 +241,16 @@ public class SetMenuSceneController extends SceneController implements DatabaseC
         setDAO = databaseManager.getSetDAO();
 
         setSelectComboBox.getItems().addAll(setDAO.defaultQuerySets(setMap));
+    }
+
+    @Override
+    public void invalidateWishlist() {
+        ((MainApp) application).wishlistInvalidatedBy(StageInfo.StageState.SET_MENU);
+    }
+
+    @Override
+    public void wishlistInvalidated() {
+        onSetSelected();
     }
 
     @Override

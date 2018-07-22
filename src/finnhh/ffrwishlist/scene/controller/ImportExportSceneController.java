@@ -31,16 +31,19 @@
 
 package finnhh.ffrwishlist.scene.controller;
 
+import finnhh.ffrwishlist.MainApp;
 import finnhh.ffrwishlist.model.Item;
 import finnhh.ffrwishlist.model.ItemPack;
 import finnhh.ffrwishlist.model.Profile;
 import finnhh.ffrwishlist.model.constants.item.Amount;
+import finnhh.ffrwishlist.model.constants.stage.StageInfo;
 import finnhh.ffrwishlist.model.database.DatabaseManager;
 import finnhh.ffrwishlist.model.database.dao.ItemPackDAO;
 import finnhh.ffrwishlist.model.parser.ParsedQueryInformation;
 import finnhh.ffrwishlist.model.parser.QueryParser;
-import finnhh.ffrwishlist.scene.controller.base.SceneController;
+import finnhh.ffrwishlist.scene.controller.base.AppConnectedSceneController;
 import finnhh.ffrwishlist.scene.controller.base.connections.DatabaseConnected;
+import finnhh.ffrwishlist.scene.controller.base.connections.WishlistConnected;
 import finnhh.ffrwishlist.scene.controller.base.ownership.ItemMapOwner;
 import finnhh.ffrwishlist.scene.controller.base.ownership.ProfileOwner;
 import finnhh.ffrwishlist.scene.holder.ImportExportSceneHolder;
@@ -55,8 +58,9 @@ import javafx.scene.control.TextArea;
 
 import java.util.*;
 
-public class ImportExportSceneController extends SceneController implements DatabaseConnected, ProfileOwner,
-                                                                            ItemMapOwner {
+public class ImportExportSceneController extends AppConnectedSceneController implements DatabaseConnected,
+                                                                                        WishlistConnected,
+                                                                                        ProfileOwner, ItemMapOwner {
     public static final String PARSE_FAIL_MESSAGE       = "There have been errors, please check the import code.";
     public static final String AMOUNT_EXCEEDED_MESSAGE  = "One or more of the specified amounts are invalid.";
     public static final String IMPORT_SUCCESS_MESSAGE   = "Successfully added the items in the list!";
@@ -84,8 +88,6 @@ public class ImportExportSceneController extends SceneController implements Data
 
     private Map<Item, Integer> wishlistItemsMap;
 
-    private boolean wishlistAltered = false;
-
     public ImportExportSceneController() {
         wishlistItemsMap = new HashMap<>();
     }
@@ -97,12 +99,16 @@ public class ImportExportSceneController extends SceneController implements Data
 
         wishlistItemsMap.clear();
         wishlistItemPacks.forEach(wip -> wishlistItemsMap.put(wip.getItem(), wip.getAmount()));
+    }
+
+    private void setExportBBCode() {
+        setWishlistItems();
 
         final StringJoiner exportBBCodeJoiner = new StringJoiner("\n");
 
         exportBBCodeJoiner.add("[list]");
-        wishlistItemPacks.forEach(ip -> exportBBCodeJoiner.add(
-                "[li]" + ip.getItem().getName() + (ip.getAmount() > 1 ? " (x" + ip.getAmount() + ")" : "") + "[/li]"
+        wishlistItemsMap.forEach((item, amount) -> exportBBCodeJoiner.add(
+                "[li]" + item.getName() + (amount > 1 ? " (x" + amount + ")" : "") + "[/li]"
         ));
         exportBBCodeJoiner.add("[/list]");
 
@@ -114,70 +120,82 @@ public class ImportExportSceneController extends SceneController implements Data
         importParseFailLabel.setText("");
         importConfirmationListView.getItems().clear();
 
+        Map<Item, ItemPack> parsedItemsMap = new HashMap<>();
+
         String BBCodeInput = importBBCodeTextArea.getText().trim();
         String[] listValidation = BBCodeInput.split("]", 2);
 
-        if (listValidation.length == 2) {
-            if (listValidation[0].startsWith("[list") && listValidation[1].endsWith("[/list]")) {
-                String listItemsString =
-                        listValidation[1].substring(0, listValidation[1].length() - 7).trim();
+        if (listValidation.length == 2 && listValidation[0].startsWith("[list") && listValidation[1].endsWith("[/list]")) {
 
-                String[] listItems = listItemsString.split("\\[/li]");
+            String listItemsString = listValidation[1].substring(0, listValidation[1].length() - 7).trim();
+            String[] listItems = listItemsString.split("\\[/li]");
 
-                for (int i = 0; i < listItems.length; i++) {
-                    listItems[i] = listItems[i].trim();
+            for (int i = 0; i < listItems.length; i++) {
+                listItems[i] = listItems[i].trim();
 
-                    if (listItems[i].startsWith("[li]")) {
-                        listItems[i] = listItems[i].substring(4);
+                if (listItems[i].startsWith("[li]")) {
+                    listItems[i] = listItems[i].substring(4);
 
-                        final String[] nameAmountParts = listItems[i].split("\\(\\s*x");
+                    final String[] nameAmountParts = listItems[i].split("\\(\\s*x");
 
-                        Optional<Item> referencedItem = itemMap.values().stream()
-                                .filter(it -> it.getName().equals(nameAmountParts[0].trim()))
-                                .findFirst();
+                    Optional<Item> referencedItem = itemMap.values().stream()
+                            .filter(it -> it.getName().equals(nameAmountParts[0].trim()))
+                            .findFirst();
 
-                        int desiredAmount = Amount.NONE.intValue();
+                    int desiredAmount = Amount.NONE.intValue();
 
-                        if (nameAmountParts.length == 2) {
-                            int parenthesisIndex = nameAmountParts[1].indexOf(')');
+                    if (nameAmountParts.length == 2) {
+                        int parenthesisIndex = nameAmountParts[1].indexOf(')');
 
-                            if (parenthesisIndex != -1) {
-                                try {
-                                    desiredAmount =
-                                            Integer.parseInt(nameAmountParts[1].substring(0, parenthesisIndex).trim());
-                                } catch (NumberFormatException ignored) {
-                                }
+                        if (parenthesisIndex != -1) {
+                            try {
+                                desiredAmount = Integer.parseInt(nameAmountParts[1].substring(0, parenthesisIndex).trim());
+                            } catch (NumberFormatException ignored) {
                             }
-                        } else if (nameAmountParts.length == 1) {
-                            desiredAmount = Amount.MINIMUM.intValue();
-                        } else {
-                            importParseFailLabel.setText(PARSE_FAIL_MESSAGE);
                         }
+                    } else if (nameAmountParts.length == 1) {
+                        desiredAmount = Amount.MINIMUM.intValue();
+                    } else {
+                        importParseFailLabel.setText(PARSE_FAIL_MESSAGE);
+                    }
 
-                        if (referencedItem.isPresent()) {
-                            Item item = referencedItem.get();
+                    if (referencedItem.isPresent()) {
+                        Item item = referencedItem.get();
 
-                            int totalAmount = desiredAmount;
-                            if (wishlistItemsMap.containsKey(item))
-                                totalAmount += wishlistItemsMap.get(item);
+                        int totalAmount = desiredAmount;
+                        if (wishlistItemsMap.containsKey(item))
+                            totalAmount += wishlistItemsMap.get(item);
 
-                            if (Amount.isValidAmount(desiredAmount) && Amount.isValidAmount(totalAmount))
-                                importConfirmationListView.getItems().add(new ItemPack(item, desiredAmount));
-                            else
-                                importParseFailLabel.setText(AMOUNT_EXCEEDED_MESSAGE);
+                        if (Amount.isValidAmount(desiredAmount) && Amount.isValidAmount(totalAmount)) {
+                            if (parsedItemsMap.containsKey(item)) {
+                                ItemPack itemPack = parsedItemsMap.get(item);
+
+                                if (Amount.isValidAmount(totalAmount + itemPack.getAmount()))
+                                    itemPack.setAmount(desiredAmount + itemPack.getAmount());
+                                else
+                                    importParseFailLabel.setText(AMOUNT_EXCEEDED_MESSAGE);
+
+                            } else {
+                                parsedItemsMap.put(item, new ItemPack(item, desiredAmount));
+                            }
+
                         } else {
-                            importParseFailLabel.setText(PARSE_FAIL_MESSAGE);
+                            importParseFailLabel.setText(AMOUNT_EXCEEDED_MESSAGE);
                         }
 
                     } else {
                         importParseFailLabel.setText(PARSE_FAIL_MESSAGE);
                     }
+
+                } else {
+                    importParseFailLabel.setText(PARSE_FAIL_MESSAGE);
                 }
             }
         } else {
             importParseFailLabel.setText(PARSE_FAIL_MESSAGE);
         }
 
+        importConfirmationListView.getItems().addAll(parsedItemsMap.values());
         importConfirmationListView.refresh();
     }
 
@@ -195,8 +213,8 @@ public class ImportExportSceneController extends SceneController implements Data
 
             updateItemPackList.forEach(uip -> uip.setAmount(wishlistItemsMap.get(uip.getItem()) + uip.getAmount()));
 
-            if (!insertItemPackList.isEmpty() || !updateItemPackList.isEmpty())
-                wishlistAltered = true;
+            insertItemPackList.removeIf(ip -> !Amount.isValidAmount(ip.getAmount()));
+            updateItemPackList.removeIf(uip -> !Amount.isValidAmount(uip.getAmount()));
 
             Task<Void> batchInsertUpdateTask = new Task<Void>() {
                 @Override
@@ -210,7 +228,8 @@ public class ImportExportSceneController extends SceneController implements Data
                 protected void succeeded() {
                     super.succeeded();
 
-                    setWishlistItems();
+                    setExportBBCode();
+                    invalidateWishlist();
 
                     Platform.runLater(() -> {
                         importSuccessLabel.setText(IMPORT_SUCCESS_MESSAGE);
@@ -224,10 +243,6 @@ public class ImportExportSceneController extends SceneController implements Data
         }
     }
 
-    public boolean alteredWishlist() {
-        return wishlistAltered;
-    }
-
     @Override
     public void bindHolderData(ControlledSceneHolder sceneHolder) {
         importConfirmationListView.setItems(((ImportExportSceneHolder) sceneHolder).getImportItemPackList());
@@ -237,7 +252,17 @@ public class ImportExportSceneController extends SceneController implements Data
     public void setDatabaseConnections(DatabaseManager databaseManager) {
         itemPackDAO = databaseManager.getItemPackDAO();
 
-        setWishlistItems();
+        setExportBBCode();
+    }
+
+    @Override
+    public void invalidateWishlist() {
+        ((MainApp) application).wishlistInvalidatedBy(StageInfo.StageState.IMPORT_EXPORT);
+    }
+
+    @Override
+    public void wishlistInvalidated() {
+        setExportBBCode();
     }
 
     @Override
