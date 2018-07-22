@@ -92,23 +92,19 @@ public class ImportExportSceneController extends AppConnectedSceneController imp
         wishlistItemsMap = new HashMap<>();
     }
 
-    private void setWishlistItems() {
+    private void fetchWishlistItems() {
         ParsedQueryInformation queryInformation = new QueryParser().parse("", true);
 
         List<ItemPack> wishlistItemPacks = itemPackDAO.queryItemPacks(activeProfile, itemMap, queryInformation);
 
         wishlistItemsMap.clear();
         wishlistItemPacks.forEach(wip -> wishlistItemsMap.put(wip.getItem(), wip.getAmount()));
-    }
-
-    private void setExportBBCode() {
-        setWishlistItems();
 
         final StringJoiner exportBBCodeJoiner = new StringJoiner("\n");
 
         exportBBCodeJoiner.add("[list]");
-        wishlistItemsMap.forEach((item, amount) -> exportBBCodeJoiner.add(
-                "[li]" + item.getName() + (amount > 1 ? " (x" + amount + ")" : "") + "[/li]"
+        wishlistItemPacks.forEach(wip -> exportBBCodeJoiner.add(
+                "[li]" + wip.getItem().getName() + (wip.getAmount() > 1 ? " (x" + wip.getAmount() + ")" : "") + "[/li]"
         ));
         exportBBCodeJoiner.add("[/list]");
 
@@ -119,8 +115,6 @@ public class ImportExportSceneController extends AppConnectedSceneController imp
     private void onParseItemsButtonClicked() {
         importParseFailLabel.setText("");
         importConfirmationListView.getItems().clear();
-
-        Map<Item, ItemPack> parsedItemsMap = new HashMap<>();
 
         String BBCodeInput = importBBCodeTextArea.getText().trim();
         String[] listValidation = BBCodeInput.split("]", 2);
@@ -167,8 +161,12 @@ public class ImportExportSceneController extends AppConnectedSceneController imp
                             totalAmount += wishlistItemsMap.get(item);
 
                         if (Amount.isValidAmount(desiredAmount) && Amount.isValidAmount(totalAmount)) {
-                            if (parsedItemsMap.containsKey(item)) {
-                                ItemPack itemPack = parsedItemsMap.get(item);
+                            Optional<ItemPack> sameItemPack = importConfirmationListView.getItems().stream()
+                                                                    .filter(ip -> ip.getItem().equals(item))
+                                                                    .findFirst();
+
+                            if (sameItemPack.isPresent()) {
+                                ItemPack itemPack = sameItemPack.get();
 
                                 if (Amount.isValidAmount(totalAmount + itemPack.getAmount()))
                                     itemPack.setAmount(desiredAmount + itemPack.getAmount());
@@ -176,7 +174,7 @@ public class ImportExportSceneController extends AppConnectedSceneController imp
                                     importParseFailLabel.setText(AMOUNT_EXCEEDED_MESSAGE);
 
                             } else {
-                                parsedItemsMap.put(item, new ItemPack(item, desiredAmount));
+                                importConfirmationListView.getItems().add(new ItemPack(item, desiredAmount));
                             }
 
                         } else {
@@ -195,7 +193,6 @@ public class ImportExportSceneController extends AppConnectedSceneController imp
             importParseFailLabel.setText(PARSE_FAIL_MESSAGE);
         }
 
-        importConfirmationListView.getItems().addAll(parsedItemsMap.values());
         importConfirmationListView.refresh();
     }
 
@@ -228,7 +225,7 @@ public class ImportExportSceneController extends AppConnectedSceneController imp
                 protected void succeeded() {
                     super.succeeded();
 
-                    setExportBBCode();
+                    fetchWishlistItems();
                     invalidateWishlist();
 
                     Platform.runLater(() -> {
@@ -252,7 +249,7 @@ public class ImportExportSceneController extends AppConnectedSceneController imp
     public void setDatabaseConnections(DatabaseManager databaseManager) {
         itemPackDAO = databaseManager.getItemPackDAO();
 
-        setExportBBCode();
+        fetchWishlistItems();
     }
 
     @Override
@@ -262,7 +259,7 @@ public class ImportExportSceneController extends AppConnectedSceneController imp
 
     @Override
     public void wishlistInvalidated() {
-        setExportBBCode();
+        fetchWishlistItems();
     }
 
     @Override
